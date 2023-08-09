@@ -1,0 +1,5 @@
+[
+    {"field_name": "name", "validation_rule": "required"},
+    {"field_name": "value", "validation_rule": "required"},
+    {"field_name": "email", "validation_rule": "required,email"}
+  ]
