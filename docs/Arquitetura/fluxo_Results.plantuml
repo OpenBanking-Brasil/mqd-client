@@ -1,0 +1,25 @@
+@startuml
+!theme aws-orange
+title Fluxo Results - Motor Qualidade de Dados
+
+!pragma teoz true
+box "Receptora"
+  box "Motor Qualidade de Dados"
+    participant Results
+    participant Validator
+  end box
+end box
+
+box "Perimetro Central"
+   participant Gateway_Qualidade
+end box
+
+Results -> Results : Tick Time (Defined time)
+Results -> Validator : Get Validation Results
+Validator -> Results : Results
+Validator -> Validator : Clean Results
+Results -> Results : Build summary data
+Results -> Gateway_Qualidade : Summary
+Gateway_Qualidade -> Results: Ok
+
+@enduml

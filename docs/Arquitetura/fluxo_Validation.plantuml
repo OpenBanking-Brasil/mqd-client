@@ -1,0 +1,26 @@
+@startuml
+!theme aws-orange
+title Fluxo Validation - Motor Qualidade de Dados
+
+
+!pragma teoz true
+box "Receptora" #LightBlue
+  box "Motor Qualidade de Dados" #LightGreen
+    participant Worker
+    participant Queue
+    participant Validator
+  end box
+end box
+
+Validator -> Validator : Load Validation Rules
+Worker -> Queue : Get queued Message
+Queue -> Worker : Messages
+loop messages.length times
+    Worker -> Validator : Validate Message
+    Validator -> Validator: Validate Endpoint
+    Validator -> Validator: Unmarshal Payload
+    Validator -> Validator : Validate Object
+    Validator -> Worker : Return valid result
+end
+
+@enduml

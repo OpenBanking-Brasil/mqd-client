@@ -1,0 +1,21 @@
+@startuml
+!theme aws-orange
+title Fluxo API - Motor Qualidade de Dados
+
+
+!pragma teoz true
+box "Receptora" #LightBlue
+  participant API_OFB
+  box "Motor Qualidade de Dados" #LightGreen
+    participant API
+    participant Queue
+  end box
+end box
+
+API_OFB -> API : Send Request
+API -> API : Validate
+API -> Queue : Queue message
+Queue -> API : OK
+API -> API_OFB : Message queued!
+
+@enduml
