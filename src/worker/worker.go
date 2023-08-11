@@ -94,6 +94,12 @@ func ValidateMessage(msg *queue.Message) validator.ValidationResult {
 
 	validator := validator.NewValidator(rules)
 
+	err = validator.ValidateWithSchema(dynamicStruct, "..\\ParameterData\\schema.json")
+	if err != nil {
+		validationResult.Valid = false
+		validationResult.ErrType = "Validation error: " + err.Error()
+	}
+
 	err = validator.Validate(dynamicStruct)
 	if err != nil {
 		validationResult.Valid = false
