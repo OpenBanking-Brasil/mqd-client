@@ -5,19 +5,13 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/OpenBanking-Brasil/MQD_Client/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/queue"
 	"github.com/OpenBanking-Brasil/MQD_Client/result"
 	"github.com/OpenBanking-Brasil/MQD_Client/validator"
 )
 
 var (
-	endpointsToProcess = map[string]struct{}{
-		"/endpoint1":   {},
-		"/endpoint2":   {},
-		"Endpoint URL": {},
-		// Add more endpoints here as needed
-	} // List of Endpoints that MUST be validated
-
 	receivedValues  = make(map[string]int)
 	validatedValues = make(map[string]int)
 	mutex           = sync.Mutex{}
@@ -38,10 +32,12 @@ func processMessage(msg *queue.Message) {
 	receivedValues[msg.Endpoint]++
 	mutex.Unlock()
 
-	if _, ok := endpointsToProcess[msg.Endpoint]; !ok {
+	endpointSettings := getEndpointSettings(msg.Endpoint)
+
+	if endpointSettings.Endpoint == "" {
 		fmt.Printf("Ignoring message with endpoint: %s\n", msg.Endpoint)
 	} else {
-		vr := ValidateMessage(msg)
+		vr := ValidateMessage(msg, endpointSettings)
 		// fmt.Printf("Valid: %s, ErrorType: %s\n", vr.Valid, vr.ErrType)
 		// Create a message result entry
 		messageResult := result.MessageResult{
@@ -62,6 +58,16 @@ func processMessage(msg *queue.Message) {
 	}
 }
 
+func getEndpointSettings(endpointName string) *configuration.EndPointSettings {
+	for _, element := range configuration.GetEndpointSettings() {
+		if element.Endpoint == endpointName {
+			return &element
+		}
+	}
+
+	return &configuration.EndPointSettings{}
+}
+
 /**
  * Func: ValidateMessage gets the payload on the message and validates its fields
  *
@@ -72,12 +78,21 @@ func processMessage(msg *queue.Message) {
  * @return
  * ValidationResult: Result of the validation for the specified message
  */
-func ValidateMessage(msg *queue.Message) validator.ValidationResult {
+func ValidateMessage(msg *queue.Message, settings *configuration.EndPointSettings) validator.ValidationResult {
+	println("Validating message")
 	validationResult := validator.ValidationResult{Valid: true}
 
+	// Load validation rules from the CSV file
+	rules, err := validator.LoadValidationRules("ParameterData\\validation_rules.json")
+	if err != nil {
+		validationResult.Valid = false
+		validationResult.ErrType = "Validation error: " + err.Error()
+		return validationResult
+	}
+
 	// Create a dynamic structure from the Message content
-	var dynamicStruct validator.DynamicStruct
-	err := json.Unmarshal([]byte(msg.Message), &dynamicStruct)
+	var headerDynamicStruct validator.DynamicStruct
+	err = json.Unmarshal([]byte(msg.HeaderMessage), &headerDynamicStruct)
 	if err != nil {
 		// http.Error(w, "Invalid dynamic structure JSON", http.StatusBadRequest)
 		validationResult.Valid = false
@@ -85,25 +100,13 @@ func ValidateMessage(msg *queue.Message) validator.ValidationResult {
 		return validationResult
 	}
 
-	// Load validation rules from the CSV file
-	rules, err := validator.LoadValidationRules("..\\validation_rules.csv")
-	if err != nil {
-		validationResult.ErrType = err.Error()
-		return validationResult
-	}
+	val := validator.NewValidator(rules)
 
-	validator := validator.NewValidator(rules)
-
-	err = validator.ValidateWithSchema(dynamicStruct, "..\\ParameterData\\schema.json")
+	err = val.ValidateWithSchema(headerDynamicStruct, settings)
 	if err != nil {
 		validationResult.Valid = false
 		validationResult.ErrType = "Validation error: " + err.Error()
-	}
-
-	err = validator.Validate(dynamicStruct)
-	if err != nil {
-		validationResult.Valid = false
-		validationResult.ErrType = "Validation error: " + err.Error()
+		println("Validation error: " + err.Error())
 	}
 
 	return validationResult

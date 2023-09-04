@@ -101,12 +101,14 @@ func ApplyValidationRule(fieldName, validationRule string, value interface{}) er
 func LoadValidationRules(filename string) ([]ValidationRule, error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
+		println("error reading file: " + err.Error())
 		return nil, err
 	}
 
 	var rules []ValidationRule
 	err = json.Unmarshal(data, &rules)
 	if err != nil {
+		println("error unmarshal file")
 		return nil, err
 	}
 

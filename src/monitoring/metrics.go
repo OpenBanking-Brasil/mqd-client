@@ -2,7 +2,6 @@ package monitoring
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -17,7 +16,6 @@ import (
 
 var Requests metric.Float64Counter
 
-//
 func StartOpenTelemetry() {
 	ctx := context.Background()
 
@@ -62,11 +60,6 @@ func StartOpenTelemetry() {
 }
 
 func serveMetrics() {
-	log.Printf("serving metrics at localhost:8081/metrics")
+	log.Printf("serving metrics at /metrics")
 	http.Handle("/metrics", promhttp.Handler())
-	err := http.ListenAndServe(":8081", nil)
-	if err != nil {
-		fmt.Printf("error serving http: %v", err)
-		return
-	}
 }

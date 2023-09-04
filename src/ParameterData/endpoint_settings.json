@@ -1,0 +1,8 @@
+[
+    {"endpoint": "/accounts", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//accounts_schema.json"},
+    {"endpoint": "/accounts/{accountid}", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//accountid_schema.json"},
+    {"endpoint": "/accounts/{accountid}/balances", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//balances_schema.json"},
+    {"endpoint": "/accounts/{accountid}/transactions", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//transactions_schema.json"},
+    {"endpoint": "/accounts/{accountid}/transactions-current", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//transactions-current_schema.json"},
+    {"endpoint": "/accounts/{accountid}/overdraft-limits", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//overdraft_schema.json"}
+  ]

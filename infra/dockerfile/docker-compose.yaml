@@ -1,0 +1,16 @@
+version: '3'
+services:
+  mqd-client:
+    image: mqd-client-alp:latest
+    ports:
+      - "8083:8080"
+    environment:
+      - API_PORT=:8080
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
