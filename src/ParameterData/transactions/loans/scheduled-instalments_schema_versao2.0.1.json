@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://www.apache.org/licenses/LICENSE-2.0",
+    "title": "",
+    "version": "2.0.1",
+    "description": "",
+    "additionalProperties": false,
+    "properties": {
+        "contractid": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]{0,99}$",
+        "maxLength": 100,
+        "description": "Identificador do contrato para todos os tipos de operação de crédito."
+      },
+      "page": {
+        "type": "integer",
+        "default": 1,
+        "minimum": 1,
+        "maximum": 2147483647,
+        "format": "int32",
+        "description": "Número da página que está sendo requisitada (o valor da primeira página é 1)."
+      },
+      "page-size": {
+        "type": "integer",
+        "default": 25,
+        "minimum": 1,
+        "format": "int32",
+        "maximum": 1000,
+        "description": "Quantidade total de registros por páginas."
+      },
+      "pagination-key": {
+        "type": "string",
+        "maxLength": 2048,
+        "pattern": "[\\w\\W\\s]*",
+        "description": "Identificador de rechamada, utilizado para evitar a contagem de chamadas ao endpoint durante a paginação."
+      },
+        "authorization": {
+        "type": "string",
+        "pattern": "[\\w\\W\\s]*",
+        "maxLength": 2048,
+        "description": "Cabeçalho HTTP padrão. Permite que as credenciais sejam fornecidas dependendo do tipo de recurso solicitado"
+      },
+      "x-fapi-auth-date": {
+        "type": "string",
+        "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
+        "minLength": 29,
+        "maxLength": 29,
+        "description": "Data em que o usuário logou pela última vez com o receptor. Representada de acordo com a [RFC7231](https://tools.ietf.org/html/rfc7231).Exemplo: Sun, 10 Sep 2017 19:43:31 UTC"
+      },
+      "x-fapi-customer-ip-address": {
+        "type": "string",
+        "pattern": "[\\w\\W\\s]*",
+        "minLength": 1,
+        "maxLength": 100,
+        "description": "O endereço IP do usuário se estiver atualmente logado com o receptor."
+      },
+      "x-fapi-interaction-id": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-]{0,99}$",
+        "minLength": 1,
+        "maxLength": 100,
+        "description": "Um UID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação. Se fornecido, o transmissor deve \"reproduzir\" esse valor no cabeçalho de resposta."
+      },
+      "x-customer-user-agent": {
+        "type": "string",
+        "pattern": "[\\w\\W\\s]*",
+        "minLength": 1,
+        "maxLength": 100,
+        "description": "Indica o user-agent que o usuário utiliza."
+      }
+    },
+    "required": [
+      "contractid", "authorization"
+    ]
+  }
