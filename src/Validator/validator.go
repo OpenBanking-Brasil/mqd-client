@@ -11,8 +11,9 @@ type DynamicStruct map[string]interface{}
 
 // Structure to store validation results
 type ValidationResult struct {
-	Valid   bool   // Indicates the result of the validation
-	ErrType string // Indicates the typ of error based on the validation executed
+	Valid bool // Indicates the result of the validation
+	// ErrType string // Indicates the typ of error based on the validation executed
+	Errors map[string][]string
 }
 
 // Structure to store the validation rules
@@ -36,8 +37,22 @@ type Validator struct {
  * @return
  * Validator created
  */
-func NewValidator(rules []ValidationRule) *Validator {
+func NewValidatorWithRules(rules []ValidationRule) *Validator {
 	return &Validator{Rules: rules}
+}
+
+/**
+ * Func: NewValidator is for creating a new instance of a validator
+ *
+ * @author AB
+ *
+ * @params
+ * rules: List of rules that will apply during the validation
+ * @return
+ * Validator created
+ */
+func NewValidator() *Validator {
+	return &Validator{}
 }
 
 /**

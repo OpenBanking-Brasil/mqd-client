@@ -37,18 +37,22 @@ func processMessage(msg *queue.Message) {
 	if endpointSettings.Endpoint == "" {
 		fmt.Printf("Ignoring message with endpoint: %s\n", msg.Endpoint)
 	} else {
-		vr := ValidateMessage(msg, endpointSettings)
-		// fmt.Printf("Valid: %s, ErrorType: %s\n", vr.Valid, vr.ErrType)
-		// Create a message result entry
-		messageResult := result.MessageResult{
-			Endpoint:   msg.Endpoint,
-			HTTPMethod: msg.HTTPMethod,
-			Result:     vr.Valid,
-			ClientID:   msg.ClientID,
-			ServerID:   msg.ServerID,
-		}
+		vr, err := ValidateMessage(msg, endpointSettings)
+		if err != nil {
+			//// TODO handle error
+			println("Error validating!!")
+		} else {
+			// Create a message result entry
+			messageResult := result.MessageResult{
+				Endpoint:   msg.Endpoint,
+				HTTPMethod: msg.HTTPMethod,
+				Result:     vr.Valid,
+				Errors:     vr.Errors,
+				ClientID:   msg.ClientID,
+			}
 
-		result.AppendResult(&messageResult)
+			result.AppendResult(&messageResult)
+		}
 
 		// Here, you can define the validation logic for the received message.
 		// For this example, let's assume it's valid and just update the validated value.
@@ -58,6 +62,16 @@ func processMessage(msg *queue.Message) {
 	}
 }
 
+/**
+ * Func: getEndpointSettings loads a specific endpoint setting based on the endpoint name
+ *
+ * @author AB
+ *
+ * @params
+ * endpointName: Name of the endpoint to lookup for settings
+ * @return
+ * EndPointSettings: settings found, empty if no endpoint found
+ */
 func getEndpointSettings(endpointName string) *configuration.EndPointSettings {
 	for _, element := range configuration.GetEndpointSettings() {
 		if element.Endpoint == endpointName {
@@ -78,38 +92,40 @@ func getEndpointSettings(endpointName string) *configuration.EndPointSettings {
  * @return
  * ValidationResult: Result of the validation for the specified message
  */
-func ValidateMessage(msg *queue.Message, settings *configuration.EndPointSettings) validator.ValidationResult {
+func ValidateMessage(msg *queue.Message, settings *configuration.EndPointSettings) (*validator.ValidationResult, error) {
 	println("Validating message")
 	validationResult := validator.ValidationResult{Valid: true}
 
-	// Load validation rules from the CSV file
-	rules, err := validator.LoadValidationRules("ParameterData\\validation_rules.json")
-	if err != nil {
-		validationResult.Valid = false
-		validationResult.ErrType = "Validation error: " + err.Error()
-		return validationResult
-	}
+	// // Load validation rules from the CSV file
+	// rules, err := validator.LoadValidationRules("ParameterData\\validation_rules.json")
+	// if err != nil {
+	// 	validationResult.Valid = false
+	// 	return validationResult, err
+	// }
 
 	// Create a dynamic structure from the Message content
 	var headerDynamicStruct validator.DynamicStruct
-	err = json.Unmarshal([]byte(msg.HeaderMessage), &headerDynamicStruct)
+	err := json.Unmarshal([]byte(msg.HeaderMessage), &headerDynamicStruct)
 	if err != nil {
 		// http.Error(w, "Invalid dynamic structure JSON", http.StatusBadRequest)
 		validationResult.Valid = false
-		validationResult.ErrType = err.Error()
-		return validationResult
+		// validationResult.ErrType = err.Error()
+		return &validationResult, err
 	}
 
-	val := validator.NewValidator(rules)
+	val := validator.NewValidator()
 
-	err = val.ValidateWithSchema(headerDynamicStruct, settings)
+	valres, err := val.ValidateWithSchema(headerDynamicStruct, settings)
 	if err != nil {
 		validationResult.Valid = false
-		validationResult.ErrType = "Validation error: " + err.Error()
+		// validationResult.ErrType = "Validation error: " + err.Error()
 		println("Validation error: " + err.Error())
+		return &validationResult, err
 	}
 
-	return validationResult
+	validationResult.Errors = valres.Errors
+	validationResult.Valid = valres.Valid
+	return &validationResult, nil
 }
 
 /**
