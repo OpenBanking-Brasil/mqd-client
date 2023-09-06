@@ -5,14 +5,14 @@
   "version": "2.0.1",
   "description": "",
   "additionalProperties": false,
-	"properties": {
-	"Authorization": {
+  "properties": {
+    "authorization": {
       "type": "string",
       "pattern": "[\\w\\W\\s]*",
       "maxLength": 2048,
       "description": "Cabeçalho HTTP padrão. Permite que as credenciais sejam fornecidas dependendo do tipo de recurso solicitado"
     },
-	"x-fapi-auth-date": {
+    "x-fapi-auth-date": {
       "type": "string",
       "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
       "minLength": 29,
@@ -33,14 +33,14 @@
       "maxLength": 100,
       "description": "Um UID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação. Se fornecido, o transmissor deve \"reproduzir\" esse valor no cabeçalho de resposta."
     },
-	"x-customer-user-agent": {
+    "x-customer-user-agent": {
       "type": "string",
       "pattern": "[\\w\\W\\s]*",
       "minLength": 1,
       "maxLength": 100,
       "description": "Indica o user-agent que o usuário utiliza."
     },
-	"page": {
+    "page": {
       "type": "integer",
       "default": 1,
       "minimum": 1,
@@ -56,22 +56,22 @@
       "maximum": 1000,
       "description": "Quantidade total de registros por páginas."
     },
-	"enumAccountType": {
-      "$ref": "#/definitions/EnumAccountType",
+    "accounttype": {
+      "$ref": "#/definitions/enumaccounttype",
       "description": "Tipos de contas. Modalidades tradicionais previstas pela Resolução 4.753, não contemplando contas vinculadas, conta de domiciliados no exterior, contas em moedas estrangeiras e conta correspondente moeda eletrônica. Vide Enum."
     },
-	"pagination-key": {
+    "pagination-key": {
       "type": "string",
       "maxLength": 2048,
       "pattern": "[\\w\\W\\s]*",
       "description": "Identificador de rechamada, utilizado para evitar a contagem de chamadas ao endpoint durante a paginação."
     }
   },
-	"required": [
-    "Authorization"
+  "required": [
+    "authorization"
   ],
-	"definitions": {
-	"EnumAccountType": {
+  "definitions": {
+    "enumaccounttype": {
       "type": "string",
       "enum": [
         "CONTA_DEPOSITO_A_VISTA",

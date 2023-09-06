@@ -6,13 +6,13 @@
   "description": "",
   "additionalProperties": false,
   "properties": {
-   "Authorization": {
+    "authorization": {
       "type": "string",
       "pattern": "[\\w\\W\\s]*",
       "maxLength": 2048,
       "description": "Cabeçalho HTTP padrão. Permite que as credenciais sejam fornecidas dependendo do tipo de recurso solicitado"
     },
-	"x-fapi-auth-date": {
+    "x-fapi-auth-date": {
       "type": "string",
       "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
       "minLength": 29,
@@ -33,20 +33,20 @@
       "maxLength": 100,
       "description": "Um UID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação. Se fornecido, o transmissor deve \"reproduzir\" esse valor no cabeçalho de resposta."
     },
-	"x-customer-user-agent": {
+    "x-customer-user-agent": {
       "type": "string",
       "pattern": "[\\w\\W\\s]*",
       "minLength": 1,
       "maxLength": 100,
       "description": "Indica o user-agent que o usuário utiliza."
     },
-	"accountId": {
+    "accountid": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-]{0,99}$",
       "maxLength": 100,
       "description": "Identificador da conta de depósito à vista, de poupança ou de pagamento pré-paga."
     },
-	"page": {
+    "page": {
       "type": "integer",
       "default": 1,
       "minimum": 1,
@@ -62,36 +62,37 @@
       "maximum": 1000,
       "description": "Quantidade total de registros por páginas."
     },
-	"fromBookingDate": {
+    "frombookingdate": {
       "type": "string",
       "maxLength": 10,
       "format": "date",
       "example": "2021-05-21",
       "description": "Data inicial de filtragem. O período máximo utilizado no filtro é de 7 dias inclusive (D-6).   \n[Restrição] Deve obrigatoriamente ser enviado caso o campo toBookingDate seja informado. \nCaso não seja informado, deve ser assumido o dia atual.\n"
     },
-    "toBookingDate": {
+    "tobookingdate": {
       "type": "string",
       "maxLength": 10,
       "format": "date",
       "example": "2021-05-21",
       "description": "Data final de filtragem. [Restrição] Deve obrigatoriamente ser enviado caso o campo fromBookingDate seja informado. Caso não seja informado, deve ser assumido o dia atual."
     },
-	"enumCreditDebitIndicator": {
-      "$ref": "#/definitions/EnumCreditDebitIndicator",
+    "creditdebitindicator": {
+      "$ref": "#/definitions/enumcreditdebitindicator",
       "description": "Indicador do tipo de lançamento"
     },
-	"pagination-key": {
+    "pagination-key": {
       "type": "string",
       "maxLength": 2048,
       "pattern": "[\\w\\W\\s]*",
       "description": "Identificador de rechamada, utilizado para evitar a contagem de chamadas ao endpoint durante a paginação."
     }
-  }
+  },
   "required": [
-    "Authorization", "accoutId"
+    "authorization",
+    "accountid"
   ],
   "definitions": {
-	"EnumCreditDebitIndicator": {
+    "enumcreditdebitindicator": {
       "type": "string",
       "description": "Indicador do tipo de lançamento: \nDébito (no extrato) Em um extrato bancário, os débitos, marcados com a letra “D” ao lado do valor registrado, informam as saídas de dinheiro na conta-corrente.\nCrédito (no extrato) Em um extrato bancário, os créditos, marcados com a letra “C” ao lado do valor registrado, informam as entradas de dinheiro na conta-corrente.\n",
       "enum": [
@@ -99,6 +100,6 @@
         "DEBITO"
       ],
       "example": "DEBITO"
-    },
+    }
   }
 }

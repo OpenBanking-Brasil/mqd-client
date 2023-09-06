@@ -6,13 +6,13 @@
   "description": "",
   "additionalProperties": false,
   "properties": {
-	  "Authorization": {
+    "authorization": {
       "type": "string",
       "pattern": "[\\w\\W\\s]*",
       "maxLength": 2048,
       "description": "Cabeçalho HTTP padrão. Permite que as credenciais sejam fornecidas dependendo do tipo de recurso solicitado"
     },
-	"x-fapi-auth-date": {
+    "x-fapi-auth-date": {
       "type": "string",
       "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
       "minLength": 29,
@@ -33,21 +33,22 @@
       "maxLength": 100,
       "description": "Um UID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação. Se fornecido, o transmissor deve \"reproduzir\" esse valor no cabeçalho de resposta."
     },
-	"x-customer-user-agent": {
+    "x-customer-user-agent": {
       "type": "string",
       "pattern": "[\\w\\W\\s]*",
       "minLength": 1,
       "maxLength": 100,
       "description": "Indica o user-agent que o usuário utiliza."
     },
-	"accountId": {
+    "accountid": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-]{0,99}$",
       "maxLength": 100,
       "description": "Identificador da conta de depósito à vista, de poupança ou de pagamento pré-paga."
     }
-  }
+  },
   "required": [
-    "Authorization", "accoutId"
-  ],
+    "authorization",
+    "accountid"
+  ]
 }
