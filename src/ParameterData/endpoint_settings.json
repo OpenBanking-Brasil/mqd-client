@@ -1,8 +1,24 @@
 [
-    {"endpoint": "/accounts", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//accounts_schema.json"},
-    {"endpoint": "/accounts/{accountid}", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//accountid_schema.json"},
-    {"endpoint": "/accounts/{accountid}/balances", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//balances_schema.json"},
-    {"endpoint": "/accounts/{accountid}/transactions", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//transactions_schema.json"},
-    {"endpoint": "/accounts/{accountid}/transactions-current", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//transactions-current_schema.json"},
-    {"endpoint": "/accounts/{accountid}/overdraft-limits", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//overdraft_schema.json"}
+    {"endpoint": "/accounts/v2/accounts", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//2.0.1//accounts_schema.json"},
+    {"endpoint": "/accounts/v2/accounts/{accountid}", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//2.0.1//accountid_schema.json"},
+    {"endpoint": "/accounts/v2/accounts/{accountid}/balances", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//2.0.1//balances_schema.json"},
+    {"endpoint": "/accounts/v2/accounts/{accountid}/transactions", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//2.0.1//transactions_schema.json"},
+    {"endpoint": "/accounts/v2/accounts/{accountid}/transactions-current", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//2.0.1//transactions-current_schema.json"},
+    {"endpoint": "/accounts/v2/accounts/{accountid}/overdraft-limits", "api": "Contas" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//accounts//2.0.1//overdraft_schema.json"},
+
+    {"endpoint": "/credit-cards-accounts/v2/accounts", "api": "Cartão de Crédito" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//credit-card-accounts//2.0.1//accounts_schema.json"},
+    {"endpoint": "/credit-cards-accounts/v2/accounts/{creditCardAccountId}", "api": "Cartão de Crédito" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//credit-card-accounts//2.0.1//creditCardAccounId_schema.json"},
+    {"endpoint": "/credit-cards-accounts/v2/accounts/{creditCardAccountId}/bills", "api": "Cartão de Crédito" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//credit-card-accounts//2.0.1//bills_schema.json"},
+    {"endpoint": "/credit-cards-accounts/v2/accounts/{creditCardAccountId}/bills/{billId}/transactions", "api": "Cartão de Crédito" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//credit-card-accounts//2.0.1//billid_transactions_schema.json"},
+    {"endpoint": "/credit-cards-accounts/v2/accounts/{creditCardAccountId}/limits", "api": "Cartão de Crédito" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//credit-card-accounts//2.0.1//limits_schema.json"},
+    {"endpoint": "/credit-cards-accounts/v2/accounts/{creditCardAccountId}/transactions", "api": "Cartão de Crédito" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//credit-card-accounts//2.0.1//transactions_schema.json"},
+    {"endpoint": "/credit-cards-accounts/v2/accounts/{creditCardAccountId}/transactions-current", "api": "Cartão de Crédito" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//credit-card-accounts//2.0.1//transactions-current_schema.json"},
+
+    {"endpoint": "/financings/v2/contracts", "api": "Operações de Crédito - Empréstimos" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//financings//2.0.1//contracts_schema.json"},
+    {"endpoint": "/financings/v2/contracts/{contractId}", "api": "Operações de Crédito - Empréstimos" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//financings//2.0.1//contractId_schema.json"},
+    {"endpoint": "/financings/v2/contracts/{contractId}/warranties", "api": "Operações de Crédito - Empréstimos" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//financings//2.0.1//warranties_schema.json"},
+    {"endpoint": "/financings/v2/contracts/{contractId}/scheduled-instalments", "api": "Operações de Crédito - Empréstimos" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//financings//2.0.1//scheduled-instalments_schema.json"},
+    {"endpoint": "/financings/v2/contracts/{contractId}/payments", "api": "Operações de Crédito - Empréstimos" , "group": "Dados Cadastrais e Transacionais", "validation_rules": "ParameterData//transactions//financings//2.0.1//payments_schema.json"}
+
+
   ]
