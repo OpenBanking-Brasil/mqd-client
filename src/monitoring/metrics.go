@@ -35,7 +35,7 @@ var (
 
 func startMemoryCalculator() {
 	// Specify the duration for which you want to collect memory statistics in each interval
-	collectionDuration := 10 * time.Second // Change this as needed
+	collectionDuration := 1 * time.Minute // Change this as needed
 
 	// Create a ticker to trigger data collection at the specified interval
 	ticker := time.NewTicker(collectionDuration)
@@ -71,18 +71,6 @@ func calculateAverageMemory(measurements []Measurement) uint64 {
 		sum += m.Memory
 	}
 	return sum / uint64(len(measurements))
-}
-
-// calculateAverageCPU calculates the average CPU usage from a slice of measurements.
-func calculateAverageCPU(measurements []Measurement) float64 {
-	if len(measurements) == 0 {
-		return 0
-	}
-	var sum float64
-	for _, m := range measurements {
-		sum += m.CPU
-	}
-	return sum / float64(len(measurements))
 }
 
 // collectCPUUsage collects the current CPU usage as a percentage.

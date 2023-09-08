@@ -3,10 +3,11 @@ package result
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
-	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
+	"github.com/OpenBanking-Brasil/MQD_Client/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/monitoring"
 )
 
@@ -28,16 +29,22 @@ type EndpointSummary struct {
 	InvalidResults int    // Total number of validation marked as "false"
 }
 
+type MetricObject struct {
+	Key   string
+	Value string
+}
+
 type ApplicationMetrics struct {
-	ReportStartDate      time.Time
-	ReportEndDate        time.Time
-	MemmoryUsageAvg      string
-	CPUUsageAvg          string
-	TotalRequests        int
-	BadRequestErrors     int
-	ReportGenerationtime string
-	MsgProcessAvg        string
-	ResposeTimeAvg       string
+	// ReportStartDate      time.Time
+	// ReportEndDate        time.Time
+	// MemmoryUsageAvg      string
+	// CPUUsageAvg          string
+	// TotalRequests        int
+	// BadRequestErrors     int
+	// ReportGenerationtime string
+	// MsgProcessAvg        string
+	// ResposeTimeAvg       string
+	Values []MetricObject
 }
 
 type ErrorDetail struct {
@@ -125,7 +132,8 @@ func getAndClearResults() map[string][]MessageResult {
  */
 func StartResultsProcessor() {
 	reportStartTime = time.Now()
-	ticker := time.NewTicker(30 * time.Second)
+	timeWindow := time.Duration(configuration.ReportExecutiontimeFrame) * time.Minute
+	ticker := time.NewTicker(timeWindow)
 	for {
 		select {
 		case <-ticker.C:
@@ -136,22 +144,23 @@ func StartResultsProcessor() {
 
 func processAndSendResults() {
 	processStartTime := time.Now()
-	report := Report{SeverID: crosscutting.GetEnvironmentValue("serverOrgId", "d2c118b2-1017-4857-a417-b0a346fdc5cc")}
+	report := Report{SeverID: configuration.ServerId}
 	updateMetrics(&report.Metrics)
-	reportStartTime = report.Metrics.ReportEndDate
+	reportStartTime = time.Now()
 	results := getAndClearResults()
 	report.ClientSummary = getSummary(results)
-	report.Metrics.ReportGenerationtime = fmt.Sprintf("%s", time.Since(processStartTime))
+	report.Metrics.Values = append(report.Metrics.Values, MetricObject{Key: "ReportGenerationtime", Value: time.Since(processStartTime).String()})
+
 	printReport(report)
 }
 
 func updateMetrics(metrics *ApplicationMetrics) {
-	metrics.ReportStartDate = reportStartTime
-	metrics.ReportEndDate = time.Now()
-	metrics.BadRequestErrors = monitoring.GetAndCleanBadRequestsReceived()
-	metrics.TotalRequests = monitoring.GetAndCleanRequestsReceived()
-	metrics.MemmoryUsageAvg = monitoring.GetAndCleanAverageMemmory()
-	metrics.ResposeTimeAvg = monitoring.GetAndCleanResponseTime()
+	metrics.Values = append(metrics.Values, MetricObject{Key: "ReportStartDate", Value: reportStartTime.String()})
+	metrics.Values = append(metrics.Values, MetricObject{Key: "ReportEndDate", Value: time.Now().String()})
+	metrics.Values = append(metrics.Values, MetricObject{Key: "BadRequestErrors", Value: strconv.Itoa(monitoring.GetAndCleanBadRequestsReceived())})
+	metrics.Values = append(metrics.Values, MetricObject{Key: "TotalRequests", Value: strconv.Itoa(monitoring.GetAndCleanRequestsReceived())})
+	metrics.Values = append(metrics.Values, MetricObject{Key: "MemmoryUsageAvg", Value: monitoring.GetAndCleanAverageMemmory()})
+	metrics.Values = append(metrics.Values, MetricObject{Key: "ResposeTimeAvg", Value: monitoring.GetAndCleanResponseTime()})
 }
 
 func getSummary(results map[string][]MessageResult) []ClientSummary {

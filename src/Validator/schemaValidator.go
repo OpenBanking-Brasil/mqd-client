@@ -51,7 +51,7 @@ func cleanErrors(errors []gojsonschema.ResultError) map[string][]string {
 
 	for _, desc := range errors {
 		result[desc.Field()] = append(result[desc.Field()], desc.Description())
-		println(desc.Field() + ": " + desc.Description())
+		// println(desc.Field() + ": " + desc.Description())
 	}
 
 	return result

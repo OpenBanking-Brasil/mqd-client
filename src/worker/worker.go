@@ -93,7 +93,7 @@ func getEndpointSettings(endpointName string) *configuration.EndPointSettings {
  * ValidationResult: Result of the validation for the specified message
  */
 func ValidateMessage(msg *queue.Message, settings *configuration.EndPointSettings) (*validator.ValidationResult, error) {
-	println("Validating message")
+	// println("Validating message")
 	validationResult := validator.ValidationResult{Valid: true}
 
 	// // Load validation rules from the CSV file

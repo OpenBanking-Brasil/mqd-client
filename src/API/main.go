@@ -38,8 +38,8 @@ func handleMessages(w http.ResponseWriter, r *http.Request) {
 	_, err := uuid.Parse(clientOrgId)
 	if err != nil {
 		monitoring.IncreaseBadRequestsReceived()
-		fmt.Println("clientOrgId: " + clientOrgId)
-		fmt.Println("Error: clientOrgId: Not found or bad format.")
+		// fmt.Println("clientOrgId: " + clientOrgId)
+		// fmt.Println("Error: clientOrgId: Not found or bad format.")
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("clientOrgId: Not found or bad format."))
 		return

@@ -3,6 +3,8 @@ module github.com/OpenBanking-Brasil/MQD_Client
 go 1.20
 
 require (
+	github.com/google/uuid v1.3.1
+	github.com/gorilla/mux v1.8.0
 	github.com/prometheus/client_golang v1.15.1
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.opentelemetry.io/otel v1.16.0
@@ -18,8 +20,6 @@ require (
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/uuid v1.3.1 // indirect
-	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/prometheus/client_model v0.4.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect

@@ -9,9 +9,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o ./server/mqd-client ./API
 
 FROM docker.io/alpine
 #FROM gcr.io/distroless/static-debian11
-WORKDIR /root/
+WORKDIR /usr/
 COPY --from=builder /src/server .
-COPY --from=builder /src/ParameterData /ParameterData
+COPY --from=builder /src/ParameterData ParameterData
 EXPOSE 8080
 EXPOSE 8081
+#CMD ["/mqd-client"]
 CMD ./mqd-client
