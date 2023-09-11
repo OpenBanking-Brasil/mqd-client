@@ -32,15 +32,15 @@ func processMessage(msg *queue.Message) {
 	receivedValues[msg.Endpoint]++
 	mutex.Unlock()
 
-	endpointSettings := getEndpointSettings(msg.Endpoint)
+	endpointSettings := configuration.GetEndpointSetting(msg.Endpoint)
 
 	if endpointSettings.Endpoint == "" {
 		fmt.Printf("Ignoring message with endpoint: %s\n", msg.Endpoint)
 	} else {
-		vr, err := ValidateMessage(msg, endpointSettings)
+		vr, err := validateMessage(msg, endpointSettings)
 		if err != nil {
 			//// TODO handle error
-			println("Error validating!!")
+			println("Error validating!! " + err.Error())
 		} else {
 			// Create a message result entry
 			messageResult := result.MessageResult{
@@ -48,7 +48,7 @@ func processMessage(msg *queue.Message) {
 				HTTPMethod: msg.HTTPMethod,
 				Result:     vr.Valid,
 				Errors:     vr.Errors,
-				ClientID:   msg.ClientID,
+				ServerID:   msg.ServerID,
 			}
 
 			result.AppendResult(&messageResult)
@@ -62,24 +62,33 @@ func processMessage(msg *queue.Message) {
 	}
 }
 
-/**
- * Func: getEndpointSettings loads a specific endpoint setting based on the endpoint name
- *
- * @author AB
- *
- * @params
- * endpointName: Name of the endpoint to lookup for settings
- * @return
- * EndPointSettings: settings found, empty if no endpoint found
- */
-func getEndpointSettings(endpointName string) *configuration.EndPointSettings {
-	for _, element := range configuration.GetEndpointSettings() {
-		if element.Endpoint == endpointName {
-			return &element
-		}
+func validateContentWithSchema(content string, schema string, validationResult *validator.ValidationResult) error {
+	// Create a dynamic structure from the Message content
+	var dynamicStruct validator.DynamicStruct
+	err := json.Unmarshal([]byte(content), &dynamicStruct)
+	if err != nil {
+		validationResult.Valid = false
+		return err
 	}
 
-	return &configuration.EndPointSettings{}
+	val := validator.NewValidator()
+
+	valRes, err := val.ValidateWithSchema(dynamicStruct, schema)
+	if err != nil {
+		validationResult.Valid = false
+		println("Validation error: " + err.Error())
+		return err
+	}
+
+	if !valRes.Valid {
+		for key, value := range valRes.Errors {
+			validationResult.Errors[key] = value
+		}
+
+		validationResult.Valid = valRes.Valid
+	}
+
+	return nil
 }
 
 /**
@@ -92,9 +101,20 @@ func getEndpointSettings(endpointName string) *configuration.EndPointSettings {
  * @return
  * ValidationResult: Result of the validation for the specified message
  */
-func ValidateMessage(msg *queue.Message, settings *configuration.EndPointSettings) (*validator.ValidationResult, error) {
-	// println("Validating message")
-	validationResult := validator.ValidationResult{Valid: true}
+func validateMessage(msg *queue.Message, settings *configuration.EndPointSettings) (*validator.ValidationResult, error) {
+	validationResult := validator.ValidationResult{Valid: true, Errors: make(map[string][]string)}
+
+	err := validateContentWithSchema(msg.HeaderMessage, settings.JSONHeaderSchema, &validationResult)
+	if err != nil {
+		validationResult.Valid = false
+		return &validationResult, err
+	}
+
+	err = validateContentWithSchema(msg.Message, settings.JSONBodySchema, &validationResult)
+	if err != nil {
+		validationResult.Valid = false
+		return &validationResult, err
+	}
 
 	// // Load validation rules from the CSV file
 	// rules, err := validator.LoadValidationRules("ParameterData\\validation_rules.json")
@@ -103,28 +123,6 @@ func ValidateMessage(msg *queue.Message, settings *configuration.EndPointSetting
 	// 	return validationResult, err
 	// }
 
-	// Create a dynamic structure from the Message content
-	var headerDynamicStruct validator.DynamicStruct
-	err := json.Unmarshal([]byte(msg.HeaderMessage), &headerDynamicStruct)
-	if err != nil {
-		// http.Error(w, "Invalid dynamic structure JSON", http.StatusBadRequest)
-		validationResult.Valid = false
-		// validationResult.ErrType = err.Error()
-		return &validationResult, err
-	}
-
-	val := validator.NewValidator()
-
-	valres, err := val.ValidateWithSchema(headerDynamicStruct, settings)
-	if err != nil {
-		validationResult.Valid = false
-		// validationResult.ErrType = "Validation error: " + err.Error()
-		println("Validation error: " + err.Error())
-		return &validationResult, err
-	}
-
-	validationResult.Errors = valres.Errors
-	validationResult.Valid = valres.Valid
 	return &validationResult, nil
 }
 

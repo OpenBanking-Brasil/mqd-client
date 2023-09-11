@@ -2,11 +2,12 @@ package queue
 
 // Message contains the information of the payload to be validated
 type Message struct {
-	Message       string `json:"message"`        // Payload sent to the API
-	HeaderMessage string `json:"header_message"` // Payload sent to the API
+	Message       string `json:"message"`        // Body Payload sent to the API
+	HeaderMessage string `json:"header_message"` // Header Payload sent to the API
 	Endpoint      string `json:"endpoint"`       // Name of the endpoint requested
 	HTTPMethod    string `json:"http_method"`    // HTTP Method used
-	ClientID      string `json:"client_id"`      // Identifier of the Client requesting the information
+	// ClientID      string `json:"client_id"`      // Identifier of the Client requesting the information
+	ServerID string `json:"server_id"` // Identifier of the Client requesting the information
 }
 
 // Buffered channel for message queue

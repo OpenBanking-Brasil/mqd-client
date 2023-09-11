@@ -16,9 +16,9 @@ type MessageResult struct {
 	Endpoint   string // Name of the endpoint
 	HTTPMethod string // Type of HTTP method
 	Result     bool   // Indicates the result of the validation (True= Valid  ok)
-	ClientID   string // Identifier of the Client requesting the information
-	ServerID   string // Identifies the server requesting the information
-	Errors     map[string][]string
+	// ClientID   string // Identifier of the Client requesting the information
+	ServerID string // Identifies the server requesting the information
+	Errors   map[string][]string
 }
 
 // EndpointSummary contains the summary information for the validations by endpoint
@@ -69,16 +69,16 @@ type EndPointSummary struct {
 	Detail           []EndPointSummaryDetail
 }
 
-type ClientSummary struct {
-	ClientId        string
+type ServerSummary struct {
+	ServerId        string
 	TotalRequests   int
 	EndpointSummary []EndPointSummary
 }
 
 type Report struct {
 	Metrics       ApplicationMetrics
-	SeverID       string
-	ClientSummary []ClientSummary
+	ClientID      string
+	ServerSummary []ServerSummary
 }
 
 var (
@@ -102,7 +102,7 @@ var (
 func AppendResult(result *MessageResult) {
 	mutex.Lock()
 	messageResults = append(messageResults, *result)
-	groupedResults[result.ClientID] = append(groupedResults[result.ClientID], *result)
+	groupedResults[result.ServerID] = append(groupedResults[result.ServerID], *result)
 	mutex.Unlock()
 }
 
@@ -144,11 +144,11 @@ func StartResultsProcessor() {
 
 func processAndSendResults() {
 	processStartTime := time.Now()
-	report := Report{SeverID: configuration.ServerId}
+	report := Report{ClientID: configuration.ClientID}
 	updateMetrics(&report.Metrics)
 	reportStartTime = time.Now()
 	results := getAndClearResults()
-	report.ClientSummary = getSummary(results)
+	report.ServerSummary = getSummary(results)
 	report.Metrics.Values = append(report.Metrics.Values, MetricObject{Key: "ReportGenerationtime", Value: time.Since(processStartTime).String()})
 
 	printReport(report)
@@ -163,10 +163,10 @@ func updateMetrics(metrics *ApplicationMetrics) {
 	metrics.Values = append(metrics.Values, MetricObject{Key: "ResposeTimeAvg", Value: monitoring.GetAndCleanResponseTime()})
 }
 
-func getSummary(results map[string][]MessageResult) []ClientSummary {
-	result := make([]ClientSummary, 0)
+func getSummary(results map[string][]MessageResult) []ServerSummary {
+	result := make([]ServerSummary, 0)
 	for key, messageResult := range results {
-		newSummary := ClientSummary{ClientId: key}
+		newSummary := ServerSummary{ServerId: key}
 		for _, endpointResult := range messageResult {
 			newSummary.TotalRequests++
 			newSummary.EndpointSummary = updateEndpointSummary(newSummary.EndpointSummary, endpointResult)

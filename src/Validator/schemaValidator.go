@@ -1,7 +1,6 @@
 package validator
 
 import (
-	"github.com/OpenBanking-Brasil/MQD_Client/configuration"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -16,12 +15,14 @@ import (
  * @return
  * Error if validation fails.
  */
-func (v *Validator) ValidateWithSchema(data DynamicStruct, settings *configuration.EndPointSettings) (*ValidationResult, error) {
+func (v *Validator) ValidateWithSchema(data DynamicStruct, schema string) (*ValidationResult, error) {
+	validationResult := ValidationResult{Valid: true}
+
 	// println("validating with schema")
-	loader := gojsonschema.NewStringLoader(settings.JSONSchema)
+	loader := gojsonschema.NewStringLoader(schema)
 	documentLoader := gojsonschema.NewGoLoader(data)
 	result, err := gojsonschema.Validate(loader, documentLoader)
-	validationResult := ValidationResult{Valid: true}
+
 	if err != nil {
 		println("error validating: " + err.Error())
 		return nil, err
@@ -51,7 +52,7 @@ func cleanErrors(errors []gojsonschema.ResultError) map[string][]string {
 
 	for _, desc := range errors {
 		result[desc.Field()] = append(result[desc.Field()], desc.Description())
-		// println(desc.Field() + ": " + desc.Description())
+		println(desc.Field() + ": " + desc.Description())
 	}
 
 	return result
