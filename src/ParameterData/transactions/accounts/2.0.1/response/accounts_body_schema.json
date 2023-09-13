@@ -3,8 +3,8 @@
   "$id": "https://www.apache.org/licenses/LICENSE-2.0",
   "title": "",
   "version": "2.0.1",
-  "description": "",
-  "additionalProperties": true,
+  "description": "ResponseAccountList",
+  "additionalProperties": false,
   "properties": {
     "data": {
       "type": "array",

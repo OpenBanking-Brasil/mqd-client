@@ -2,23 +2,22 @@ package result
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"sync"
 	"time"
 
 	"github.com/OpenBanking-Brasil/MQD_Client/configuration"
+	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/OpenBanking-Brasil/MQD_Client/monitoring"
 )
 
 // MessageResult contains the information for a validation
 type MessageResult struct {
-	Endpoint   string // Name of the endpoint
-	HTTPMethod string // Type of HTTP method
-	Result     bool   // Indicates the result of the validation (True= Valid  ok)
-	// ClientID   string // Identifier of the Client requesting the information
-	ServerID string // Identifies the server requesting the information
-	Errors   map[string][]string
+	Endpoint   string              // Name of the endpoint
+	HTTPMethod string              // Type of HTTP method
+	Result     bool                // Indicates the result of the validation (True= Valid  ok)
+	ServerID   string              // Identifies the server requesting the information
+	Errors     map[string][]string // Details for the errors found during the validation
 }
 
 // EndpointSummary contains the summary information for the validations by endpoint
@@ -29,76 +28,69 @@ type EndpointSummary struct {
 	InvalidResults int    // Total number of validation marked as "false"
 }
 
+// Contains the name and value for different types of metrics for the report
 type MetricObject struct {
-	Key   string
-	Value string
+	Key   string // Name of the metric
+	Value string // Value of the metric
 }
 
+// Contains a list of metrics recorded for the report
 type ApplicationMetrics struct {
-	// ReportStartDate      time.Time
-	// ReportEndDate        time.Time
-	// MemmoryUsageAvg      string
-	// CPUUsageAvg          string
-	// TotalRequests        int
-	// BadRequestErrors     int
-	// ReportGenerationtime string
-	// MsgProcessAvg        string
-	// ResposeTimeAvg       string
-	Values []MetricObject
+	Values []MetricObject // List of metrics with its values
 }
 
+// Contains de detail for a specific error
 type ErrorDetail struct {
-	Field     string
-	ErrorType string
+	Field     string // Name of the field with problems
+	ErrorType string // Description of the error found
 }
 
+// Detail for a filed with an error type
 type FieldDetail struct {
-	ErrorType  string
-	TotalCount int
+	ErrorType  string // Name of the error type found
+	TotalCount int    // Number of times the error was found
 }
 
+// Summary of the details of errors for a specific field
 type EndPointSummaryDetail struct {
-	Field   string
-	Details []FieldDetail
+	Field   string        // Name of the field
+	Details []FieldDetail // List of details with the errors
 }
 
+// Contains a summary for a specific endpoint
 type EndPointSummary struct {
-	EndpointName     string
-	TotalRequests    int
-	ValidationErrors int
-	Detail           []EndPointSummaryDetail
+	EndpointName     string                  // Name of the endpoint
+	TotalRequests    int                     // Totla number of requests
+	ValidationErrors int                     // Total number of validation errors
+	Detail           []EndPointSummaryDetail // Detail of the errors
 }
 
+// Summary of a specific server
 type ServerSummary struct {
-	ServerId        string
-	TotalRequests   int
-	EndpointSummary []EndPointSummary
+	ServerId        string            // Server identifier (UUID)
+	TotalRequests   int               // Total number of requests
+	EndpointSummary []EndPointSummary // Summary of the endpoints requested
 }
 
+// Object report to be sent to the server
 type Report struct {
-	Metrics       ApplicationMetrics
-	ClientID      string
-	ServerSummary []ServerSummary
+	Metrics       ApplicationMetrics // Metris of the application
+	ClientID      string             // Client identifier (UUID)
+	ServerSummary []ServerSummary    // List of Servers requested
 }
 
 var (
-	messageResults = make([]MessageResult, 0) // Slice to store message results
-	mutex          = sync.Mutex{}             // Mutex for thread-safe access to messageResults
-
-	// Create a map to group results by ID
-	groupedResults  = make(map[string][]MessageResult)
-	reportStartTime = time.Time{}
+	messageResults  = make([]MessageResult, 0)         // Slice to store message results
+	mutex           = sync.Mutex{}                     // Mutex for thread-safe access to messageResults
+	groupedResults  = make(map[string][]MessageResult) // slice to store grouped results
+	reportStartTime = time.Time{}                      // Datetime of the start of the report
 )
 
-/**
- * Func: AppendResult is for appending a message result
- *
- * @author AB
- *
- * @params
- * result: Message rresult to be included
- * @return
- */
+// Func: AppendResult is for appending a message result
+// @author AB
+// @params
+// result: Message rresult to be included
+// @return
 func AppendResult(result *MessageResult) {
 	mutex.Lock()
 	messageResults = append(messageResults, *result)
@@ -106,14 +98,10 @@ func AppendResult(result *MessageResult) {
 	mutex.Unlock()
 }
 
-/**
- * Func: GetAndClearResults returns the actual results, and cleans the lists
- *
- * @author AB
- *
- * @return
- * List of Message results
- */
+// Func: GetAndClearResults returns the actual results, and cleans the lists
+// @author AB
+// @return
+// List of Message results
 func getAndClearResults() map[string][]MessageResult {
 	mutex.Lock()
 	defer func() {
@@ -125,11 +113,8 @@ func getAndClearResults() map[string][]MessageResult {
 	return groupedResults
 }
 
-/**
- * Func: StartResultsProcessor starts the periodic process that prints total results and clears them every 2 minutes
- *
- * @author AB
- */
+// Func: StartResultsProcessor starts the periodic process that prints total results and clears them every 2 minutes
+// @author AB
 func StartResultsProcessor() {
 	reportStartTime = time.Now()
 	timeWindow := time.Duration(configuration.ReportExecutiontimeFrame) * time.Minute
@@ -142,6 +127,10 @@ func StartResultsProcessor() {
 	}
 }
 
+// Func: processAndSendResults Processes the current results (creates a summary report) and sends it to the main server
+// @author AB
+// @params
+// @return
 func processAndSendResults() {
 	processStartTime := time.Now()
 	report := Report{ClientID: configuration.ClientID}
@@ -154,6 +143,11 @@ func processAndSendResults() {
 	printReport(report)
 }
 
+// Func: updateMetrics Updates the metrics for the report
+// @author AB
+// @params
+// metrics: List of metrics to be included
+// @return
 func updateMetrics(metrics *ApplicationMetrics) {
 	metrics.Values = append(metrics.Values, MetricObject{Key: "ReportStartDate", Value: reportStartTime.String()})
 	metrics.Values = append(metrics.Values, MetricObject{Key: "ReportEndDate", Value: time.Now().String()})
@@ -163,6 +157,12 @@ func updateMetrics(metrics *ApplicationMetrics) {
 	metrics.Values = append(metrics.Values, MetricObject{Key: "ResposeTimeAvg", Value: monitoring.GetAndCleanResponseTime()})
 }
 
+// Func: getSummary Returns the server summary for a specific set of MessageResults
+// @author AB
+// @params
+// results: List of results for a specific server
+// @return
+// ServerSummary: Summary by each point for the speciified server
 func getSummary(results map[string][]MessageResult) []ServerSummary {
 	result := make([]ServerSummary, 0)
 	for key, messageResult := range results {
@@ -178,6 +178,13 @@ func getSummary(results map[string][]MessageResult) []ServerSummary {
 	return result
 }
 
+// Func: updateEndpointSummary Updates the summary for a specific endpoint
+// @author AB
+// @params
+// endpointSummary: summary to be updated
+// messageResult: Result to be included on the summary
+// @return
+// ServerSummary: Summary updated with the result
 func updateEndpointSummary(endpointSummary []EndPointSummary, messageResult MessageResult) []EndPointSummary {
 	newepSummary := EndPointSummary{EndpointName: messageResult.Endpoint, TotalRequests: 1}
 	found := false
@@ -187,7 +194,7 @@ func updateEndpointSummary(endpointSummary []EndPointSummary, messageResult Mess
 			endpointSummary[i].TotalRequests = endpointSummary[i].TotalRequests + 1
 			if !messageResult.Result {
 				endpointSummary[i].ValidationErrors = endpointSummary[i].ValidationErrors + 1
-				endpointSummary[i].Detail = updateEndpointSummaryDetal(endpointSummary[i].Detail, messageResult.Errors)
+				endpointSummary[i].Detail = updateEndpointSummaryDetail(endpointSummary[i].Detail, messageResult.Errors)
 			}
 
 			break
@@ -197,7 +204,7 @@ func updateEndpointSummary(endpointSummary []EndPointSummary, messageResult Mess
 	if !found {
 		if !messageResult.Result {
 			newepSummary.ValidationErrors = 1
-			newepSummary.Detail = updateEndpointSummaryDetal(newepSummary.Detail, messageResult.Errors)
+			newepSummary.Detail = updateEndpointSummaryDetail(newepSummary.Detail, messageResult.Errors)
 		}
 
 		endpointSummary = append(endpointSummary, newepSummary)
@@ -206,7 +213,14 @@ func updateEndpointSummary(endpointSummary []EndPointSummary, messageResult Mess
 	return endpointSummary
 }
 
-func updateEndpointSummaryDetal(details []EndPointSummaryDetail, errors map[string][]string) []EndPointSummaryDetail {
+// Func: updateEndpointSummaryDetail Updates the summary detail for a specific endpoint / field
+// @author AB
+// @params
+// details: Details to be updated
+// errors: List of errors to be included
+// @return
+// EndPointSummaryDetail: Updated detail with the errors
+func updateEndpointSummaryDetail(details []EndPointSummaryDetail, errors map[string][]string) []EndPointSummaryDetail {
 	for key, val := range errors {
 		newDetail := &EndPointSummaryDetail{Field: key}
 		fieldFound := false
@@ -227,6 +241,13 @@ func updateEndpointSummaryDetal(details []EndPointSummaryDetail, errors map[stri
 	return details
 }
 
+// Func: updateFieldDetails Updates the summary detail for a specific field
+// @author AB
+// @params
+// details: Field Details to be updated
+// fieldDetails: Field details to include
+// @return
+// FieldDetail: Updated FieldDetail with the errors
 func updateFieldDetails(details []FieldDetail, fieldDetails []string) []FieldDetail {
 	for _, errorDetail := range fieldDetails {
 		detailFound := false
@@ -245,11 +266,17 @@ func updateFieldDetails(details []FieldDetail, fieldDetails []string) []FieldDet
 	return details
 }
 
+// Func: printReport Prits the report to console (Should be used for DEBUG pourpuses only)
+// @author AB
+// @params
+// report: Report to be printed
+// @return
 func printReport(report Report) {
 	b, err := json.Marshal(report)
 	if err != nil {
-		fmt.Println(err)
+		log.Error(err, "Error while printing the report.", "Result", "printReport")
 		return
 	}
-	fmt.Println(string(b))
+
+	log.Info(string(b), "Result", "printReport")
 }

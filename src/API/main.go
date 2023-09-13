@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/OpenBanking-Brasil/MQD_Client/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
+	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/OpenBanking-Brasil/MQD_Client/monitoring"
 	"github.com/OpenBanking-Brasil/MQD_Client/queue"
 	"github.com/OpenBanking-Brasil/MQD_Client/result"
@@ -20,16 +20,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-/**
- * Func: handleValidateResponseMessage Handles requests to the specified urls in the settings
- *
- * @author AB
- *
- * @params
- * w: Writer to create the response
- * r: Request received
- * @return
- */
+// Func: handleValidateResponseMessage Handles requests to the specified urls in the settings
+// @author AB
+// @params
+// w: Writer to create the response
+// r: Request received
+// @return
 func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	monitoring.IncreaseRequestsReceived()
@@ -61,7 +57,7 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	// Read header and create a json object
 	headerMsg, err := buildHeaderMsg(&r.Header)
 	if err != nil {
-		fmt.Println("Error:", err)
+		log.Error(err, "Error: handleValidateResponseMessage", "API", "handleValidateResponseMessage")
 		return
 	}
 
@@ -78,30 +74,18 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	msg.HTTPMethod = r.Method
 	msg.ServerID = serverOrgId
 
-	// // print the message for validation
-	// b, err := json.Marshal(msg)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// fmt.Println(string(b))
-
 	// Enqueue the message for processing using worker's enqueueMessage
 	queue.EnqueueMessage(&msg)
 	monitoring.RecordResponseDuration(startTime)
 	fmt.Fprintf(w, "Message enqueued for processing!")
 }
 
-/**
- * Func: handleMessages Handles requests to the specified urls in the settings
- *
- * @author AB
- *
- * @params
- * w: Writer to create the response
- * r: Request received
- * @return
- */
+// Func: handleMessages Handles requests to the specified urls in the settings
+// @author AB
+// @params
+// w: Writer to create the response
+// r: Request received
+// @return
 func handleMessages(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	monitoring.IncreaseRequestsReceived()
@@ -123,7 +107,7 @@ func handleMessages(w http.ResponseWriter, r *http.Request) {
 	// Read header and create a json object
 	headerMsg, err := buildHeaderMsg(&r.Header)
 	if err != nil {
-		fmt.Println("Error:", err)
+		log.Error(err, "Error: handleMessages", "API", "handleMessages")
 		return
 	}
 
@@ -146,6 +130,13 @@ func handleMessages(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Message enqueued for processing!")
 }
 
+// Func: buildHeaderMsg Creates a JSON message based on the headers
+// @author AB
+// @params
+// header: List of headers
+// @return
+// string: JSON Message created
+// error: in case of parsing error
 func buildHeaderMsg(header *http.Header) (string, error) {
 	// Create a map to store header key-value pairs.
 	objectMap := make(map[string]interface{})
@@ -163,17 +154,13 @@ func buildHeaderMsg(header *http.Header) (string, error) {
 	return string(jsonData), nil
 }
 
-/**
-* Func: headersToJSON Maps all the headers found in the request to a JSON object
-*
-* @author AB
-*
-* @params
-* headers: List of headers to map
-* @return
-* string: JSON object created
-* error: Returs error in case a problem is found during the mapping
- */
+// Func: headersToJSON Maps all the headers found in the request to a JSON object
+// @author AB
+// @params
+// headers: List of headers to map
+// @return
+// string: JSON object created
+// error: Returs error in case a problem is found during the mapping
 func getHeaderMap(headers http.Header) map[string]interface{} {
 	// Create a map to store header key-value pairs.
 	headerMap := make(map[string]interface{})
@@ -194,45 +181,10 @@ func getHeaderMap(headers http.Header) map[string]interface{} {
 	return headerMap
 }
 
-/**
-* Func: headersToJSON Maps all the headers found in the request to a JSON object
-*
-* @author AB
-*
-* @params
-* headers: List of headers to map
-* @return
-* string: JSON object created
-* error: Returs error in case a problem is found during the mapping
- */
-// func getPathMap(values map[string]string) map[string]interface{} {
-// 	// Create a map to store header key-value pairs.
-// 	pathMap := make(map[string]interface{})
-
-// 	// Iterate through the header parameters and add them to the map.
-// 	for key, values := range values {
-
-// 		key = strings.ToLower(key)
-// 		// If there's only one value for the header, store it directly.
-// 		if len(values) == 1 {
-// 			pathMap[key] = values[0]
-// 		} else {
-// 			// If there are multiple values, store them as an array.
-// 			pathMap[key] = values
-// 		}
-// 	}
-
-// 	return pathMap
-// }
-
-/**
-* Func: Main is the main function of the api, that is executed on "run"
-*
-* @author AB
-*
-* @params
- * @return
-*/
+// Func: Main is the main function of the api, that is executed on "run"
+// @author AB
+// @params
+// @return
 func main() {
 	monitoring.StartOpenTelemetry()
 
@@ -242,21 +194,18 @@ func main() {
 	go result.StartResultsProcessor()
 
 	r := mux.NewRouter()
-	//http.Handle("/metrics", promhttp.Handler())
 	r.Handle("/metrics", monitoring.GetOpentelemetryHandler())
-	r.HandleFunc("/sendmessage", handleMessages).Name("/sendmessage").Methods("GET")
 
 	// Validator for Responses
 	r.HandleFunc("/ValidateResponse", handleValidateResponseMessage)
 
 	for _, element := range configuration.GetEndpointSettings() {
 		r.HandleFunc(element.Endpoint, handleMessages).Name(element.Endpoint).Methods("GET")
-		println("handling endpoint: " + element.Endpoint)
+		log.Log("handling endpoint: "+element.Endpoint, "API", "Main")
 	}
 
-	//http.Handle("/", r)
 	port := crosscutting.GetEnvironmentValue("API_PORT", ":8080")
 
-	fmt.Println("Starting the server on port " + port)
-	log.Fatal(http.ListenAndServe(port, r))
+	log.Log("Starting the server on port "+port, "API", "Main")
+	log.Fatal(http.ListenAndServe(port, r), "", "API", "Main")
 }
