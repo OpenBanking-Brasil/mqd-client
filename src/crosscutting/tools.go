@@ -15,9 +15,11 @@ import (
 func GetEnvironmentValue(key string, defaultValue string) string {
 	result := os.Getenv(key)
 	if result == "" {
+		log.Info("Evironment Variable: ["+key+"], not found. using default value: ["+defaultValue+"]", "configuration", "GetEnvironmentValue")
 		result = defaultValue
 	}
 
+	log.Info("Evironment Variable: ["+key+"] = ["+result+"]", "configuration", "GetEnvironmentValue")
 	return result
 }
 

@@ -25,6 +25,27 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+        <collectionProp name="HeaderManager.headers">
+          <elementProp name="" elementType="Header">
+            <stringProp name="Header.value">${xFapiID}</stringProp>
+            <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
+          </elementProp>
+        </collectionProp>
+      </HeaderManager>
+      <hashTree/>
+      <UserParameters guiclass="UserParametersGui" testclass="UserParameters" testname="User Parameters" enabled="true">
+        <collectionProp name="UserParameters.names">
+          <stringProp name="1223321255">xFapiID</stringProp>
+        </collectionProp>
+        <collectionProp name="UserParameters.thread_values">
+          <collectionProp name="681405977">
+            <stringProp name="118040362">${__UUID()}</stringProp>
+          </collectionProp>
+        </collectionProp>
+        <boolProp name="UserParameters.per_iteration">true</boolProp>
+      </UserParameters>
+      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Functional Tests" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -53,7 +74,7 @@
             <stringProp name="HTTPSampler.domain">${Server}</stringProp>
             <stringProp name="HTTPSampler.port">${Port}</stringProp>
             <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -88,7 +109,7 @@
             <stringProp name="HTTPSampler.domain">${Server}</stringProp>
             <stringProp name="HTTPSampler.port">${Port}</stringProp>
             <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -130,7 +151,7 @@
             <stringProp name="HTTPSampler.domain">${Server}</stringProp>
             <stringProp name="HTTPSampler.port">${Port}</stringProp>
             <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -178,10 +199,6 @@
                   <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
                   <stringProp name="Header.value">79db2d44-50ad-11ee-be56-0242ac120002</stringProp>
                 </elementProp>
@@ -227,7 +244,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -286,7 +303,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -350,7 +367,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -417,7 +434,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -484,7 +501,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -548,7 +565,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -582,10 +599,6 @@
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
                   <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -626,7 +639,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -679,7 +692,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -731,7 +744,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -789,7 +802,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -847,7 +860,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -905,7 +918,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -939,10 +952,6 @@
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
                   <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -990,7 +999,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1049,7 +1058,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1113,7 +1122,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1180,7 +1189,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1247,7 +1256,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1311,7 +1320,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1345,10 +1354,6 @@
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
                   <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -1396,7 +1401,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1455,7 +1460,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1519,7 +1524,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1586,7 +1591,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1653,7 +1658,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1717,7 +1722,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1756,11 +1761,7 @@
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
-                  <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
+                  <stringProp name="Header.value">/credit-cards-accounts/v2/accounts</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -1808,7 +1809,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1871,7 +1872,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1953,7 +1954,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2032,7 +2033,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2104,7 +2105,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2180,7 +2181,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2256,7 +2257,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2289,11 +2290,7 @@
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
-                  <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
+                  <stringProp name="Header.value">/credit-cards-accounts/v2/accounts</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -2335,7 +2332,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2390,7 +2387,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2457,7 +2454,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2521,7 +2518,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2588,7 +2585,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2652,7 +2649,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2716,7 +2713,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2749,11 +2746,7 @@
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
-                  <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
+                  <stringProp name="Header.value">/credit-cards-accounts/v2/accounts</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -2801,7 +2794,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2864,7 +2857,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -2946,7 +2939,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3025,7 +3018,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3097,7 +3090,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3173,7 +3166,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3249,7 +3242,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3273,7 +3266,7 @@
               <hashTree/>
             </hashTree>
           </hashTree>
-          <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Credit Cards type Tests" enabled="false">
+          <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Credit Cards type Tests" enabled="true">
             <boolProp name="TransactionController.includeTimers">true</boolProp>
             <boolProp name="TransactionController.parent">true</boolProp>
           </TransactionController>
@@ -3282,11 +3275,7 @@
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
-                  <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
+                  <stringProp name="Header.value">/credit-cards-accounts/v2/accounts</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -3334,7 +3323,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3397,7 +3386,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3479,7 +3468,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3558,7 +3547,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3630,7 +3619,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3706,7 +3695,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3782,7 +3771,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3821,11 +3810,7 @@
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
-                  <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
+                  <stringProp name="Header.value">/financings/v2/contracts</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -3871,7 +3856,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -3973,7 +3958,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4031,7 +4016,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4099,7 +4084,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4179,7 +4164,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4203,7 +4188,7 @@
               <hashTree/>
             </hashTree>
           </hashTree>
-          <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Financings required fields" enabled="false">
+          <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Financings required fields" enabled="true">
             <boolProp name="TransactionController.includeTimers">true</boolProp>
             <boolProp name="TransactionController.parent">true</boolProp>
           </TransactionController>
@@ -4212,11 +4197,7 @@
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
-                  <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
+                  <stringProp name="Header.value">/financings/v2/contracts</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -4262,7 +4243,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4364,7 +4345,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4422,7 +4403,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4490,7 +4471,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4570,7 +4551,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4594,7 +4575,7 @@
               <hashTree/>
             </hashTree>
           </hashTree>
-          <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Financings length Tests" enabled="false">
+          <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Financings length Tests" enabled="true">
             <boolProp name="TransactionController.includeTimers">true</boolProp>
             <boolProp name="TransactionController.parent">true</boolProp>
           </TransactionController>
@@ -4603,11 +4584,7 @@
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
-                  <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
+                  <stringProp name="Header.value">/financings/v2/contracts</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -4653,7 +4630,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4755,7 +4732,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4813,7 +4790,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4881,7 +4858,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4961,7 +4938,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -4985,7 +4962,7 @@
               <hashTree/>
             </hashTree>
           </hashTree>
-          <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Financings type Tests" enabled="false">
+          <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Financings type Tests" enabled="true">
             <boolProp name="TransactionController.includeTimers">true</boolProp>
             <boolProp name="TransactionController.parent">true</boolProp>
           </TransactionController>
@@ -4994,11 +4971,7 @@
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">endpointName</stringProp>
-                  <stringProp name="Header.value">/accounts/v2/accounts</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">x-fapi-interaction-id</stringProp>
-                  <stringProp name="Header.value">ec87d50C-D4a4-1cAA-8d9B-F0bEFd1Ceb31 </stringProp>
+                  <stringProp name="Header.value">/financings/v2/contracts</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">serverOrgId</stringProp>
@@ -5044,7 +5017,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -5146,7 +5119,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -5204,7 +5177,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -5272,7 +5245,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -5352,7 +5325,7 @@
               <stringProp name="HTTPSampler.domain">${Server}</stringProp>
               <stringProp name="HTTPSampler.port">${Port}</stringProp>
               <stringProp name="HTTPSampler.path">/ValidateResponse</stringProp>
-              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>

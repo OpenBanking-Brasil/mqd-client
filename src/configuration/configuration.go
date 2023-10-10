@@ -86,8 +86,8 @@ func loadEndpointValidationSchemas() error {
 // @return
 func loadEnvironmentSettings() {
 	// ServerId = crosscutting.GetEnvironmentValue(SERVER_ID_ENVIRONMENT, "d2c118b2-1017-4857-a417-b0a346fdc5cc")
-	ClientID = crosscutting.GetEnvironmentValue(SERVER_ID_ENVIRONMENT, "43a3a836-50ae-11ee-be56-0242ac120002")
-	intVar, err := strconv.Atoi(crosscutting.GetEnvironmentValue(REPORT_EXECUTION_WINDOW, "1"))
+	ClientID = crosscutting.GetEnvironmentValue(SERVER_ID_ENVIRONMENT, "09b20d09-bf30-4497-938e-b0ead8ce9629")
+	intVar, err := strconv.Atoi(crosscutting.GetEnvironmentValue(REPORT_EXECUTION_WINDOW, "10"))
 	if err != nil {
 		intVar = 30
 		log.Log("REPORT_EXECUTION_WINDOW: Bad Format, Loading default: 30.", "Configuration", "loadEnvironmentSettings")

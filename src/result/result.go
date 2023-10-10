@@ -13,11 +13,12 @@ import (
 
 // MessageResult contains the information for a validation
 type MessageResult struct {
-	Endpoint   string              // Name of the endpoint
-	HTTPMethod string              // Type of HTTP method
-	Result     bool                // Indicates the result of the validation (True= Valid  ok)
-	ServerID   string              // Identifies the server requesting the information
-	Errors     map[string][]string // Details for the errors found during the validation
+	Endpoint           string              // Name of the endpoint
+	HTTPMethod         string              // Type of HTTP method
+	Result             bool                // Indicates the result of the validation (True= Valid  ok)
+	ServerID           string              // Identifies the server requesting the information
+	Errors             map[string][]string // Details for the errors found during the validation
+	XFapiInteractionID string
 }
 
 // EndpointSummary contains the summary information for the validations by endpoint
@@ -47,8 +48,9 @@ type ErrorDetail struct {
 
 // Detail for a filed with an error type
 type FieldDetail struct {
-	ErrorType  string // Name of the error type found
-	TotalCount int    // Number of times the error was found
+	ErrorType  string   // Name of the error type found
+	XFapiList  []string // List of xFapiInteractionIds that showed this specific error
+	TotalCount int      // Number of times the error was found
 }
 
 // Summary of the details of errors for a specific field
@@ -116,6 +118,7 @@ func getAndClearResults() map[string][]MessageResult {
 // Func: StartResultsProcessor starts the periodic process that prints total results and clears them every 2 minutes
 // @author AB
 func StartResultsProcessor() {
+	loadCertificates()
 	reportStartTime = time.Now()
 	timeWindow := time.Duration(configuration.ReportExecutiontimeFrame) * time.Minute
 	ticker := time.NewTicker(timeWindow)
@@ -132,6 +135,7 @@ func StartResultsProcessor() {
 // @params
 // @return
 func processAndSendResults() {
+	log.Info("Processing and sending results", "result", "processAndSendResults")
 	processStartTime := time.Now()
 	report := Report{ClientID: configuration.ClientID}
 	updateMetrics(&report.Metrics)
@@ -140,7 +144,9 @@ func processAndSendResults() {
 	report.ServerSummary = getSummary(results)
 	report.Metrics.Values = append(report.Metrics.Values, MetricObject{Key: "ReportGenerationtime", Value: time.Since(processStartTime).String()})
 
+	sendReportToAPI(report)
 	printReport(report)
+	log.Info("processAndSendResults -> Process finished", "server", "postReport")
 }
 
 // Func: updateMetrics Updates the metrics for the report
@@ -194,7 +200,7 @@ func updateEndpointSummary(endpointSummary []EndPointSummary, messageResult Mess
 			endpointSummary[i].TotalRequests = endpointSummary[i].TotalRequests + 1
 			if !messageResult.Result {
 				endpointSummary[i].ValidationErrors = endpointSummary[i].ValidationErrors + 1
-				endpointSummary[i].Detail = updateEndpointSummaryDetail(endpointSummary[i].Detail, messageResult.Errors)
+				endpointSummary[i].Detail = updateEndpointSummaryDetail(endpointSummary[i].Detail, messageResult.Errors, messageResult.XFapiInteractionID)
 			}
 
 			break
@@ -204,7 +210,7 @@ func updateEndpointSummary(endpointSummary []EndPointSummary, messageResult Mess
 	if !found {
 		if !messageResult.Result {
 			newepSummary.ValidationErrors = 1
-			newepSummary.Detail = updateEndpointSummaryDetail(newepSummary.Detail, messageResult.Errors)
+			newepSummary.Detail = updateEndpointSummaryDetail(newepSummary.Detail, messageResult.Errors, messageResult.XFapiInteractionID)
 		}
 
 		endpointSummary = append(endpointSummary, newepSummary)
@@ -220,7 +226,7 @@ func updateEndpointSummary(endpointSummary []EndPointSummary, messageResult Mess
 // errors: List of errors to be included
 // @return
 // EndPointSummaryDetail: Updated detail with the errors
-func updateEndpointSummaryDetail(details []EndPointSummaryDetail, errors map[string][]string) []EndPointSummaryDetail {
+func updateEndpointSummaryDetail(details []EndPointSummaryDetail, errors map[string][]string, xfapiID string) []EndPointSummaryDetail {
 	for key, val := range errors {
 		newDetail := &EndPointSummaryDetail{Field: key}
 		fieldFound := false
@@ -232,7 +238,7 @@ func updateEndpointSummaryDetail(details []EndPointSummaryDetail, errors map[str
 			}
 		}
 
-		newDetail.Details = updateFieldDetails(newDetail.Details, val)
+		newDetail.Details = updateFieldDetails(newDetail.Details, val, xfapiID)
 		if !fieldFound {
 			details = append(details, *newDetail)
 		}
@@ -248,18 +254,19 @@ func updateEndpointSummaryDetail(details []EndPointSummaryDetail, errors map[str
 // fieldDetails: Field details to include
 // @return
 // FieldDetail: Updated FieldDetail with the errors
-func updateFieldDetails(details []FieldDetail, fieldDetails []string) []FieldDetail {
+func updateFieldDetails(details []FieldDetail, fieldDetails []string, xfapiID string) []FieldDetail {
 	for _, errorDetail := range fieldDetails {
 		detailFound := false
 		for j, fieldDetail := range details {
 			if fieldDetail.ErrorType == errorDetail {
 				detailFound = true
+				details[j].XFapiList = append(details[j].XFapiList, xfapiID)
 				details[j].TotalCount = details[j].TotalCount + 1
 			}
 		}
 
 		if !detailFound {
-			details = append(details, FieldDetail{ErrorType: errorDetail, TotalCount: 1})
+			details = append(details, FieldDetail{ErrorType: errorDetail, TotalCount: 1, XFapiList: []string{xfapiID}})
 		}
 	}
 
@@ -278,5 +285,5 @@ func printReport(report Report) {
 		return
 	}
 
-	log.Info(string(b), "Result", "printReport")
+	log.Debug(string(b), "Result", "printReport")
 }

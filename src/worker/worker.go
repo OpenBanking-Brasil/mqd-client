@@ -40,11 +40,12 @@ func processMessage(msg *queue.Message) {
 		} else {
 			// Create a message result entry
 			messageResult := result.MessageResult{
-				Endpoint:   msg.Endpoint,
-				HTTPMethod: msg.HTTPMethod,
-				Result:     vr.Valid,
-				Errors:     vr.Errors,
-				ServerID:   msg.ServerID,
+				Endpoint:           msg.Endpoint,
+				HTTPMethod:         msg.HTTPMethod,
+				Result:             vr.Valid,
+				Errors:             vr.Errors,
+				ServerID:           msg.ServerID,
+				XFapiInteractionID: msg.XFapiInteractionID,
 			}
 
 			monitoring.IncreaseValidationResult(messageResult.ServerID, messageResult.Endpoint, messageResult.Result)

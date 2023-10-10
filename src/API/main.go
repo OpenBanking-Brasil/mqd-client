@@ -20,6 +20,29 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Contains information message when error needs to be returned
+type GenericError struct {
+	Message string // Error message
+}
+
+func updateReponseError(w http.ResponseWriter, genericError GenericError, responseCode int) {
+	// Marshal the struct into JSON
+	jsonData, err := json.Marshal(genericError)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Set the response content type to JSON
+	w.Header().Set("Content-Type", "application/json")
+
+	// Set the HTTP status code
+	w.WriteHeader(responseCode)
+
+	// Write the JSON data to the response
+	w.Write(jsonData)
+}
+
 // Func: handleValidateResponseMessage Handles requests to the specified urls in the settings
 // @author AB
 // @params
@@ -27,6 +50,7 @@ import (
 // r: Request received
 // @return
 func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
+	genericError := &GenericError{}
 	startTime := time.Now()
 	monitoring.IncreaseRequestsReceived()
 	var msg queue.Message
@@ -36,8 +60,8 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	_, err := uuid.Parse(serverOrgId)
 	if err != nil {
 		monitoring.IncreaseBadRequestsReceived()
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("serverOrgId: Not found or bad format."))
+		genericError.Message = "serverOrgId: Not found or bad format."
+		updateReponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
@@ -49,8 +73,8 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 
 	if endpointSettings.Endpoint == "" {
 		monitoring.IncreaseBadRequestsReceived()
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("endpointName: Not found or bad format."))
+		genericError.Message = "endpointName: Not found or bad format."
+		updateReponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
@@ -58,21 +82,28 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	headerMsg, err := buildHeaderMsg(&r.Header)
 	if err != nil {
 		log.Error(err, "Error: handleValidateResponseMessage", "API", "handleValidateResponseMessage")
+		genericError.Message = "Error processing request."
+		updateReponseError(w, *genericError, http.StatusInternalServerError)
 		return
 	}
 
 	// Read the body of the message
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		genericError.Message = "Failed to read request body."
+		updateReponseError(w, *genericError, http.StatusInternalServerError)
 		return
 	}
 
+	// Read the Server Organization ID from the header
 	msg.HeaderMessage = headerMsg
 	msg.Message = string(body)
 	msg.Endpoint = endpointName
 	msg.HTTPMethod = r.Method
 	msg.ServerID = serverOrgId
+	xFapiID := r.Header.Get("x-fapi-interaction-id")
+	// log.Info(xFapiID, "API", "Main")
+	msg.XFapiInteractionID = xFapiID
 
 	// Enqueue the message for processing using worker's enqueueMessage
 	queue.EnqueueMessage(&msg)
@@ -189,6 +220,7 @@ func main() {
 	monitoring.StartOpenTelemetry()
 
 	configuration.Initialize()
+
 	// Start the worker Goroutine to process messages
 	go worker.StartWorker()
 	go result.StartResultsProcessor()
@@ -197,12 +229,13 @@ func main() {
 	r.Handle("/metrics", monitoring.GetOpentelemetryHandler())
 
 	// Validator for Responses
-	r.HandleFunc("/ValidateResponse", handleValidateResponseMessage)
+	r.HandleFunc("/ValidateResponse", handleValidateResponseMessage).Name("ValidateResponse").Methods("POST")
 
-	for _, element := range configuration.GetEndpointSettings() {
-		r.HandleFunc(element.Endpoint, handleMessages).Name(element.Endpoint).Methods("GET")
-		log.Log("handling endpoint: "+element.Endpoint, "API", "Main")
-	}
+	//// TODO handlers for specific endpoints were removed as /ValidateResponse will validate all requests
+	// for _, element := range configuration.GetEndpointSettings() {
+	// 	r.HandleFunc(element.Endpoint, handleMessages).Name(element.Endpoint).Methods("POST")
+	// 	log.Log("handling endpoint: "+element.Endpoint, "API", "Main")
+	// }
 
 	port := crosscutting.GetEnvironmentValue("API_PORT", ":8080")
 
