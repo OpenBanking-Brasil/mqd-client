@@ -1,0 +1,18 @@
+FROM docker.io/golang:alpine as builder
+RUN apk update && apk add --no-cache git
+WORKDIR /src
+COPY /src/go.mod .
+COPY /src/go.sum .
+RUN go mod download
+COPY /src/. .
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./server/mqd-client ./API
+
+FROM docker.io/alpine
+#FROM gcr.io/distroless/static-debian11
+WORKDIR /usr/
+COPY --from=builder /src/server .
+COPY --from=builder /src/ParameterData ParameterData
+EXPOSE 8080
+EXPOSE 8081
+#CMD ["/mqd-client"]
+CMD ./mqd-client

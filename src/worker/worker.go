@@ -2,132 +2,144 @@ package worker
 
 import (
 	"encoding/json"
-	"fmt"
 	"sync"
 
+	"github.com/OpenBanking-Brasil/MQD_Client/configuration"
+	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
+	"github.com/OpenBanking-Brasil/MQD_Client/monitoring"
 	"github.com/OpenBanking-Brasil/MQD_Client/queue"
 	"github.com/OpenBanking-Brasil/MQD_Client/result"
 	"github.com/OpenBanking-Brasil/MQD_Client/validator"
 )
 
 var (
-	endpointsToProcess = map[string]struct{}{
-		"/endpoint1":   {},
-		"/endpoint2":   {},
-		"Endpoint URL": {},
-		// Add more endpoints here as needed
-	} // List of Endpoints that MUST be validated
-
-	receivedValues  = make(map[string]int)
-	validatedValues = make(map[string]int)
-	mutex           = sync.Mutex{}
+	receivedValues  = make(map[string]int) // Stores the values for the received messages
+	validatedValues = make(map[string]int) // Stores the values for the validated messages
+	mutex           = sync.Mutex{}         // Mutex for multi processing locks
 )
 
-/**
- * Func: processMessage Validates and creates a result of a specific message
- *
- * @author AB
- *
- * @params
- * msg: MEssage to be processed
- * @return
- */
+// Func: processMessage Validates and creates a result of a specific message
+// @author AB
+// @params
+// msg: MEssage to be processed
+// @return
 func processMessage(msg *queue.Message) {
-	// Update received value for the endpoint
 	mutex.Lock()
 	receivedValues[msg.Endpoint]++
 	mutex.Unlock()
 
-	if _, ok := endpointsToProcess[msg.Endpoint]; !ok {
-		fmt.Printf("Ignoring message with endpoint: %s\n", msg.Endpoint)
+	endpointSettings := configuration.GetEndpointSetting(msg.Endpoint)
+
+	if endpointSettings.Endpoint == "" {
+		log.Warning("Ignoring message with endpoint: "+msg.Endpoint, "Worker", "processMessage")
 	} else {
-		vr := ValidateMessage(msg)
-		// fmt.Printf("Valid: %s, ErrorType: %s\n", vr.Valid, vr.ErrType)
-		// Create a message result entry
-		messageResult := result.MessageResult{
-			Endpoint:   msg.Endpoint,
-			HTTPMethod: msg.HTTPMethod,
-			Result:     vr.Valid,
-			ClientID:   msg.ClientID,
-			ServerID:   msg.ServerID,
+		vr, err := validateMessage(msg, endpointSettings)
+		if err != nil {
+			//// TODO handle error
+			log.Error(err, "Error during Validation", "Worker", "processMessage")
+		} else {
+			// Create a message result entry
+			messageResult := result.MessageResult{
+				Endpoint:           msg.Endpoint,
+				HTTPMethod:         msg.HTTPMethod,
+				Result:             vr.Valid,
+				Errors:             vr.Errors,
+				ServerID:           msg.ServerID,
+				XFapiInteractionID: msg.XFapiInteractionID,
+			}
+
+			monitoring.IncreaseValidationResult(messageResult.ServerID, messageResult.Endpoint, messageResult.Result)
+			result.AppendResult(&messageResult)
 		}
 
-		result.AppendResult(&messageResult)
-
-		// Here, you can define the validation logic for the received message.
-		// For this example, let's assume it's valid and just update the validated value.
 		mutex.Lock()
 		validatedValues[msg.Endpoint]++
 		mutex.Unlock()
 	}
 }
 
-/**
- * Func: ValidateMessage gets the payload on the message and validates its fields
- *
- * @author AB
- *
- * @params
- * msg: Message to be validated
- * @return
- * ValidationResult: Result of the validation for the specified message
- */
-func ValidateMessage(msg *queue.Message) validator.ValidationResult {
-	validationResult := validator.ValidationResult{Valid: true}
-
+// Func: validateContentWithSchema Validates the content against a specific schema
+// @author AB
+// @params
+// content: Content to be validated
+// Schema: String of the JSON schema
+// validationResult: Result to be filled with details from the validation
+// @return
+// Error in case ther is a problem reading or validating the schema
+func validateContentWithSchema(content string, schema string, validationResult *validator.ValidationResult) error {
 	// Create a dynamic structure from the Message content
 	var dynamicStruct validator.DynamicStruct
-	err := json.Unmarshal([]byte(msg.Message), &dynamicStruct)
-	if err != nil {
-		// http.Error(w, "Invalid dynamic structure JSON", http.StatusBadRequest)
-		validationResult.Valid = false
-		validationResult.ErrType = err.Error()
-		return validationResult
-	}
-
-	// Load validation rules from the CSV file
-	rules, err := validator.LoadValidationRules("..\\validation_rules.csv")
-	if err != nil {
-		validationResult.ErrType = err.Error()
-		return validationResult
-	}
-
-	validator := validator.NewValidator(rules)
-
-	err = validator.ValidateWithSchema(dynamicStruct, "..\\ParameterData\\schema.json")
+	err := json.Unmarshal([]byte(content), &dynamicStruct)
 	if err != nil {
 		validationResult.Valid = false
-		validationResult.ErrType = "Validation error: " + err.Error()
+		return err
 	}
 
-	err = validator.Validate(dynamicStruct)
+	val := validator.NewValidator()
+
+	valRes, err := val.ValidateWithSchema(dynamicStruct, schema)
 	if err != nil {
 		validationResult.Valid = false
-		validationResult.ErrType = "Validation error: " + err.Error()
+		log.Error(err, "Validation error", "Worker", "validateContentWithSchema")
+		return err
 	}
 
-	return validationResult
+	if !valRes.Valid {
+		for key, value := range valRes.Errors {
+			validationResult.Errors[key] = value
+		}
+
+		validationResult.Valid = valRes.Valid
+	}
+
+	return nil
 }
 
-/**
- * Func: worker is for starting the processing of the queued messages
- *
- * @author AB
- */
+// Func: ValidateMessage gets the payload on the message and validates its fields
+// @author AB
+// @params
+// msg: Message to be validated
+// settings: Endpoint configuration settings
+// @return
+// ValidationResult: Result of the validation for the specified message
+// error: error in case there is a problem during the validation
+func validateMessage(msg *queue.Message, settings *configuration.EndPointSettings) (*validator.ValidationResult, error) {
+	validationResult := validator.ValidationResult{Valid: true, Errors: make(map[string][]string)}
+
+	err := validateContentWithSchema(msg.HeaderMessage, settings.JSONHeaderSchema, &validationResult)
+	if err != nil {
+		validationResult.Valid = false
+		return &validationResult, err
+	}
+
+	err = validateContentWithSchema(msg.Message, settings.JSONBodySchema, &validationResult)
+	if err != nil {
+		validationResult.Valid = false
+		return &validationResult, err
+	}
+
+	// // Load validation rules from the CSV file
+	//// rules, err := validator.LoadValidationRules("ParameterData\\validation_rules.json")
+	//// if err != nil {
+	//// 	validationResult.Valid = false
+	//// 	return validationResult, err
+	//// }
+
+	return &validationResult, nil
+}
+
+// Func: worker is for starting the processing of the queued messages
+// @author AB
 func worker() {
 	for msg := range queue.MessageQueue {
 		processMessage(msg)
 	}
 }
 
-/**
- * Func: StartWorker is for starting the worker process
- *
- * @author AB
- */
-
+// Func: StartWorker is for starting the worker process
+// @author AB
 func StartWorker() {
 	go worker() // Start the worker Goroutine to process messages
 
-	fmt.Println("Worker started.")
+	log.Log("Worker started.", "Worker", "StartWorker")
 }

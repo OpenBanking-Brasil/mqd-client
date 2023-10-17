@@ -1,0 +1,43 @@
+@startuml
+title Fluxo API - Envio de Reporte ao Servidor Central
+
+
+box "RECEPTORA" #B1DDF0
+  participant MQD #7EA6E0
+end box
+
+box PERIMETRO CENTRAL #FAD7AC
+  participant AUTH_SERVER #7EA6E0
+  participant GATEWAY #7EA6E0
+end box
+
+note over MQD
+   1. A cada 30 minutos, o MQD
+   resume as informações de validação
+   e as envia para o servidor central
+end note
+
+MQD -> MQD: ReportTimeEllapsed
+
+note over MQD
+   2. MQD solicita o token (OAUTH 2)
+   no AUTH_SERVER
+end note
+MQD -> GATEWAY: /token (clientID)
+GATEWAY -> MQD : tokenInfo
+
+note over MQD
+   3. MQD envia o relatorio usando
+   o token e os certificados mTLS
+end note
+
+MQD -> GATEWAY : /updateReport (token+report)
+GATEWAY -> AUTH_SERVER : Validate Token
+AUTH_SERVER -> GATEWAY: token OK
+
+GATEWAY -> MQD : OK
+GATEWAY -> GATEWAY: Update Local Data
+
+
+
+@enduml

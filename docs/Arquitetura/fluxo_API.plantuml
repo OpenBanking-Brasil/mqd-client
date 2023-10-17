@@ -1,21 +1,39 @@
 @startuml
-!theme aws-orange
 title Fluxo API - Motor Qualidade de Dados
 
-
-!pragma teoz true
-box "Receptora" #LightBlue
-  participant API_OFB
-  box "Motor Qualidade de Dados" #LightGreen
-    participant API
-    participant Queue
-  end box
+box "RECEPTORA" #B1DDF0
+  participant Service #7EA6E0
+  participant MQD #7EA6E0
 end box
 
-API_OFB -> API : Send Request
-API -> API : Validate
-API -> Queue : Queue message
-Queue -> API : OK
-API -> API_OFB : Message queued!
+box TRANSMISORA #D5E8D4
+  participant API #7EA6E0
+end box
 
+note over Service 
+   1. A RECEPTORA faz a solicitação para 
+   TRANSMISORA com o fluxo normal
+end note
+
+Service -> API
+API -> API: Process Request
+API -> Service: Response (Corpo + Cabeçalho)
+  note over Service 
+     2. A solicitação deve ser atualizada incluindo 
+     a resposta da solicitação para a TRANSMISORA
+     (Corpo + Cabeçalho), adicionando os parâmetros 
+     clientOrgID e endpointName ao cabeçalho 
+  end note
+Service -> Service: UpdateRequest
+
+
+
+Service -> MQD: POST /ValidateResponse
+note over MQD
+  3. MQD valida as informações 
+  do Cabeçalho, se estiver completo, 
+  adiciona a messagem na Fila
+end note
+MQD -> MQD: Queue Messsage
+MQD -> Service: OK
 @enduml

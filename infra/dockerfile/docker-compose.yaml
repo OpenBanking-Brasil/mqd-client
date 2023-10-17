@@ -1,0 +1,19 @@
+version: '3'
+services:
+  mqd-client:
+    image: mqd-client:latest
+    ports:
+      - "8081:8080"
+    environment:
+      - API_PORT=:8080
+      - SERVER_ORG_ID=43a3a836-50ae-11ee-be56-0242ac120002
+      - REPORT_EXECUTION_WINDOW=30
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 128M

@@ -42,7 +42,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.domain">54.90.129.75</stringProp>
           <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.path">/sendmessage</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -140,7 +140,7 @@
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename"></stringProp>
+        <stringProp name="filename">C:\Code\OFB\MQD\Client\Tests\results.csv</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>

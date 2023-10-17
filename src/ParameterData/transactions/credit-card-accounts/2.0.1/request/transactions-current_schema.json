@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://www.apache.org/licenses/LICENSE-2.0",
+  "title": "",
+  "version": "2.0.1",
+  "description": "",
+  "additionalProperties": true,
+  "properties": {
+    "authorization": {
+      "type": "string",
+      "pattern": "[\\w\\W\\s]*",
+      "maxLength": 2048,
+      "description": "Cabeçalho HTTP padrão. Permite que as credenciais sejam fornecidas dependendo do tipo de recurso solicitado"
+    },
+    "x-fapi-auth-date": {
+      "type": "string",
+      "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
+      "minLength": 29,
+      "maxLength": 29,
+      "description": "Data em que o usuário logou pela última vez com o receptor. Representada de acordo com a [RFC7231](https://tools.ietf.org/html/rfc7231).Exemplo: Sun, 10 Sep 2017 19:43:31 UTC"
+    },
+    "x-fapi-customer-ip-address": {
+      "type": "string",
+      "pattern": "[\\w\\W\\s]*",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "O endereço IP do usuário se estiver atualmente logado com o receptor."
+    },
+    "x-fapi-interaction-id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-]{0,99}$",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Um UID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação. Se fornecido, o transmissor deve \"reproduzir\" esse valor no cabeçalho de resposta."
+    },
+    "x-customer-user-agent": {
+      "type": "string",
+      "pattern": "[\\w\\W\\s]*",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Indica o user-agent que o usuário utiliza."
+    },
+    "creditcardaccountid": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-]{0,99}$",
+      "maxLength": 100,
+      "description": "Identifica de forma única a conta pagamento pós-paga do cliente, mantendo as regras de imutabilidade detro da instituição transmissora"
+    },
+    "page": {
+      "type": "integer",
+      "default": 1,
+      "minimum": 1,
+      "maximum": 2147483647,
+      "format": "int32",
+      "description": "Número da página que está sendo requisitada (o valor da primeira página é 1)."
+    },
+    "page-size": {
+      "type": "integer",
+      "default": 25,
+      "minimum": 1,
+      "format": "int32",
+      "maximum": 1000,
+      "description": "Quantidade total de registros por páginas."
+    },
+    "pagination-key": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "[\\w\\W\\s]*",
+      "description": "Identificador de rechamada, utilizado para evitar a contagem de chamadas ao endpoint durante a paginação."
+    },
+    "fromtransactiondate": {
+      "type": "string",
+      "maxLength": 10,
+      "format": "date",
+      "example": "2021-05-21",
+      "description": "Data inicial de filtragem. O período máximo utilizado no filtro é de 7 dias inclusive (D-6).\n\n[Restrição] Deve obrigatoriamente ser enviado caso o campo toTransactionDate seja informado. Caso não seja informado, deve ser assumido o dia atual.\n"
+    },
+    "totransactiondate": {
+      "type": "string",
+      "maxLength": 10,
+      "format": "date",
+      "example": "2021-05-21",
+      "description": "Data final de filtragem. O período máximo utilizado no filtro é de 7 dias inclusive (D-6).\n\n[Restrição] Deve obrigatoriamente ser enviado caso o campo fromTransactionDate seja informado. Caso não seja informado, deve ser assumido o dia atual.\n"
+    },
+    "creditcardtransactiontype": {
+      "$ref": "#/definitions/enumcreditcardtransactiontype",
+      "description": "Traz os tipos de Transação"
+    },
+    "payeemcc": {
+      "type": "number",
+      "maximum": 9999,
+      "example": 8299,
+      "format": "int32",
+      "description": "MCC é o Merchant Category Code, ou o código da categoria do estabelecimento comercial. Os MCCs são agrupados segundo suas similaridades"
+    }
+  },
+  "required": [
+    "authorization",
+    "creditcardaccountid"
+  ],
+  "definitions": {
+    "enumcreditcardtransactiontype": {
+      "type": "string",
+      "description": "Traz os tipos de Transação",
+      "enum": [
+        "PAGAMENTO",
+        "TARIFA",
+        "OPERACOES_CREDITO_CONTRATADAS_CARTAO",
+        "ESTORNO",
+        "CASHBACK",
+        "OUTROS"
+      ],
+      "example": "CASHBACK"
+    },
+  }
+}

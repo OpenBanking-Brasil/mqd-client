@@ -1,0 +1,103 @@
+openapi: 3.0.3
+info:
+  title: Motor de Qualidade de Dados - Cliente
+  description: |
+    ...
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0'
+  contact:
+    name: Governança do Open Finance Brasil – Squad Qualidade de Dados
+    email: email@ofb.com
+    url: 'https://openfinancebrasil.atlassian.net/wiki/spaces/OF/overview?homepageId=17367041'
+externalDocs:
+  description: Documentação Motor qualidade de Dados
+  url: https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37912663/Documenta+o+da+API
+servers:
+  - url: 'http://servidor_motor_de_qualidade'
+    description: Servidor de Produção na receptora
+tags:
+  - name: Validação da Receptora
+    description: Operações de validação de resposta na RECEPTORA
+paths:
+  /ValidateResponse:   
+    post:
+      tags:
+        - Validação da Receptora
+      summary: Valida uma "Response" com base no endpoint indicado
+      description: Método utilizado para validar os dados obtidos em uma resposta de um TRANSMISSOR, de acordo com o endpoint indicado
+      operationId: validateResponse
+      parameters:
+        - $ref: '#/components/parameters/xFapiInteractionId'
+        - $ref: '#/components/parameters/serverOrgId'
+        - $ref: '#/components/parameters/endpointName'
+      responses:
+        '200':
+          description: 
+            O status 200 indica a situação em que a informação enviada foi recebida corretamente pelo serviço e é encaminhada para a fila para posterior validação.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmptyObject"
+        "400":
+          description: 
+            A requisição foi malformada, omitindo atributos obrigatórios, seja no payload ou através de atributos na URL.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "serverOrgId: Not found or bad format."
+components:
+  parameters: 
+    xFapiInteractionId:
+      name: x-fapi-interaction-id
+      in: header
+      description: 'Um UID [RFC4122](https://tools.ietf.org/html/rfc4122) usado como um ID de correlação.'
+      required: true
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+        pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        example: "150fca7a-533a-11ee-8c99-0242ac120002"
+    serverOrgId:
+      name: serverOrgId
+      in: header
+      description: Identificador da organização **para onde** a chamada foi feita
+      required: true
+      schema:
+          type: string
+          format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
+    endpointName:
+      name: endpointName
+      in: header
+      required: true
+      description: Representa o identificador exclusivo de um endpoint
+      schema:
+          type: string
+          example: "/accounts/v2/accounts"
+
+  schemas:
+    EmptyObject:
+      description: Representa um objeto sem propriedades previamente definidas
+      type: object
+      additionalProperties: false
+      example: 
+        {}
+    GenericError:
+      description: Representa uma resposta de erro genérica.
+      type: object
+      additionalProperties: false
+      properties:
+        message:
+          type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+          maxLength: 200
+
