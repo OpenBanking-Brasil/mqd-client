@@ -13,9 +13,9 @@ import (
 // defaultValue: Value to be used in case the variable is not asigned
 // @return
 func GetEnvironmentValue(key string, defaultValue string) string {
-	result := os.Getenv(key)
-	if result == "" {
-		log.Info("Evironment Variable: ["+key+"], not found. using default value: ["+defaultValue+"]", "configuration", "GetEnvironmentValue")
+	result, found := os.LookupEnv(key)
+	if !found {
+		log.Debug("Evironment Variable: ["+key+"], not found. using default value: ["+defaultValue+"]", "configuration", "GetEnvironmentValue")
 		result = defaultValue
 	}
 

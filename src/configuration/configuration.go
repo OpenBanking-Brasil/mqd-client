@@ -25,12 +25,15 @@ const ENDPOINT_SETTINGS_PATH = "ParameterData//endpoint_settings.json" // Consta
 const SERVER_ID_ENVIRONMENT = "SERVER_ORG_ID"                          //constant  to store name of the server id environment variable
 const REPORT_EXECUTION_WINDOW = "REPORT_EXECUTION_WINDOW"              //constant  to store name of the report execution time environment variable
 const LOGGING_LEVEL = "LOGGING_LEVEL"                                  //constant  to store name of the Logging level environment variable
+const ENVIRONMENT = "ENVIRONMENT"                                      //constant  to store name of the environment variable
 
 var (
 	endPointSettings         []EndPointSettings // Buffered channel for message queue
 	ServerId                 = ""               // Organisation id for server
 	ClientID                 = ""               // Organisation id for the client
 	ReportExecutiontimeFrame = 0                // TimeWindow for report execution
+	Environment              = ""               // Indicates the actual Environment the app is running
+	ServerURL                = ""               // Server URL to send the reports to
 )
 
 // Func: loadEndpointSettings Loads the specific settings for each endpoint
@@ -85,17 +88,37 @@ func loadEndpointValidationSchemas() error {
 // @params
 // @return
 func loadEnvironmentSettings() {
-	// ServerId = crosscutting.GetEnvironmentValue(SERVER_ID_ENVIRONMENT, "d2c118b2-1017-4857-a417-b0a346fdc5cc")
-	ClientID = crosscutting.GetEnvironmentValue(SERVER_ID_ENVIRONMENT, "09b20d09-bf30-4497-938e-b0ead8ce9629")
-	intVar, err := strconv.Atoi(crosscutting.GetEnvironmentValue(REPORT_EXECUTION_WINDOW, "10"))
-	if err != nil {
-		intVar = 30
-		log.Log("REPORT_EXECUTION_WINDOW: Bad Format, Loading default: 30.", "Configuration", "loadEnvironmentSettings")
+	Environment = crosscutting.GetEnvironmentValue(ENVIRONMENT, "PROD")
+
+	if Environment != "PROD" {
+		setupDevEnvironment()
+	} else {
+		log.SetLoggingGlobalLevelFromString(crosscutting.GetEnvironmentValue(LOGGING_LEVEL, "WARNING"))
+		intVar, err := strconv.Atoi(crosscutting.GetEnvironmentValue(REPORT_EXECUTION_WINDOW, "10"))
+		if err != nil {
+			intVar = 30
+			log.Log("REPORT_EXECUTION_WINDOW: Bad Format, Loading default: 30.", "Configuration", "loadEnvironmentSettings")
+		}
+
+		ReportExecutiontimeFrame = intVar
+		ClientID = crosscutting.GetEnvironmentValue(SERVER_ID_ENVIRONMENT, "")
+		ServerURL = "https://mqd.openfinancebrasil.net.br"
 	}
 
-	ReportExecutiontimeFrame = intVar
+	if ClientID == "" {
+		log.Fatal(nil, "ClientID not found, please set Environment Variable: ["+SERVER_ID_ENVIRONMENT+"]", "Configuration", "loadEnvironmentSettings")
+	}
+}
 
-	log.SetLoggingGlobalLevelFromString(crosscutting.GetEnvironmentValue(LOGGING_LEVEL, "INFO"))
+// Func: setupDevEnvironment Sets up configuration values expected for development environment
+// @author AB
+// @params
+// @return
+func setupDevEnvironment() {
+	ReportExecutiontimeFrame = 1
+	log.SetLoggingGlobalLevelFromString(crosscutting.GetEnvironmentValue(LOGGING_LEVEL, "DEBUG"))
+	ClientID = crosscutting.GetEnvironmentValue(SERVER_ID_ENVIRONMENT, "09b20d09-bf30-4497-938e-b0ead8ce9629")
+	ServerURL = "https://auth-gateway-dev.openfinancebrasil.net.br"
 }
 
 // Func: Initialize Loads all settings requered for the application to run, such as endpoint settings and environment settings

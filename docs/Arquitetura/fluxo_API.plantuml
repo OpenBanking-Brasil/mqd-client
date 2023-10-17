@@ -2,8 +2,8 @@
 title Fluxo API - Motor Qualidade de Dados
 
 box "RECEPTORA" #B1DDF0
-  participant Service #7EA6E0
   participant MQD #7EA6E0
+  participant Service #7EA6E0
 end box
 
 box TRANSMISORA #D5E8D4
