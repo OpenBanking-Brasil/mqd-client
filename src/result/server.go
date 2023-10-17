@@ -19,7 +19,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const SERVER_URL = "https://auth-gateway-dev.openfinancebrasil.net.br" // Constant to store path to the Server endpoint.
 const CERTIFICATE_PATH = "ParameterData//certificates//"
 const TOKEN_PATH = "/token"
 const REPORT_PATH = "/report"
@@ -130,7 +129,7 @@ func GetJWKToken() (*JWKToken, error) {
 	data.Set("client_id", configuration.ClientID)
 	requestBody := strings.NewReader(data.Encode())
 
-	request, err := http.NewRequest("POST", SERVER_URL+TOKEN_PATH, requestBody)
+	request, err := http.NewRequest("POST", configuration.ServerURL+TOKEN_PATH, requestBody)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 		return nil, err
@@ -186,7 +185,7 @@ func postReport(report Report) error {
 	}
 
 	// Create a new request
-	req, err := http.NewRequest("POST", SERVER_URL+REPORT_PATH, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", configuration.ServerURL+REPORT_PATH, bytes.NewBuffer(requestBody))
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 		return err
