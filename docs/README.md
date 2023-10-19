@@ -1,2 +1,3 @@
-# mqd-client
-Documentos do Motor de Qualidade
+# Documentos do Motor de Qualidade
+
+1.  [Arquitetura](./Arquitetura/ARQUITETURA.MD)

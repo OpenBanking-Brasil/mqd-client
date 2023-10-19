@@ -1,0 +1,52 @@
+@startuml
+title Fluxo Results - Motor Qualidade de Dados
+
+!pragma teoz true
+box "RECEPTORA" #B1DDF0
+  box "Motor Qualidade de Dados (MQD)"
+    participant Results
+    participant Validator
+  end box
+end box
+
+box "PERIMETRO CENTRAL" #FAD7AC
+   participant API_GATEWAY #7EA6E0
+   participant AUTH_SERVER #7EA6E0
+   participant MQD_SERVER #7EA6E0
+end box
+
+note over Results
+   1. A cada 30 minutos, o MQD
+   resume as informacoes de validacao
+   e as envia para o servidor central
+end note
+
+Results -> Results : Tick Time (Defined time)
+Results -> Validator : Get Validation Results
+Validator -> Results : Results
+Validator -> Validator : Clean Results
+Results -> Results : Build summary data
+
+note over Results 
+   2. MQD solicita o token (OAUTH 2)
+   no AUTH_SERVER
+end note
+
+Results -> API_GATEWAY: /token (clientID)
+API_GATEWAY -> AUTH_SERVER :/token
+AUTH_SERVER -> API_GATEWAY : JWT
+API_GATEWAY -> Results : JWT
+
+note over Results
+   3. MQD envia o relatorio usando
+   o token e os certificados mTLS
+end note
+
+Results -> API_GATEWAY : /report (Summary)
+API_GATEWAY -> AUTH_SERVER : /authorize
+AUTH_SERVER -> API_GATEWAY : policy
+API_GATEWAY -> MQD_SERVER : Summary
+MQD_SERVER -> MQD_SERVER : Store Report
+MQD_SERVER -> API_GATEWAY : HTTP 200 OK
+API_GATEWAY -> Results : HTTP 200 OK
+@enduml

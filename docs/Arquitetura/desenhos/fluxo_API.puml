@@ -11,18 +11,18 @@ box TRANSMISORA #D5E8D4
 end box
 
 note over Service 
-   1. A RECEPTORA faz a solicitação para 
+   1. A RECEPTORA faz a solicitacao para 
    TRANSMISORA com o fluxo normal
 end note
 
 Service -> API
 API -> API: Process Request
-API -> Service: Response (Corpo + Cabeçalho)
+API -> Service: Response (Corpo + Cabecalho)
   note over Service 
-     2. A solicitação deve ser atualizada incluindo 
-     a resposta da solicitação para a TRANSMISORA
-     (Corpo + Cabeçalho), adicionando os parâmetros 
-     clientOrgID e endpointName ao cabeçalho 
+     2. A solicitacao deve ser atualizada incluindo 
+     a resposta da solicitacao para a TRANSMISORA
+     (Corpo + Cabecalho), adicionando os parâmetros 
+     clientOrgID e endpointName ao cabecalho 
   end note
 Service -> Service: UpdateRequest
 
@@ -30,8 +30,8 @@ Service -> Service: UpdateRequest
 
 Service -> MQD: POST /ValidateResponse
 note over MQD
-  3. MQD valida as informações 
-  do Cabeçalho, se estiver completo, 
+  3. MQD valida as informacoes 
+  do Cabecalho, se estiver completo, 
   adiciona a messagem na Fila
 end note
 MQD -> MQD: Queue Messsage
