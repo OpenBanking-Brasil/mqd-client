@@ -19,7 +19,7 @@ func GetEnvironmentValue(key string, defaultValue string) string {
 		result = defaultValue
 	}
 
-	log.Info("Evironment Variable: ["+key+"] = ["+result+"]", "configuration", "GetEnvironmentValue")
+	log.Log("Evironment Variable: ["+key+"] = ["+result+"]", "configuration", "GetEnvironmentValue")
 	return result
 }
 

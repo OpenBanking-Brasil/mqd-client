@@ -19,20 +19,21 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const CERTIFICATE_PATH = "ParameterData//certificates//"
+const CERTIFICATE_PATH = "ParameterData//certificates//" //
 const TOKEN_PATH = "/token"
 const REPORT_PATH = "/report"
 
-const CLIENT_CRT_FILE = "CLIENT_CRT_FILE"
-const CLIENT_KEY_FILE = "CLIENT_KEY_FILE"
+const ENV_CLIENT_CRT_FILE = "CLIENT_CRT_FILE" // Certificate file
+const ENV_CLIENT_KEY_FILE = "CLIENT_KEY_FILE" // Private key file
 
+// JWKToken struct
 type JWKToken struct {
-	AccessToken      string `json:"access_token"`
-	ExpiresIn        int    `json:"expires_in"`
-	RefreshExpiresIn int    `json:"refresh_expires_in"`
-	TokenType        string `json:"token_type"`
-	NotBeforePolicy  int    `json:"not-before-policy"`
-	Scope            string `json:"scope"`
+	AccessToken      string `json:"access_token"`       // Access token to be used
+	TokenType        string `json:"token_type"`         // Type of token
+	ExpiresIn        int    `json:"expires_in"`         // Indicates the expiration of the token
+	RefreshExpiresIn int    `json:"refresh_expires_in"` // Indicates the expiration of the refresh token
+	NotBeforePolicy  int    `json:"not-before-policy"`  // Indicates the time before which the token cannot be used
+	Scope            string `json:"scope"`              // Scope of the token
 }
 
 var (
@@ -47,8 +48,8 @@ var (
 func loadCertificates() {
 	log.Info("Loading certificates", "Server", "loadCertificates")
 
-	certFile := crosscutting.GetEnvironmentValue(CLIENT_CRT_FILE, "client.crt")
-	keyFile := crosscutting.GetEnvironmentValue(CLIENT_KEY_FILE, "client.key")
+	certFile := crosscutting.GetEnvironmentValue(ENV_CLIENT_CRT_FILE, "client.crt")
+	keyFile := crosscutting.GetEnvironmentValue(ENV_CLIENT_KEY_FILE, "client.key")
 
 	keyPath := fmt.Sprintf("%s%s", CERTIFICATE_PATH, keyFile)
 	crtPath := fmt.Sprintf("%s%s", CERTIFICATE_PATH, certFile)

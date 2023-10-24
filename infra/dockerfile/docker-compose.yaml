@@ -8,6 +8,10 @@ services:
       - API_PORT=:8080
       - SERVER_ORG_ID=43a3a836-50ae-11ee-be56-0242ac120002
       - REPORT_EXECUTION_WINDOW=30
+      - CLIENT_CRT_FILE=client.crt
+      - CLIENT_KEY_FILE=client.key
+    volumes:
+      - ./certificates:/usr/ParameterData/certificates/
     restart: always
     deploy:
       resources:
