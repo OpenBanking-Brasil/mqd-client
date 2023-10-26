@@ -39,6 +39,15 @@ func SetLoggingGlobalLevel(level LogLevel) {
 	zerolog.SetGlobalLevel(zerolog.Level(level))
 }
 
+// Func: GetLoggingGlobalLevel Gets the global level for the globbing feature
+// @author AB
+// @params
+// @return
+// LogLevel: Actual logging level
+func GetLoggingGlobalLevel() LogLevel {
+	return LogLevel(zerolog.GlobalLevel())
+}
+
 // Func: SetLoggingGlobalLevelFromString Sets the global level for the globbing feature based on a string,
 // in the case the string is not recognized the default value ERROR will be used
 // @author AB
