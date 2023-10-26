@@ -102,7 +102,7 @@ func loadEnvironmentSettings() {
 
 		ReportExecutiontimeFrame = intVar
 		ClientID = crosscutting.GetEnvironmentValue(SERVER_ID_ENVIRONMENT, "")
-		ServerURL = "https://mqd.openfinancebrasil.net.br"
+		ServerURL = "https://mqd.openfinancebrasil.org.br"
 	}
 
 	if ClientID == "" {

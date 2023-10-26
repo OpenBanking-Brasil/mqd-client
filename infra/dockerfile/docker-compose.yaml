@@ -6,10 +6,12 @@ services:
       - "8081:8080"
     environment:
       - API_PORT=:8080
-      - SERVER_ORG_ID=43a3a836-50ae-11ee-be56-0242ac120002
+      - SERVER_ORG_ID=09b20d09-bf30-4497-938e-b0ead8ce9629
       - REPORT_EXECUTION_WINDOW=30
       - CLIENT_CRT_FILE=client.crt
       - CLIENT_KEY_FILE=client.key
+      - ENVIRONMENT=PROD
+      - LOGGING_LEVEL=WARNING
     volumes:
       - ./certificates:/usr/ParameterData/certificates/
     restart: always

@@ -130,6 +130,9 @@ func GetJWKToken() (*JWKToken, error) {
 	data.Set("client_id", configuration.ClientID)
 	requestBody := strings.NewReader(data.Encode())
 
+	log.Debug("ServerURL:"+configuration.ServerURL+TOKEN_PATH, "server", "GetJWKToken")
+	log.Debug("Body:"+data.Encode(), "server", "GetJWKToken")
+
 	request, err := http.NewRequest("POST", configuration.ServerURL+TOKEN_PATH, requestBody)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
@@ -163,6 +166,11 @@ func GetJWKToken() (*JWKToken, error) {
 		log.Debug("Refresh Token: "+strconv.Itoa(token.RefreshExpiresIn), "server", "GetJWKToken")
 	} else {
 		log.Warning("Request failed with status code: "+strconv.Itoa(resp.StatusCode), "server", "GetJWKToken")
+		if log.GetLoggingGlobalLevel() == log.DebugLevel {
+			body, _ := io.ReadAll(resp.Body)
+			log.Debug("Response Body:"+string(body), "server", "GetJWKToken")
+		}
+
 		return nil, errors.New("request failed with status code:" + strconv.Itoa(resp.StatusCode))
 	}
 
