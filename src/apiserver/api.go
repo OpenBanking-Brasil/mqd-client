@@ -1,5 +1,4 @@
-// api/main.go
-package main
+package apiserver
 
 import (
 	"encoding/json"
@@ -9,13 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/OpenBanking-Brasil/MQD_Client/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
-	"github.com/OpenBanking-Brasil/MQD_Client/monitoring"
+	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/monitoring"
 	"github.com/OpenBanking-Brasil/MQD_Client/queue"
-	"github.com/OpenBanking-Brasil/MQD_Client/result"
-	"github.com/OpenBanking-Brasil/MQD_Client/worker"
+	"github.com/OpenBanking-Brasil/MQD_Client/validation/settings"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -25,7 +22,59 @@ type GenericError struct {
 	Message string // Error message
 }
 
-func updateReponseError(w http.ResponseWriter, genericError GenericError, responseCode int) {
+// APIServer Contains the APIServer
+type APIServer struct {
+	pack           string       // Package name
+	logger         log.Logger   // Logger to be used
+	metricsHandler http.Handler // Handler for the metric endpoint
+}
+
+// GetAPIServer Creates a new APIServer
+// @author AB
+// @param
+// logger: Logger to be used
+// metricsHandler: Handler for the metric endpoint
+// @return
+// *APIServer: APIServer
+func GetAPIServer(logger log.Logger, metricsHandler http.Handler) *APIServer {
+	return &APIServer{
+		pack:           "API",
+		logger:         logger,
+		metricsHandler: metricsHandler,
+	}
+}
+
+// StartServing Starts the APIServer
+// @author AB
+// @param
+// @return
+func (api *APIServer) StartServing() {
+	r := mux.NewRouter()
+	r.Handle("/metrics", api.metricsHandler)
+
+	// Validator for Responses
+	r.HandleFunc("/ValidateResponse", api.handleValidateResponseMessage).Name("ValidateResponse").Methods("POST")
+
+	//// TODO handlers for specific endpoints were removed as /ValidateResponse will validate all requests
+	// for _, element := range configuration.GetEndpointSettings() {
+	// 	r.HandleFunc(element.Endpoint, handleMessages).Name(element.Endpoint).Methods("POST")
+	// 	log.Log("handling endpoint: "+element.Endpoint, "API", "Main")
+	// }
+
+	port := crosscutting.GetEnvironmentValue(api.logger, "API_PORT", ":8080")
+
+	api.logger.Log("Starting the server on port "+port, api.pack, "Main")
+	api.logger.Fatal(http.ListenAndServe(port, r), "", api.pack, "Main")
+}
+
+// Func: updateReponseError Handles requests to the specified urls in the settings
+// @author AB
+// @param
+// w: Writer to create the response
+// genericError: Error to be returned
+// responseCode: HTTP Status code
+// @return
+func (api *APIServer) updateReponseError(w http.ResponseWriter, genericError GenericError, responseCode int) {
 	// Marshal the struct into JSON
 	jsonData, err := json.Marshal(genericError)
 	if err != nil {
@@ -49,7 +98,7 @@ func updateReponseError(w http.ResponseWriter, genericError GenericError, respon
 // w: Writer to create the response
 // r: Request received
 // @return
-func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
+func (api *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	genericError := &GenericError{}
 	startTime := time.Now()
 	monitoring.IncreaseRequestsReceived()
@@ -61,7 +110,7 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		monitoring.IncreaseBadRequestsReceived()
 		genericError.Message = "serverOrgId: Not found or bad format."
-		updateReponseError(w, *genericError, http.StatusBadRequest)
+		api.updateReponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
@@ -69,21 +118,21 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	endpointName := r.Header.Get("endpointName")
 
 	// Validate the endpoint configuration exists
-	endpointSettings := configuration.GetEndpointSetting(endpointName)
+	endpointSettings := settings.GetEndpointSetting(endpointName)
 
-	if endpointSettings.Endpoint == "" {
+	if endpointSettings == nil {
 		monitoring.IncreaseBadRequestsReceived()
 		genericError.Message = "endpointName: Not found or bad format."
-		updateReponseError(w, *genericError, http.StatusBadRequest)
+		api.updateReponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
 	// Read header and create a json object
-	headerMsg, err := buildHeaderMsg(&r.Header)
+	headerMsg, err := api.buildHeaderMsg(&r.Header)
 	if err != nil {
-		log.Error(err, "Error: handleValidateResponseMessage", "API", "handleValidateResponseMessage")
+		api.logger.Error(err, "Error: handleValidateResponseMessage", "API", "handleValidateResponseMessage")
 		genericError.Message = "Error processing request."
-		updateReponseError(w, *genericError, http.StatusInternalServerError)
+		api.updateReponseError(w, *genericError, http.StatusInternalServerError)
 		return
 	}
 
@@ -91,7 +140,7 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		genericError.Message = "Failed to read request body."
-		updateReponseError(w, *genericError, http.StatusInternalServerError)
+		api.updateReponseError(w, *genericError, http.StatusInternalServerError)
 		return
 	}
 
@@ -102,7 +151,6 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	msg.HTTPMethod = r.Method
 	msg.ServerID = serverOrgId
 	xFapiID := r.Header.Get("x-fapi-interaction-id")
-	// log.Info(xFapiID, "API", "Main")
 	msg.XFapiInteractionID = xFapiID
 
 	// Enqueue the message for processing using worker's enqueueMessage
@@ -117,7 +165,7 @@ func handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 // w: Writer to create the response
 // r: Request received
 // @return
-func handleMessages(w http.ResponseWriter, r *http.Request) {
+func (api *APIServer) handleMessages(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	monitoring.IncreaseRequestsReceived()
 	var msg queue.Message
@@ -136,9 +184,9 @@ func handleMessages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Read header and create a json object
-	headerMsg, err := buildHeaderMsg(&r.Header)
+	headerMsg, err := api.buildHeaderMsg(&r.Header)
 	if err != nil {
-		log.Error(err, "Error: handleMessages", "API", "handleMessages")
+		api.logger.Error(err, "Error: handleMessages", "API", "handleMessages")
 		return
 	}
 
@@ -168,10 +216,10 @@ func handleMessages(w http.ResponseWriter, r *http.Request) {
 // @return
 // string: JSON Message created
 // error: in case of parsing error
-func buildHeaderMsg(header *http.Header) (string, error) {
+func (api *APIServer) buildHeaderMsg(header *http.Header) (string, error) {
 	// Create a map to store header key-value pairs.
 	objectMap := make(map[string]interface{})
-	headermap := getHeaderMap(*header)
+	headermap := api.getHeaderMap(*header)
 	for k, v := range headermap {
 		objectMap[k] = v
 	}
@@ -192,7 +240,7 @@ func buildHeaderMsg(header *http.Header) (string, error) {
 // @return
 // string: JSON object created
 // error: Returs error in case a problem is found during the mapping
-func getHeaderMap(headers http.Header) map[string]interface{} {
+func (api *APIServer) getHeaderMap(headers http.Header) map[string]interface{} {
 	// Create a map to store header key-value pairs.
 	headerMap := make(map[string]interface{})
 
@@ -210,35 +258,4 @@ func getHeaderMap(headers http.Header) map[string]interface{} {
 	}
 
 	return headerMap
-}
-
-// Func: Main is the main function of the api, that is executed on "run"
-// @author AB
-// @params
-// @return
-func main() {
-	monitoring.StartOpenTelemetry()
-
-	configuration.Initialize()
-
-	// Start the worker Goroutine to process messages
-	go worker.StartWorker()
-	go result.StartResultsProcessor()
-
-	r := mux.NewRouter()
-	r.Handle("/metrics", monitoring.GetOpentelemetryHandler())
-
-	// Validator for Responses
-	r.HandleFunc("/ValidateResponse", handleValidateResponseMessage).Name("ValidateResponse").Methods("POST")
-
-	//// TODO handlers for specific endpoints were removed as /ValidateResponse will validate all requests
-	// for _, element := range configuration.GetEndpointSettings() {
-	// 	r.HandleFunc(element.Endpoint, handleMessages).Name(element.Endpoint).Methods("POST")
-	// 	log.Log("handling endpoint: "+element.Endpoint, "API", "Main")
-	// }
-
-	port := crosscutting.GetEnvironmentValue("API_PORT", ":8080")
-
-	log.Log("Starting the server on port "+port, "API", "Main")
-	log.Fatal(http.ListenAndServe(port, r), "", "API", "Main")
 }

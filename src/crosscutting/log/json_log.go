@@ -1,41 +1,32 @@
 package log
 
 import (
+	"context"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
-// LogLevel - Custom type to hold value for weekday ranging from 1-7
-type LogLevel int
+// JSONLogger struct in charge of logging tasks
+type JSONLogger struct {
+	context context.Context // Context to be used during logging
+}
 
-// Declare related constants for each LogLevel starting with index 0
-const (
-	DebugLevel LogLevel = iota // DebugLevel defines debug log level.
-	// InfoLevel defines info log level.
-	InfoLevel
-	// WarnLevel defines warn log level.
-	WarnLevel
-	// ErrorLevel defines error log level.
-	ErrorLevel
-	// FatalLevel defines fatal log level.
-	FatalLevel
-	// PanicLevel defines panic log level.
-	PanicLevel
-	// NoLevel defines an absent log level.
-	NoLevel
-	// Disabled disables the logger.
-	Disabled
-
-	// TraceLevel defines trace log level.
-	TraceLevel LogLevel = -1
-)
+// Func: GetNewJSONLogger Creates a new JSONLogger
+// @author AB
+// @param
+// @return
+// JSONLogger: JSONLogger
+func GetNewJSONLogger() *JSONLogger {
+	return &JSONLogger{}
+}
 
 // Func: SetLoggingGlobalLevel Sets the global level for the globbing feature
 // @author AB
 // @params
 // level: logging Level to be configured
 // @return
-func SetLoggingGlobalLevel(level LogLevel) {
+func (l *JSONLogger) SetLoggingGlobalLevel(level LogLevel) {
 	zerolog.SetGlobalLevel(zerolog.Level(level))
 }
 
@@ -44,8 +35,14 @@ func SetLoggingGlobalLevel(level LogLevel) {
 // @params
 // @return
 // LogLevel: Actual logging level
-func GetLoggingGlobalLevel() LogLevel {
+func (l *JSONLogger) GetLoggingGlobalLevel() LogLevel {
 	return LogLevel(zerolog.GlobalLevel())
+}
+
+// Func: WithContext Sets the context for the logger
+func (l *JSONLogger) WithContext(context context.Context) Logger {
+	l.context = context
+	return l
 }
 
 // Func: SetLoggingGlobalLevelFromString Sets the global level for the globbing feature based on a string,
@@ -54,26 +51,26 @@ func GetLoggingGlobalLevel() LogLevel {
 // @params
 // level: logging Level string to be configured
 // @return
-func SetLoggingGlobalLevelFromString(level string) {
+func (l *JSONLogger) SetLoggingGlobalLevelFromString(level string) {
 	switch level {
 	case "DEBUG":
-		SetLoggingGlobalLevel(DebugLevel)
+		l.SetLoggingGlobalLevel(DebugLevel)
 	case "INFO":
-		SetLoggingGlobalLevel(InfoLevel)
+		l.SetLoggingGlobalLevel(InfoLevel)
 	case "WARNING":
-		SetLoggingGlobalLevel(WarnLevel)
+		l.SetLoggingGlobalLevel(WarnLevel)
 	case "ERROR":
-		SetLoggingGlobalLevel(ErrorLevel)
+		l.SetLoggingGlobalLevel(ErrorLevel)
 	case "FATAL":
-		SetLoggingGlobalLevel(FatalLevel)
+		l.SetLoggingGlobalLevel(FatalLevel)
 	case "PANIC":
-		SetLoggingGlobalLevel(PanicLevel)
+		l.SetLoggingGlobalLevel(PanicLevel)
 	case "DISABLED":
-		SetLoggingGlobalLevel(Disabled)
+		l.SetLoggingGlobalLevel(Disabled)
 	case "TRACE":
-		SetLoggingGlobalLevel(TraceLevel)
+		l.SetLoggingGlobalLevel(TraceLevel)
 	default:
-		SetLoggingGlobalLevel(ErrorLevel)
+		l.SetLoggingGlobalLevel(ErrorLevel)
 	}
 }
 
@@ -84,7 +81,7 @@ func SetLoggingGlobalLevelFromString(level string) {
 // pack: name of the package where the log is called
 // component: name of the package where the log is called
 // @return
-func Trace(message string, pack string, component string) {
+func (l *JSONLogger) Trace(message string, pack string, component string) {
 	log.Trace().Str("package", pack).Str("component", component).Msg(message)
 }
 
@@ -95,7 +92,7 @@ func Trace(message string, pack string, component string) {
 // pack: name of the package where the log is called
 // component: name of the package where the log is called
 // @return
-func Log(message string, pack string, component string) {
+func (l *JSONLogger) Log(message string, pack string, component string) {
 	log.Log().Str("package", pack).Str("component", component).Msg(message)
 }
 
@@ -106,7 +103,7 @@ func Log(message string, pack string, component string) {
 // pack: name of the package where the log is called
 // component: name of the package where the log is called
 // @return
-func Debug(message string, pack string, component string) {
+func (l *JSONLogger) Debug(message string, pack string, component string) {
 	log.Debug().Str("package", pack).Str("component", component).Msg(message)
 }
 
@@ -117,7 +114,7 @@ func Debug(message string, pack string, component string) {
 // pack: name of the package where the log is called
 // component: name of the package where the log is called
 // @return
-func Info(message string, pack string, component string) {
+func (l *JSONLogger) Info(message string, pack string, component string) {
 	log.Info().Str("package", pack).Str("component", component).Msg(message)
 }
 
@@ -128,7 +125,7 @@ func Info(message string, pack string, component string) {
 // pack: name of the package where the log is called
 // component: name of the package where the log is called
 // @return
-func Warning(message string, pack string, component string) {
+func (l *JSONLogger) Warning(message string, pack string, component string) {
 	log.Warn().Str("package", pack).Str("component", component).Msg(message)
 }
 
@@ -140,7 +137,7 @@ func Warning(message string, pack string, component string) {
 // pack: name of the package where the log is called
 // component: name of the package where the log is called
 // @return
-func Error(err error, message string, pack string, component string) {
+func (l *JSONLogger) Error(err error, message string, pack string, component string) {
 	log.Error().Err(err).Str("package", pack).Str("component", component).Msg(message)
 }
 
@@ -152,7 +149,7 @@ func Error(err error, message string, pack string, component string) {
 // pack: name of the package where the log is called
 // component: name of the package where the log is called
 // @return
-func Fatal(err error, message string, pack string, component string) {
+func (l *JSONLogger) Fatal(err error, message string, pack string, component string) {
 	log.Fatal().Err(err).Str("package", pack).Str("component", component).Msg(message)
 }
 
@@ -164,6 +161,6 @@ func Fatal(err error, message string, pack string, component string) {
 // pack: name of the package where the log is called
 // component: name of the package where the log is called
 // @return
-func Panic(message string, pack string, component string) {
+func (l *JSONLogger) Panic(message string, pack string, component string) {
 	log.Panic().Str("package", pack).Str("component", component).Msg(message)
 }

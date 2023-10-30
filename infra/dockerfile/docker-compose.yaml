@@ -11,7 +11,7 @@ services:
       - CLIENT_CRT_FILE=client.crt
       - CLIENT_KEY_FILE=client.key
       - ENVIRONMENT=PROD
-      - LOGGING_LEVEL=WARNING
+      - LOGGING_LEVEL=DEBUG
     volumes:
       - ./certificates:/usr/ParameterData/certificates/
     restart: always

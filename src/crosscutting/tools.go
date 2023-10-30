@@ -12,14 +12,14 @@ import (
 // key: Environment variable name
 // defaultValue: Value to be used in case the variable is not asigned
 // @return
-func GetEnvironmentValue(key string, defaultValue string) string {
+func GetEnvironmentValue(logger log.Logger, key string, defaultValue string) string {
 	result, found := os.LookupEnv(key)
 	if !found {
-		log.Debug("Evironment Variable: ["+key+"], not found. using default value: ["+defaultValue+"]", "configuration", "GetEnvironmentValue")
+		logger.Debug("Evironment Variable: ["+key+"], not found. using default value: ["+defaultValue+"]", "configuration", "GetEnvironmentValue")
 		result = defaultValue
 	}
 
-	log.Log("Evironment Variable: ["+key+"] = ["+result+"]", "configuration", "GetEnvironmentValue")
+	logger.Log("Evironment Variable: ["+key+"] = ["+result+"]", "configuration", "GetEnvironmentValue")
 	return result
 }
 
@@ -28,10 +28,10 @@ func GetEnvironmentValue(key string, defaultValue string) string {
 // @params
 // @return
 // string Working folder
-func GetWorkingFolder() string {
+func GetWorkingFolder(logger log.Logger) string {
 	path, err := os.Getwd()
 	if err != nil {
-		log.Error(err, "Error getting working folder", "Crosscutting", "GetWorkingFolder")
+		logger.Error(err, "Error getting working folder", "Crosscutting", "GetWorkingFolder")
 	}
 
 	return path

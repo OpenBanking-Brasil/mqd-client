@@ -4,39 +4,71 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/OpenBanking-Brasil/MQD_Client/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
-	"github.com/OpenBanking-Brasil/MQD_Client/monitoring"
+	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/monitoring"
 	"github.com/OpenBanking-Brasil/MQD_Client/queue"
 	"github.com/OpenBanking-Brasil/MQD_Client/result"
-	"github.com/OpenBanking-Brasil/MQD_Client/validator"
+	"github.com/OpenBanking-Brasil/MQD_Client/validation"
+	"github.com/OpenBanking-Brasil/MQD_Client/validation/settings"
 )
 
 var (
-	receivedValues  = make(map[string]int) // Stores the values for the received messages
-	validatedValues = make(map[string]int) // Stores the values for the validated messages
-	mutex           = sync.Mutex{}         // Mutex for multi processing locks
+	mutex          = sync.Mutex{} // Mutex for multi processing locks
+	singletonMutex = sync.Mutex{}
+	singleton      MessageProcessorWorker
 )
+
+type MessageProcessorWorker struct {
+	pack            string                 // Package name
+	logger          log.Logger             // Logger to be used by the package
+	receivedValues  map[string]int         // Stores the values for the received messages
+	validatedValues map[string]int         // Stores the values for the validated messages
+	resultProcessor result.ResultProcessor // Result processor to be used by the package
+
+}
+
+// Func: GetMessageProcessorWorker returns a new message processor
+// @author AB
+// @params
+// logger: Logger to be used by the package
+// resultProcessor: Result processor to be used by the package
+// @return
+// MessageProcessorWorker: New message processor
+func GetMessageProcessorWorker(logger log.Logger, resultProcessor result.ResultProcessor) *MessageProcessorWorker {
+	if singleton.pack == "" {
+		singletonMutex.Lock()
+		defer singletonMutex.Unlock()
+		singleton = MessageProcessorWorker{
+			pack:            "worker",
+			logger:          logger,
+			receivedValues:  make(map[string]int),
+			validatedValues: make(map[string]int),
+			resultProcessor: resultProcessor,
+		}
+	}
+
+	return &singleton
+}
 
 // Func: processMessage Validates and creates a result of a specific message
 // @author AB
 // @params
-// msg: MEssage to be processed
+// msg: Message to be processed
 // @return
-func processMessage(msg *queue.Message) {
+func (mp *MessageProcessorWorker) processMessage(msg *queue.Message) {
 	mutex.Lock()
-	receivedValues[msg.Endpoint]++
+	mp.receivedValues[msg.Endpoint]++
 	mutex.Unlock()
 
-	endpointSettings := configuration.GetEndpointSetting(msg.Endpoint)
+	endpointSettings := settings.GetEndpointSetting(msg.Endpoint)
 
-	if endpointSettings.Endpoint == "" {
-		log.Warning("Ignoring message with endpoint: "+msg.Endpoint, "Worker", "processMessage")
+	if endpointSettings == nil {
+		mp.logger.Warning("Ignoring message with endpoint: "+msg.Endpoint, "Worker", "processMessage")
 	} else {
-		vr, err := validateMessage(msg, endpointSettings)
+		vr, err := mp.validateMessage(msg, endpointSettings)
 		if err != nil {
 			//// TODO handle error
-			log.Error(err, "Error during Validation", "Worker", "processMessage")
+			mp.logger.Error(err, "Error during Validation", "Worker", "processMessage")
 		} else {
 			// Create a message result entry
 			messageResult := result.MessageResult{
@@ -49,11 +81,11 @@ func processMessage(msg *queue.Message) {
 			}
 
 			monitoring.IncreaseValidationResult(messageResult.ServerID, messageResult.Endpoint, messageResult.Result)
-			result.AppendResult(&messageResult)
+			mp.resultProcessor.AppendResult(&messageResult)
 		}
 
 		mutex.Lock()
-		validatedValues[msg.Endpoint]++
+		mp.validatedValues[msg.Endpoint]++
 		mutex.Unlock()
 	}
 }
@@ -66,21 +98,20 @@ func processMessage(msg *queue.Message) {
 // validationResult: Result to be filled with details from the validation
 // @return
 // Error in case ther is a problem reading or validating the schema
-func validateContentWithSchema(content string, schema string, validationResult *validator.ValidationResult) error {
+func (mp *MessageProcessorWorker) validateContentWithSchema(content string, schema string, validationResult *validation.ValidationResult) error {
 	// Create a dynamic structure from the Message content
-	var dynamicStruct validator.DynamicStruct
+	var dynamicStruct validation.DynamicStruct
 	err := json.Unmarshal([]byte(content), &dynamicStruct)
 	if err != nil {
 		validationResult.Valid = false
 		return err
 	}
 
-	val := validator.NewValidator()
-
-	valRes, err := val.ValidateWithSchema(dynamicStruct, schema)
+	val := validation.GetSchemaValidator(mp.logger, schema)
+	valRes, err := val.Validate(dynamicStruct)
 	if err != nil {
 		validationResult.Valid = false
-		log.Error(err, "Validation error", "Worker", "validateContentWithSchema")
+		mp.logger.Error(err, "Validation error", "Worker", "validateContentWithSchema")
 		return err
 	}
 
@@ -103,16 +134,16 @@ func validateContentWithSchema(content string, schema string, validationResult *
 // @return
 // ValidationResult: Result of the validation for the specified message
 // error: error in case there is a problem during the validation
-func validateMessage(msg *queue.Message, settings *configuration.EndPointSettings) (*validator.ValidationResult, error) {
-	validationResult := validator.ValidationResult{Valid: true, Errors: make(map[string][]string)}
+func (mp *MessageProcessorWorker) validateMessage(msg *queue.Message, settings *settings.EndPointSetting) (*validation.ValidationResult, error) {
+	validationResult := validation.ValidationResult{Valid: true, Errors: make(map[string][]string)}
 
-	err := validateContentWithSchema(msg.HeaderMessage, settings.JSONHeaderSchema, &validationResult)
+	err := mp.validateContentWithSchema(msg.HeaderMessage, settings.JSONHeaderSchema, &validationResult)
 	if err != nil {
 		validationResult.Valid = false
 		return &validationResult, err
 	}
 
-	err = validateContentWithSchema(msg.Message, settings.JSONBodySchema, &validationResult)
+	err = mp.validateContentWithSchema(msg.Message, settings.JSONBodySchema, &validationResult)
 	if err != nil {
 		validationResult.Valid = false
 		return &validationResult, err
@@ -130,16 +161,16 @@ func validateMessage(msg *queue.Message, settings *configuration.EndPointSetting
 
 // Func: worker is for starting the processing of the queued messages
 // @author AB
-func worker() {
+func (mp *MessageProcessorWorker) worker() {
 	for msg := range queue.MessageQueue {
-		processMessage(msg)
+		mp.processMessage(msg)
 	}
 }
 
 // Func: StartWorker is for starting the worker process
 // @author AB
-func StartWorker() {
-	go worker() // Start the worker Goroutine to process messages
+func (mp *MessageProcessorWorker) StartWorker() {
+	go mp.worker() // Start the worker Goroutine to process messages
 
-	log.Log("Worker started.", "Worker", "StartWorker")
+	mp.logger.Log("Worker started.", "Worker", "StartWorker")
 }
