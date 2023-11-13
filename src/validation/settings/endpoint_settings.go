@@ -29,7 +29,7 @@ var (
 	endPointSettings EndPointSettings // Settings for each endpoint
 )
 
-// Func: loadEndpointSettings Loads the specific settings for each endpoint
+// loadEndpointSettings Loads the specific settings for each endpoint
 // @author AB
 // @params
 // @return
@@ -57,7 +57,7 @@ func LoadEndpointSettings(logger log.Logger, settingsPath string) error {
 	return nil
 }
 
-// Func: GetEndPointSettings Returns the settings for each endpoint
+// GetEndPointSettings Returns the settings for each endpoint
 // @author AB
 // @params
 // @return
@@ -66,7 +66,7 @@ func GetEndPointSettings() *EndPointSettings {
 	return &endPointSettings
 }
 
-// Func: getEndpointSettings loads a specific endpoint setting based on the endpoint name
+// getEndpointSettings loads a specific endpoint setting based on the endpoint name
 // @author AB
 // @params
 // endpointName: Name of the endpoint to lookup for settings
@@ -83,7 +83,7 @@ func GetEndpointSetting(endpointName string) *EndPointSetting {
 	return nil
 }
 
-// Func: loadEndpointValidationSchemas loads the Validation schemas from the file specified on the settings for each endpoint
+// loadEndpointValidationSchemas loads the Validation schemas from the file specified on the settings for each endpoint
 // @author AB
 // @params
 // @return

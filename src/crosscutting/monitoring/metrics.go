@@ -37,7 +37,7 @@ var (
 	responseTime               = []time.Duration{}   // Creates a slice to store the response time duration of requests
 )
 
-// Func: startMemoryCalculator Starts the memmory calculation for observability
+// startMemoryCalculator Starts the memmory calculation for observability
 // @author AB
 // @params
 // @return
@@ -69,7 +69,7 @@ func startMemoryCalculator() {
 	}
 }
 
-// Func: calculateAverageMemory calculates the average memory usage from a slice of measurements.
+// calculateAverageMemory calculates the average memory usage from a slice of measurements.
 // @author AB
 // @params
 // measurements: Lists of measurements to calculate the average
@@ -85,7 +85,7 @@ func calculateAverageMemory(measurements []Measurement) uint64 {
 	return sum / uint64(len(measurements))
 }
 
-// Func: collectCPUUsage collects the current CPU usage as a percentage.
+// collectCPUUsage collects the current CPU usage as a percentage.
 // @author AB
 // @params
 // @return
@@ -97,7 +97,7 @@ func collectCPUUsage() float64 {
 	return 0.0 // Placeholder value, replace with actual implementation
 }
 
-// Func: StartOpenTelemetry Initializes the counters and OpenTelemetry exporter for the service
+// StartOpenTelemetry Initializes the counters and OpenTelemetry exporter for the service
 // @author AB
 // @params
 // @return
@@ -157,7 +157,7 @@ func StartOpenTelemetry() {
 	requests.Add(ctx, 0)
 }
 
-// Func: GetOpentelemetryHandler Returns the specified handler to export metrics
+// GetOpentelemetryHandler Returns the specified handler to export metrics
 // @author AB
 // @params
 // @return
@@ -166,7 +166,7 @@ func GetOpentelemetryHandler() http.Handler {
 	return promhttp.Handler()
 }
 
-// Func: RecordResponseDuration records thee response duration for a specific request.
+// RecordResponseDuration records thee response duration for a specific request.
 // @author AB
 // @params
 // startTime: Initial start time for the request
@@ -177,7 +177,7 @@ func RecordResponseDuration(startTime time.Time) {
 	mutex.Unlock()
 }
 
-// Func: IncreaseRequestsReceived increses the number of requests received metric
+// IncreaseRequestsReceived increses the number of requests received metric
 // @author AB
 // @params
 // @return
@@ -188,7 +188,7 @@ func IncreaseRequestsReceived() {
 	mutex.Unlock()
 }
 
-// Func: IncreaseBadRequestsReceived increses the number of bad requests received metric
+// IncreaseBadRequestsReceived increses the number of bad requests received metric
 // @author AB
 // @params
 // @return
@@ -198,7 +198,7 @@ func IncreaseBadRequestsReceived() {
 	mutex.Unlock()
 }
 
-// Func: IncreaseValidationResult increses the number validation result for a specific server / endpoint, if the validation is false
+// IncreaseValidationResult increses the number validation result for a specific server / endpoint, if the validation is false
 // endpoint_validation_errors will also be increased
 // @author AB
 // @params
@@ -217,7 +217,7 @@ func IncreaseValidationResult(serverId string, endpointName string, valid bool) 
 	mutex.Unlock()
 }
 
-// Func: GetAndCleanRequestsReceived returns and cleans the lists of requests
+// GetAndCleanRequestsReceived returns and cleans the lists of requests
 // @author AB
 // @params
 // @return
@@ -232,7 +232,7 @@ func GetAndCleanRequestsReceived() int {
 	return requestsReceived
 }
 
-// Func: GetAndCleanBadRequestsReceived returns and cleans the lists of bad requests
+// GetAndCleanBadRequestsReceived returns and cleans the lists of bad requests
 // @author AB
 // @params
 // @return
@@ -247,7 +247,7 @@ func GetAndCleanBadRequestsReceived() int {
 	return badRequestsReceived
 }
 
-// Func: GetAndCleanAverageMemmory returns and cleans the average memmory used during the interval time
+// GetAndCleanAverageMemmory returns and cleans the average memmory used during the interval time
 // @author AB
 // @params
 // @return
@@ -263,7 +263,7 @@ func GetAndCleanAverageMemmory() string {
 	return result
 }
 
-// Func: GetAndCleanResponseTime Returns and clenas the metric fot average response time
+// GetAndCleanResponseTime Returns and clenas the metric fot average response time
 // @author AB
 // @params
 // @return
@@ -276,7 +276,7 @@ func GetAndCleanResponseTime() string {
 	return fmt.Sprint(avgTime)
 }
 
-// Func: calculateAverageMemory calculates the average memory usage from a slice of measurements.
+// calculateAverageMemory calculates the average memory usage from a slice of measurements.
 // @author AB
 // @params
 // @return

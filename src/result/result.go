@@ -37,72 +37,71 @@ type ErrorDetail struct {
 }
 
 var (
-	singleton ResultProcessor // Singleton instance of the ResultProcessor
-	mutex     = sync.Mutex{}  // Mutex for thread-safe access to messageResults
+	singleton      ResultProcessor            // Singleton instance of the ResultProcessor
+	mutex          = sync.Mutex{}             // Mutex for thread-safe access to messageResults
+	groupedResults map[string][]MessageResult // slice to store grouped results
 )
 
 // struct in charge of processing results
 type ResultProcessor struct {
-	pack            string                     // name of thes package
-	logger          log.Logger                 // Logger to be used by the processor
-	messageResults  []MessageResult            // Slice to store message results
-	reportStartTime time.Time                  // Datetime of the start of the report
-	groupedResults  map[string][]MessageResult // slice to store grouped results
+	pack            string     // name of thes package
+	logger          log.Logger // Logger to be used by the processor
+	reportStartTime time.Time  // Datetime of the start of the report
 }
 
-// Func: GetResultProcessor returns the singleton instance of the ResultProcessor
+// GetResultProcessor returns the singleton instance of the ResultProcessor
 // @author AB
 // @params
 // logger: Logger to be used by the processor
 // startTime: Initial start time for the request
 // @return
 // ResultProcessor instance
-func GetResultProcessor(logger log.Logger) ResultProcessor {
+func GetResultProcessor(logger log.Logger) *ResultProcessor {
 	if singleton.pack == "" {
 		singleton = ResultProcessor{
 			pack:            "ResultProcessor",
 			logger:          logger,
-			messageResults:  make([]MessageResult, 0),
 			reportStartTime: time.Time{},
-			groupedResults:  make(map[string][]MessageResult),
 		}
 	}
 
-	return singleton
+	return &singleton
 }
 
-// Func: AppendResult is for appending a message result
+// AppendResult is for appending a message result
 // @author AB
 // @params
 // result: Message rresult to be included
 // @return
 func (rp *ResultProcessor) AppendResult(result *MessageResult) {
 	mutex.Lock()
-	rp.messageResults = append(rp.messageResults, *result)
-	rp.groupedResults[result.ServerID] = append(rp.groupedResults[result.ServerID], *result)
+	groupedResults[result.ServerID] = append(groupedResults[result.ServerID], *result)
+	rp.logger.Debug("Total grouped Results in serverid ["+result.ServerID+"] :"+strconv.Itoa(len(groupedResults[result.ServerID])), rp.pack, "getAndClearResults")
 	mutex.Unlock()
 }
 
-// Func: GetAndClearResults returns the actual results, and cleans the lists
+// GetAndClearResults returns the actual results, and cleans the lists
 // @author AB
 // @return
 // List of Message results
 func (rp *ResultProcessor) getAndClearResults() map[string][]MessageResult {
+	rp.logger.Info("Loading results", rp.pack, "getAndClearResults")
 	mutex.Lock()
+	rp.logger.Debug("Total Results Found :"+strconv.Itoa(len(groupedResults)), rp.pack, "getAndClearResults")
 	defer func() {
-		rp.messageResults = nil // Clear the results
-		rp.groupedResults = make(map[string][]MessageResult)
+		groupedResults = make(map[string][]MessageResult)
 		mutex.Unlock()
 	}()
 
-	return rp.groupedResults
+	return groupedResults
 }
 
-// Func: StartResultsProcessor starts the periodic process that prints total results and clears them every 2 minutes
+// StartResultsProcessor starts the periodic process that prints total results and clears them every 2 minutes
 // @author AB
 // @params
 // @return
 func (rp *ResultProcessor) StartResultsProcessor() {
+	rp.logger.Info("Starting result processor", rp.pack, "StartResultsProcessor")
 	rp.reportStartTime = time.Now()
 	timeWindow := time.Duration(configuration.ReportExecutiontimeFrame) * time.Minute
 
@@ -117,7 +116,7 @@ func (rp *ResultProcessor) StartResultsProcessor() {
 	}
 }
 
-// Func: processAndSendResults Processes the current results (creates a summary report) and sends it to the main server
+// processAndSendResults Processes the current results (creates a summary report) and sends it to the main server
 // @author AB
 // @params
 // reportServer: Server to send the report
@@ -129,7 +128,9 @@ func (rp *ResultProcessor) processAndSendResults(reportServer server.ReportServe
 	rp.updateMetrics(&report.Metrics)
 	rp.reportStartTime = time.Now()
 	results := rp.getAndClearResults()
+	rp.logger.Debug("Total Results to process :"+strconv.Itoa(len(results)), rp.pack, "processAndSendResults")
 	report.ServerSummary = rp.getSummary(results)
+	rp.logger.Debug("Total ServerSummary processe :"+strconv.Itoa(len(report.ServerSummary)), rp.pack, "processAndSendResults")
 	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "ReportGenerationtime", Value: time.Since(processStartTime).String()})
 
 	reportServer.SendReport(report)
@@ -137,12 +138,13 @@ func (rp *ResultProcessor) processAndSendResults(reportServer server.ReportServe
 	rp.logger.Info("processAndSendResults -> Process finished", "server", "postReport")
 }
 
-// Func: updateMetrics Updates the metrics for the report
+// updateMetrics Updates the metrics for the report
 // @author AB
 // @params
 // metrics: List of metrics to be included
 // @return
 func (rp *ResultProcessor) updateMetrics(metrics *server.ApplicationMetrics) {
+	rp.logger.Info("Updating metrics", rp.pack, "updateMetrics")
 	metrics.Values = append(metrics.Values, server.MetricObject{Key: "ReportStartDate", Value: rp.reportStartTime.String()})
 	metrics.Values = append(metrics.Values, server.MetricObject{Key: "ReportEndDate", Value: time.Now().String()})
 	metrics.Values = append(metrics.Values, server.MetricObject{Key: "BadRequestErrors", Value: strconv.Itoa(monitoring.GetAndCleanBadRequestsReceived())})
@@ -151,7 +153,7 @@ func (rp *ResultProcessor) updateMetrics(metrics *server.ApplicationMetrics) {
 	metrics.Values = append(metrics.Values, server.MetricObject{Key: "ResposeTimeAvg", Value: monitoring.GetAndCleanResponseTime()})
 }
 
-// Func: getSummary Returns the server summary for a specific set of MessageResults
+// getSummary Returns the server summary for a specific set of MessageResults
 // @author AB
 // @params
 // results: List of results for a specific server
@@ -172,7 +174,7 @@ func (rp *ResultProcessor) getSummary(results map[string][]MessageResult) []serv
 	return result
 }
 
-// Func: updateEndpointSummary Updates the summary for a specific endpoint
+// updateEndpointSummary Updates the summary for a specific endpoint
 // @author AB
 // @params
 // endpointSummary: summary to be updated
@@ -207,7 +209,7 @@ func (rp *ResultProcessor) updateEndpointSummary(endpointSummary []server.EndPoi
 	return endpointSummary
 }
 
-// Func: updateEndpointSummaryDetail Updates the summary detail for a specific endpoint / field
+// updateEndpointSummaryDetail Updates the summary detail for a specific endpoint / field
 // @author AB
 // @params
 // details: Details to be updated
@@ -235,7 +237,7 @@ func (rp *ResultProcessor) updateEndpointSummaryDetail(details []server.EndPoint
 	return details
 }
 
-// Func: updateFieldDetails Updates the summary detail for a specific field
+// updateFieldDetails Updates the summary detail for a specific field
 // @author AB
 // @params
 // details: Field Details to be updated
@@ -261,7 +263,7 @@ func (rp *ResultProcessor) updateFieldDetails(details []server.FieldDetail, fiel
 	return details
 }
 
-// Func: printReport Prits the report to console (Should be used for DEBUG pourpuses only)
+// printReport Prits the report to console (Should be used for DEBUG pourpuses only)
 // @author AB
 // @params
 // report: Report to be printed

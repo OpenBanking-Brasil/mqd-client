@@ -6,7 +6,7 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 )
 
-// Func: GetEnvironmentValue is obtaining a environment variable value
+// GetEnvironmentValue is obtaining a environment variable value
 // @author AB
 // @params
 // key: Environment variable name
@@ -23,7 +23,7 @@ func GetEnvironmentValue(logger log.Logger, key string, defaultValue string) str
 	return result
 }
 
-// Func: GetWorkingFolder returns the actual working folder of the application
+// GetWorkingFolder returns the actual working folder of the application
 // @author AB
 // @params
 // @return

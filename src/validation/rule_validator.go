@@ -24,7 +24,7 @@ type RuleValidator struct {
 	logger log.Logger
 }
 
-// Func: NewRuleValidator is for creating a new instance of a validator
+// NewRuleValidator is for creating a new instance of a validator
 // @author AB
 // @params
 // rules: List of rules that will apply during the validation
@@ -38,7 +38,7 @@ func NewRuleValidator(logger log.Logger, rules []ValidationRule) *RuleValidator 
 	}
 }
 
-// Func: NewRuleValidatorFromFile is for creating a new instance of a validator
+// NewRuleValidatorFromFile is for creating a new instance of a validator
 // @author AB
 // @params
 // fileName: Name of the configuration file that contains the validation rules
@@ -54,7 +54,7 @@ func NewRuleValidatorFromFile(fileName string) *RuleValidator {
 	return result
 }
 
-// Func: Validate is for Validating a dynamic structure based on a set of validation rules
+// Validate is for Validating a dynamic structure based on a set of validation rules
 // @author AB
 // @params
 // data: DynamicStruct to be validated
@@ -79,7 +79,7 @@ func (v *RuleValidator) Validate(data DynamicStruct) (*ValidationResult, error) 
 	return nil, nil
 }
 
-// Func: ApplyValidationRule Applies the specified validation rule to the field indicated
+// ApplyValidationRule Applies the specified validation rule to the field indicated
 // @author AB
 // @params
 // fieldName: Name of the field to be validated
@@ -94,7 +94,7 @@ func (v *RuleValidator) applyValidationRule(fieldName, validationRule string, va
 	return nil
 }
 
-// Func: LoadValidationRules is for loading the validation rules from the configuration file
+// LoadValidationRules is for loading the validation rules from the configuration file
 // @author AB
 // @params
 // filename: Name of the configuration file that contains the validation rules

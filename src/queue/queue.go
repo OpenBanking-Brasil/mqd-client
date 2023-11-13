@@ -13,7 +13,7 @@ type Message struct {
 // Buffered channel for message queue
 var MessageQueue = make(chan *Message, 1000)
 
-// Func: EnqueueMessage is for queueing the message
+// EnqueueMessage is for queueing the message
 // @author AB
 // @params
 // msg: Message to be queued
