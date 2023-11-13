@@ -19,22 +19,22 @@ var (
 )
 
 type MessageProcessorWorker struct {
-	pack            string                 // Package name
-	logger          log.Logger             // Logger to be used by the package
-	receivedValues  map[string]int         // Stores the values for the received messages
-	validatedValues map[string]int         // Stores the values for the validated messages
-	resultProcessor result.ResultProcessor // Result processor to be used by the package
+	pack            string                  // Package name
+	logger          log.Logger              // Logger to be used by the package
+	receivedValues  map[string]int          // Stores the values for the received messages
+	validatedValues map[string]int          // Stores the values for the validated messages
+	resultProcessor *result.ResultProcessor // Result processor to be used by the package
 
 }
 
-// Func: GetMessageProcessorWorker returns a new message processor
+// GetMessageProcessorWorker returns a new message processor
 // @author AB
 // @params
 // logger: Logger to be used by the package
 // resultProcessor: Result processor to be used by the package
 // @return
 // MessageProcessorWorker: New message processor
-func GetMessageProcessorWorker(logger log.Logger, resultProcessor result.ResultProcessor) *MessageProcessorWorker {
+func GetMessageProcessorWorker(logger log.Logger, resultProcessor *result.ResultProcessor) *MessageProcessorWorker {
 	if singleton.pack == "" {
 		singletonMutex.Lock()
 		defer singletonMutex.Unlock()
@@ -50,7 +50,7 @@ func GetMessageProcessorWorker(logger log.Logger, resultProcessor result.ResultP
 	return &singleton
 }
 
-// Func: processMessage Validates and creates a result of a specific message
+// processMessage Validates and creates a result of a specific message
 // @author AB
 // @params
 // msg: Message to be processed
@@ -90,7 +90,7 @@ func (mp *MessageProcessorWorker) processMessage(msg *queue.Message) {
 	}
 }
 
-// Func: validateContentWithSchema Validates the content against a specific schema
+// validateContentWithSchema Validates the content against a specific schema
 // @author AB
 // @params
 // content: Content to be validated
@@ -99,6 +99,7 @@ func (mp *MessageProcessorWorker) processMessage(msg *queue.Message) {
 // @return
 // Error in case ther is a problem reading or validating the schema
 func (mp *MessageProcessorWorker) validateContentWithSchema(content string, schema string, validationResult *validation.ValidationResult) error {
+	mp.logger.Info("Validating content with schema", mp.pack, "validateContentWithSchema")
 	// Create a dynamic structure from the Message content
 	var dynamicStruct validation.DynamicStruct
 	err := json.Unmarshal([]byte(content), &dynamicStruct)
@@ -126,7 +127,7 @@ func (mp *MessageProcessorWorker) validateContentWithSchema(content string, sche
 	return nil
 }
 
-// Func: ValidateMessage gets the payload on the message and validates its fields
+// ValidateMessage gets the payload on the message and validates its fields
 // @author AB
 // @params
 // msg: Message to be validated
@@ -135,6 +136,7 @@ func (mp *MessageProcessorWorker) validateContentWithSchema(content string, sche
 // ValidationResult: Result of the validation for the specified message
 // error: error in case there is a problem during the validation
 func (mp *MessageProcessorWorker) validateMessage(msg *queue.Message, settings *settings.EndPointSetting) (*validation.ValidationResult, error) {
+	mp.logger.Info("Validating message", mp.pack, "validateMessage")
 	validationResult := validation.ValidationResult{Valid: true, Errors: make(map[string][]string)}
 
 	err := mp.validateContentWithSchema(msg.HeaderMessage, settings.JSONHeaderSchema, &validationResult)
@@ -159,7 +161,7 @@ func (mp *MessageProcessorWorker) validateMessage(msg *queue.Message, settings *
 	return &validationResult, nil
 }
 
-// Func: worker is for starting the processing of the queued messages
+// worker is for starting the processing of the queued messages
 // @author AB
 func (mp *MessageProcessorWorker) worker() {
 	for msg := range queue.MessageQueue {
@@ -167,7 +169,7 @@ func (mp *MessageProcessorWorker) worker() {
 	}
 }
 
-// Func: StartWorker is for starting the worker process
+// StartWorker is for starting the worker process
 // @author AB
 func (mp *MessageProcessorWorker) StartWorker() {
 	go mp.worker() // Start the worker Goroutine to process messages

@@ -92,7 +92,7 @@ func (api *APIServer) updateReponseError(w http.ResponseWriter, genericError Gen
 	w.Write(jsonData)
 }
 
-// Func: handleValidateResponseMessage Handles requests to the specified urls in the settings
+// handleValidateResponseMessage Handles requests to the specified urls in the settings
 // @author AB
 // @params
 // w: Writer to create the response
@@ -159,7 +159,7 @@ func (api *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *ht
 	fmt.Fprintf(w, "Message enqueued for processing!")
 }
 
-// Func: handleMessages Handles requests to the specified urls in the settings
+// handleMessages Handles requests to the specified urls in the settings
 // @author AB
 // @params
 // w: Writer to create the response
@@ -209,7 +209,7 @@ func (api *APIServer) handleMessages(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Message enqueued for processing!")
 }
 
-// Func: buildHeaderMsg Creates a JSON message based on the headers
+// buildHeaderMsg Creates a JSON message based on the headers
 // @author AB
 // @params
 // header: List of headers
@@ -233,7 +233,7 @@ func (api *APIServer) buildHeaderMsg(header *http.Header) (string, error) {
 	return string(jsonData), nil
 }
 
-// Func: headersToJSON Maps all the headers found in the request to a JSON object
+// headersToJSON Maps all the headers found in the request to a JSON object
 // @author AB
 // @params
 // headers: List of headers to map

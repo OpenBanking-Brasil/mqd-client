@@ -22,7 +22,7 @@ var (
 	ServerURL                = "" // Server URL to send the reports to
 )
 
-// Func: loadEnvironmentSettings Loads settings specified as environment variables, or assigns default values
+// loadEnvironmentSettings Loads settings specified as environment variables, or assigns default values
 // @author AB
 // @params
 // @return
@@ -49,7 +49,7 @@ func loadEnvironmentSettings(logger log.Logger) {
 	}
 }
 
-// Func: setupDevEnvironment Sets up configuration values expected for development environment
+// setupDevEnvironment Sets up configuration values expected for development environment
 // @author AB
 // @params
 // @return
@@ -60,7 +60,7 @@ func setupDevEnvironment(logger log.Logger) {
 	ServerURL = "https://auth-gateway-dev.openfinancebrasil.net.br"
 }
 
-// Func: Initialize Loads all settings requered for the application to run, such as endpoint settings and environment settings
+// Initialize Loads all settings requered for the application to run, such as endpoint settings and environment settings
 // @author AB
 // @params
 // @return

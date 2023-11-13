@@ -9,7 +9,7 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/worker"
 )
 
-// Func: Main is the main function of the api, that is executed on "run"
+// Main is the main function of the api, that is executed on "run"
 // @author AB
 // @params
 // @return

@@ -12,7 +12,7 @@ type SchemaValidator struct {
 	logger log.Logger // Logger
 }
 
-// Func: GetSchemaValidator is for creating a SchemaValidator
+// GetSchemaValidator is for creating a SchemaValidator
 // @author AB
 // @params
 // logger: Logger to be used
@@ -27,7 +27,7 @@ func GetSchemaValidator(logger log.Logger, schema string) *SchemaValidator {
 	}
 }
 
-// Func: ValidateWithSchema is for Validating a dynamic structure using a JSON Schema
+// ValidateWithSchema is for Validating a dynamic structure using a JSON Schema
 // @author AB
 // @params
 // data: DynamicStruct to be validated
@@ -35,7 +35,7 @@ func GetSchemaValidator(logger log.Logger, schema string) *SchemaValidator {
 // @return
 // Error if validation fails.
 func (v *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error) {
-	v.logger.Debug("validating with schema", v.pack, "ValidateWithSchema")
+	v.logger.Info("Starting Validation With Schema", v.pack, "Validate")
 
 	validationResult := ValidationResult{Valid: true}
 
@@ -57,7 +57,7 @@ func (v *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error
 	return &validationResult, nil
 }
 
-// Func: cleanErrors Creates an array or clean error based on the validations
+// cleanErrors Creates an array or clean error based on the validations
 // @author AB
 // @params
 // error: List of errors generated during the validation

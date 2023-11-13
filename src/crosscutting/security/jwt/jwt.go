@@ -20,7 +20,7 @@ type JWKToken struct {
 	Scope            string `json:"scope"`              // Scope of the token
 }
 
-// Func: validateExpiration validates the expiration date of a jwt token
+// validateExpiration validates the expiration date of a jwt token
 // @author AB
 // @params
 // token: JWT token to be validated
@@ -56,7 +56,7 @@ func ValidateExpiration(logger log.Logger, token *JWKToken) bool {
 	return true
 }
 
-// Func: GetTokenFromReader reads a jwt token from a reader
+// GetTokenFromReader reads a jwt token from a reader
 // @author AB
 // @params
 // logger: Logger to be used

@@ -45,7 +45,7 @@ func NewMQDServer(logger log.Logger) *MQDServer {
 	return result
 }
 
-// Func: SendReport Sends a report to the central server
+// SendReport Sends a report to the central server
 // @author AB
 // @param
 // report: Report to be sent
@@ -67,7 +67,7 @@ func (m *MQDServer) SendReport(report Report) error {
 	return nil
 }
 
-// Func: getHttpClient Returns a client configured to use certificates for mTLS communication
+// getHttpClient Returns a client configured to use certificates for mTLS communication
 // @author AB
 // @return
 // http client: Client created with certificate info
@@ -85,7 +85,7 @@ func (m *MQDServer) getHttpClient() *http.Client {
 	return httpClient
 }
 
-// Func: loadCertificates Loads certificates from environment variables
+// loadCertificates Loads certificates from environment variables
 // @author AB
 // @params
 // @return
@@ -124,7 +124,7 @@ func (m *MQDServer) requestNewToken() (*http.Response, error) {
 	return resp, nil
 }
 
-// func getJWKToken returns a valid Token to be used in a secure communication
+// getJWKToken returns a valid Token to be used in a secure communication
 // @author AB
 // @params
 // @return
@@ -162,7 +162,7 @@ func (m *MQDServer) getJWKToken() error {
 	}
 }
 
-// Func: postReport sends the report to the server using required authorization
+// postReport sends the report to the server using required authorization
 // @author AB
 // @params
 // report: Report to send
@@ -212,7 +212,7 @@ func (m *MQDServer) postReport(report Report) error {
 	return nil
 }
 
-// Func: loadCertificates Load certificate files (crt and key) into memmory for further use
+// loadCertificates Load certificate files (crt and key) into memmory for further use
 // @author AB
 // @params
 // @return
