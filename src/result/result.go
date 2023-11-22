@@ -12,6 +12,8 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/server"
 )
 
+const version = "1.1.0"
+
 // MessageResult contains the information for a validation
 type MessageResult struct {
 	Endpoint           string              // Name of the endpoint
@@ -37,9 +39,9 @@ type ErrorDetail struct {
 }
 
 var (
-	singleton      ResultProcessor            // Singleton instance of the ResultProcessor
-	mutex          = sync.Mutex{}             // Mutex for thread-safe access to messageResults
-	groupedResults map[string][]MessageResult // slice to store grouped results
+	singleton      ResultProcessor                    // Singleton instance of the ResultProcessor
+	mutex          = sync.Mutex{}                     // Mutex for thread-safe access to messageResults
+	groupedResults = make(map[string][]MessageResult) // slice to store grouped results
 )
 
 // struct in charge of processing results
@@ -131,7 +133,7 @@ func (rp *ResultProcessor) processAndSendResults(reportServer server.ReportServe
 	rp.logger.Debug("Total Results to process :"+strconv.Itoa(len(results)), rp.pack, "processAndSendResults")
 	report.ServerSummary = rp.getSummary(results)
 	rp.logger.Debug("Total ServerSummary processe :"+strconv.Itoa(len(report.ServerSummary)), rp.pack, "processAndSendResults")
-	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "ReportGenerationtime", Value: time.Since(processStartTime).String()})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "runtime.ReportGenerationtime", Value: time.Since(processStartTime).String()})
 
 	reportServer.SendReport(report)
 	rp.printReport(report)
@@ -145,12 +147,15 @@ func (rp *ResultProcessor) processAndSendResults(reportServer server.ReportServe
 // @return
 func (rp *ResultProcessor) updateMetrics(metrics *server.ApplicationMetrics) {
 	rp.logger.Info("Updating metrics", rp.pack, "updateMetrics")
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "ReportStartDate", Value: rp.reportStartTime.String()})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "ReportEndDate", Value: time.Now().String()})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "BadRequestErrors", Value: strconv.Itoa(monitoring.GetAndCleanBadRequestsReceived())})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "TotalRequests", Value: strconv.Itoa(monitoring.GetAndCleanRequestsReceived())})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "MemmoryUsageAvg", Value: monitoring.GetAndCleanAverageMemmory()})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "ResposeTimeAvg", Value: monitoring.GetAndCleanResponseTime()})
+	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.ReportStartDate", Value: rp.reportStartTime.String()})
+	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.ReportEndDate", Value: time.Now().String()})
+	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.BadRequestErrors", Value: strconv.Itoa(monitoring.GetAndCleanBadRequestsReceived())})
+	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.TotalRequests", Value: strconv.Itoa(monitoring.GetAndCleanRequestsReceived())})
+	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.MemmoryUsageAvg", Value: monitoring.GetAndCleanAverageMemmory()})
+	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.ResposeTimeAvg", Value: monitoring.GetAndCleanResponseTime()})
+	metrics.Values = append(metrics.Values, server.MetricObject{Key: "Configuration.Version", Value: version})
+	metrics.Values = append(metrics.Values, server.MetricObject{Key: "Configuration.Environment", Value: configuration.Environment})
+	metrics.Values = append(metrics.Values, server.MetricObject{Key: "Configuration.REPORT_EXECUTION_WINDOW", Value: strconv.Itoa(configuration.ReportExecutiontimeFrame)})
 }
 
 // getSummary Returns the server summary for a specific set of MessageResults
