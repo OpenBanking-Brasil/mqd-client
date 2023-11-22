@@ -1,0 +1,204 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://www.apache.org/licenses/LICENSE-2.0",
+  "title": "",
+  "version": "2.1.0",
+  "description": "ResponseCreditCardAccountsIdentification",
+  "additionalProperties": false,
+  "required": [
+    "data",
+    "links",
+    "meta"
+  ],
+  "properties": {
+    "data": {
+      "type": "object",
+      "description": "Conjunto de informações referentes à identificação da conta de pagamento pós-paga.",
+      "required": [
+        "name",
+        "productType",
+        "creditCardNetwork",
+        "paymentMethod"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "[\\w\\W\\s]*",
+          "description": "Denominação/Identificação do nome da conta de pagamento pós-paga (cartão). Conforme CIRCULAR Nº 3.680,BCB, 2013: 'conta de pagamento pós-paga: destinada à execução de transações de pagamento que independem do aporte prévio de recursos'.\n",
+          "maxLength": 50,
+          "example": "Cartão Universitário"
+        },
+        "productType": {
+          "type": "string",
+          "description": "Categoria atribuída a um cartão de pagamento, sob uma certa denominação, que lhe agrega um conjunto de vantagens, diferenciando-o de acordo com o perfil do portador.",
+          "enum": [
+            "CLASSIC_NACIONAL",
+            "CLASSIC_INTERNACIONAL",
+            "GOLD",
+            "PLATINUM",
+            "INFINITE",
+            "ELECTRON",
+            "STANDARD_NACIONAL",
+            "STANDARD_INTERNACIONAL",
+            "ELETRONIC",
+            "BLACK",
+            "REDESHOP",
+            "MAESTRO_MASTERCARD_MAESTRO",
+            "GREEN",
+            "BLUE",
+            "BLUEBOX",
+            "PROFISSIONAL_LIBERAL",
+            "CHEQUE_ELETRONICO",
+            "CORPORATIVO",
+            "EMPRESARIAL",
+            "COMPRAS",
+            "BASICO_NACIONAL",
+            "BASICO_INTERNACIONAL",
+            "NANQUIM",
+            "GRAFITE",
+            "MAIS",
+            "OUTROS"
+          ],
+          "example": "OUTROS"
+        },
+        "productAdditionalInfo": {
+          "type": "string",
+          "pattern": "[\\w\\W\\s]*",
+          "description": "Informações complementares se tipo de Cartão 'OUTROS'",
+          "maxLength": 50,
+          "example": "OURO_INTERNACIONAL"
+        },
+        "creditCardNetwork": {
+          "type": "string",
+          "description": "Categoria de Bandeiras de Cartões de Crédito (Instituidor do arranjo de pagamento).\nBandeira é a detentora de todos os direitos e deveres da utilização da marca estampada no cartão, inclusive as bandeiras pertencentes aos emissores.\n",
+          "enum": [
+            "VISA",
+            "MASTERCARD",
+            "AMERICAN_EXPRESS",
+            "DINERS_CLUB",
+            "HIPERCARD",
+            "BANDEIRA_PROPRIA",
+            "CHEQUE_ELETRONICO",
+            "ELO",
+            "OUTRAS"
+          ],
+          "example": "VISA"
+        },
+        "networkAdditionalInfo": {
+          "type": "string",
+          "pattern": "[\\w\\W\\s]*",
+          "description": "Texto livre para especificar categoria de bandeira marcada como 'OUTRAS'.",
+          "maxLength": 50,
+          "example": "AURA CARD"
+        },
+        "paymentMethod": {
+          "type": "array",
+          "description": "Listagem dos cartões (ex.: virtual/adicional/titular) associados a conta cartão consentida, conforme disponíveis ao usuário nos canais proprietários.\n",
+          "items": {
+            "type": "object",
+            "description": "Conjunto de informações relativas aos Meios de Pagamento da Conta de pagamento pós-paga",
+            "required": [
+              "identificationNumber",
+              "isMultipleCreditCard"
+            ],
+            "properties": {
+              "identificationNumber": {
+                "type": "string",
+                "description": "Número de identificação do cartão: corresponde aos 4 últimos dígitos do cartão para pessoa natural, ou então, preencher com um identificador para pessoa jurídica, com as características definidas para os IDs no Open Finance.\n",
+                "maxLength": 100,
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]{0,99}$",
+                "example": "4453"
+              },
+              "isMultipleCreditCard": {
+                "type": "boolean",
+                "description": "Indica se o Cartão de crédito associado à conta pagamento pós-paga é múltiplo ou não. Cartões denominados múltiplos possuem tanto a função crédito quanto a função débito, devendo o proprietário do cartão, no momento de sua utilização, informar se o pagamento é na função crédito (que leva a um pagamento futuro, por meio de uma fatura do cartão de crédito) ou na função débito.\n",
+                "example": true
+              }
+            }
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "links": {
+      "type": "object",
+      "description": "Referências para outros recusos da API requisitada.",
+      "required": [
+        "self"
+      ],
+      "properties": {
+        "self": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2000,
+          "description": "URI completo que gerou a resposta atual.",
+          "example": "https://api.banco.com.br/open-banking/api/v1/resource",
+          "pattern": "^(https:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&\\/\\/=]*)$"
+        },
+        "first": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2000,
+          "description": "URI da primeira página que originou essa lista de resultados. Restrição - Obrigatório quando não for a primeira página da resposta",
+          "example": "https://api.banco.com.br/open-banking/api/v1/resource",
+          "pattern": "^(https:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&\\/\\/=]*)$"
+        },
+        "prev": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2000,
+          "description": "URI da página anterior dessa lista de resultados. Restrição - \tObrigatório quando não for a primeira página da resposta",
+          "example": "https://api.banco.com.br/open-banking/api/v1/resource",
+          "pattern": "^(https:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&\\/\\/=]*)$"
+        },
+        "next": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2000,
+          "description": "URI da próxima página dessa lista de resultados. Restrição - Obrigatório quando não for a última página da resposta",
+          "example": "https://api.banco.com.br/open-banking/api/v1/resource",
+          "pattern": "^(https:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&\\/\\/=]*)$"
+        },
+        "last": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2000,
+          "description": "URI da última página dessa lista de resultados. Restrição - Obrigatório quando não for a última página da resposta",
+          "example": "https://api.banco.com.br/open-banking/api/v1/resource",
+          "pattern": "^(https:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&\\/\\/=]*)$"
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "description": "Meta informações referente à API requisitada.",
+      "required": [
+        "totalRecords",
+        "totalPages",
+        "requestDateTime"
+      ],
+      "properties": {
+        "totalRecords": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Número total de registros no resultado",
+          "example": 1
+        },
+        "totalPages": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Número total de páginas no resultado",
+          "example": 1
+        },
+        "requestDateTime": {
+          "description": "Data e hora da consulta, conforme especificação RFC-3339, formato UTC.",
+          "type": "string",
+          "maxLength": 20,
+          "format": "date-time",
+          "example": "2021-05-21T08:30:00Z"
+        }
+      }
+    }
+  }
+}

@@ -100,12 +100,12 @@ func (m *MQDServer) requestNewToken() (*http.Response, error) {
 	data.Set("client_id", configuration.ClientID)
 	requestBody := strings.NewReader(data.Encode())
 
-	m.logger.Debug("ServerURL:"+configuration.ServerURL+TOKEN_PATH, m.pack, "GetJWKToken")
-	m.logger.Debug("Body:"+data.Encode(), m.pack, "GetJWKToken")
+	m.logger.Debug("ServerURL:"+configuration.ServerURL+TOKEN_PATH, m.pack, "requestNewToken")
+	m.logger.Debug("Body:"+data.Encode(), m.pack, "requestNewToken")
 
 	request, err := http.NewRequest("POST", configuration.ServerURL+TOKEN_PATH, requestBody)
 	if err != nil {
-		m.logger.Error(err, "Error creating request", m.pack, "GetJWKToken")
+		m.logger.Error(err, "Error creating request", m.pack, "requestNewToken")
 		return nil, err
 	}
 
@@ -117,7 +117,7 @@ func (m *MQDServer) requestNewToken() (*http.Response, error) {
 	// Send the request
 	resp, err := httpClient.Do(request)
 	if err != nil {
-		m.logger.Error(err, "Error sending request", m.pack, "GetJWKToken")
+		m.logger.Error(err, "Error sending request", m.pack, "requestNewToken")
 		return nil, err
 	}
 

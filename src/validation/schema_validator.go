@@ -38,11 +38,9 @@ func (v *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error
 	v.logger.Info("Starting Validation With Schema", v.pack, "Validate")
 
 	validationResult := ValidationResult{Valid: true}
-
 	loader := gojsonschema.NewStringLoader(v.schema)
 	documentLoader := gojsonschema.NewGoLoader(data)
 	result, err := gojsonschema.Validate(loader, documentLoader)
-
 	if err != nil {
 		v.logger.Error(err, "error validating message", v.pack, "ValidateWithSchema")
 		return nil, err
@@ -65,7 +63,6 @@ func (v *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error
 // ErrorDetail: List of errors found
 func (v *SchemaValidator) cleanErrors(errors []gojsonschema.ResultError) map[string][]string {
 	result := make(map[string][]string)
-
 	for _, desc := range errors {
 		result[desc.Field()] = append(result[desc.Field()], desc.Description())
 		v.logger.Debug(desc.Field()+": "+desc.Description(), v.pack, "cleanErrors")
