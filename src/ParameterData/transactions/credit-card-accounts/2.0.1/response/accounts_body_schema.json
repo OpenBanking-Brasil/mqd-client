@@ -4,7 +4,7 @@
   "title": "",
   "version": "2.0.1",
   "description": "",
-  "additionalProperties": false,
+  "additionalProperties": true,
   "required": [
     "data",
     "links",

@@ -1,10 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://www.apache.org/licenses/LICENSE-2.0",
+  "$id": "https://openfinancebrasil.org.br/overdraft_body_schema.2.1.0.json",
   "title": "",
   "version": "2.1.0",
   "description": "ResponseAccountOverdraftLimits",
-  "additionalProperties": false,
+  "additionalProperties": true,
   "required": [
     "data",
     "links",

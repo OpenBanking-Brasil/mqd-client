@@ -42,7 +42,7 @@ func (v *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error
 	documentLoader := gojsonschema.NewGoLoader(data)
 	result, err := gojsonschema.Validate(loader, documentLoader)
 	if err != nil {
-		v.logger.Error(err, "error validating message", v.pack, "ValidateWithSchema")
+		v.logger.Error(err, "error validating message", v.pack, "Validate")
 		return nil, err
 	}
 
