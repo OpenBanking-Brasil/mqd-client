@@ -4,7 +4,7 @@
   "title": "",
   "version": "2.0.1",
   "description": "ResponseAccountTransactions",
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
     "data": {
       "type": "array",

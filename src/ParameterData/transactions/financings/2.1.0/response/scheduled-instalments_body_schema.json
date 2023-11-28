@@ -4,7 +4,7 @@
   "title": "",
   "version": "2.1.0",
   "description": "ResponseFinancingsInstalments",
-  "additionalProperties": false,
+  "additionalProperties": true,
   "required": [
     "data",
     "links",
