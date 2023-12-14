@@ -38,6 +38,10 @@ func (v *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error
 	v.logger.Info("Starting Validation With Schema", v.pack, "Validate")
 
 	validationResult := ValidationResult{Valid: true}
+	if v.schema == "" {
+		return &validationResult, nil
+	}
+
 	loader := gojsonschema.NewStringLoader(v.schema)
 	documentLoader := gojsonschema.NewGoLoader(data)
 	result, err := gojsonschema.Validate(loader, documentLoader)
