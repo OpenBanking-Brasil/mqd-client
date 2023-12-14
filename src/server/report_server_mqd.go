@@ -21,6 +21,7 @@ import (
 const CERTIFICATE_PATH = "ParameterData//certificates//"
 const TOKEN_PATH = "/token"
 const REPORT_PATH = "/report"
+const SCHEMA_PATH = "/settings"
 
 const ENV_CLIENT_CRT_FILE = "CLIENT_CRT_FILE" // Certificate file
 const ENV_CLIENT_KEY_FILE = "CLIENT_KEY_FILE" // Private key file
@@ -233,4 +234,36 @@ func (m *MQDServer) loadCertificates() {
 	}
 
 	m.certificates = cert
+}
+
+func (m *MQDServer) LoadAPIConfigurationFile(filePath string) ([]byte, error) {
+	m.logger.Info("Loading API configuration", m.pack, "loadAPIConfiguration")
+
+	httpClient := m.getHttpClient()
+	serverPath := configuration.ServerURL + SCHEMA_PATH + "/" + filePath
+	m.logger.Debug("serverPath: "+serverPath, m.pack, "loadAPIConfiguration")
+
+	// Create a new request
+	response, err := httpClient.Get(serverPath)
+	if err != nil {
+		m.logger.Error(err, "Error executing request", m.pack, "loadAPIConfiguration")
+		return nil, err
+	}
+
+	// Check the status code of the response
+	if response.StatusCode != http.StatusOK {
+		m.logger.Warning("Unexpected status code", m.pack, "loadAPIConfiguration")
+		return nil, nil
+	}
+
+	// Read the response body
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		m.logger.Error(err, "Error reading response body", m.pack, "loadAPIConfiguration")
+		return nil, err
+	}
+
+	return body, nil
 }

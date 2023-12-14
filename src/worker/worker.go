@@ -24,7 +24,7 @@ type MessageProcessorWorker struct {
 	receivedValues  map[string]int          // Stores the values for the received messages
 	validatedValues map[string]int          // Stores the values for the validated messages
 	resultProcessor *result.ResultProcessor // Result processor to be used by the package
-
+	cm              *settings.ConfigurationManager
 }
 
 // GetMessageProcessorWorker returns a new message processor
@@ -34,7 +34,7 @@ type MessageProcessorWorker struct {
 // resultProcessor: Result processor to be used by the package
 // @return
 // MessageProcessorWorker: New message processor
-func GetMessageProcessorWorker(logger log.Logger, resultProcessor *result.ResultProcessor) *MessageProcessorWorker {
+func GetMessageProcessorWorker(logger log.Logger, resultProcessor *result.ResultProcessor, cm *settings.ConfigurationManager) *MessageProcessorWorker {
 	if singleton.pack == "" {
 		singletonMutex.Lock()
 		defer singletonMutex.Unlock()
@@ -44,6 +44,7 @@ func GetMessageProcessorWorker(logger log.Logger, resultProcessor *result.Result
 			receivedValues:  make(map[string]int),
 			validatedValues: make(map[string]int),
 			resultProcessor: resultProcessor,
+			cm:              cm,
 		}
 	}
 
@@ -60,7 +61,8 @@ func (mp *MessageProcessorWorker) processMessage(msg *queue.Message) {
 	mp.receivedValues[msg.Endpoint]++
 	mutex.Unlock()
 
-	endpointSettings := settings.GetEndpointSetting(msg.Endpoint)
+	// endpointSettings := settings.GetEndpointSetting(msg.Endpoint)
+	endpointSettings := mp.cm.GetEndpointSettingFromAPI(msg.Endpoint, mp.logger)
 
 	if endpointSettings == nil {
 		mp.logger.Warning("Ignoring message with endpoint: "+msg.Endpoint, "Worker", "processMessage")
@@ -135,7 +137,8 @@ func (mp *MessageProcessorWorker) validateContentWithSchema(content string, sche
 // @return
 // ValidationResult: Result of the validation for the specified message
 // error: error in case there is a problem during the validation
-func (mp *MessageProcessorWorker) validateMessage(msg *queue.Message, settings *settings.EndPointSetting) (*validation.ValidationResult, error) {
+// func (mp *MessageProcessorWorker) validateMessage(msg *queue.Message, settings *settings.EndPointSetting) (*validation.ValidationResult, error) {
+func (mp *MessageProcessorWorker) validateMessage(msg *queue.Message, settings *settings.APIEndpointSetting) (*validation.ValidationResult, error) {
 	mp.logger.Info("Validating message", mp.pack, "validateMessage")
 	validationResult := validation.ValidationResult{Valid: true, Errors: make(map[string][]string)}
 

@@ -5,14 +5,12 @@ import (
 
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
-	"github.com/OpenBanking-Brasil/MQD_Client/validation/settings"
 )
 
-const ENDPOINT_SETTINGS_PATH = "ParameterData//endpoint_settings.json" // Constant to store path to the endpoint settings file.
-const SERVER_ID_ENVIRONMENT = "SERVER_ORG_ID"                          // constant  to store name of the server id environment variable
-const REPORT_EXECUTION_WINDOW = "REPORT_EXECUTION_WINDOW"              // constant  to store name of the report execution time environment variable
-const LOGGING_LEVEL = "LOGGING_LEVEL"                                  // constant  to store name of the Logging level environment variable
-const ENVIRONMENT = "ENVIRONMENT"                                      // constant  to store name of the environment variable
+const SERVER_ID_ENVIRONMENT = "SERVER_ORG_ID"             // constant  to store name of the server id environment variable
+const REPORT_EXECUTION_WINDOW = "REPORT_EXECUTION_WINDOW" // constant  to store name of the report execution time environment variable
+const LOGGING_LEVEL = "LOGGING_LEVEL"                     // constant  to store name of the Logging level environment variable
+const ENVIRONMENT = "ENVIRONMENT"                         // constant  to store name of the environment variable
 
 var (
 	ServerId                 = "" // Organisation id for server
@@ -68,5 +66,4 @@ func setupDevEnvironment(logger log.Logger) {
 func Initialize() {
 	logger := log.GetLogger()
 	loadEnvironmentSettings(logger)
-	settings.LoadEndpointSettings(logger, ENDPOINT_SETTINGS_PATH)
 }

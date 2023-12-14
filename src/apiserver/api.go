@@ -27,6 +27,7 @@ type APIServer struct {
 	pack           string       // Package name
 	logger         log.Logger   // Logger to be used
 	metricsHandler http.Handler // Handler for the metric endpoint
+	cm             *settings.ConfigurationManager
 }
 
 // GetAPIServer Creates a new APIServer
@@ -36,11 +37,12 @@ type APIServer struct {
 // metricsHandler: Handler for the metric endpoint
 // @return
 // *APIServer: APIServer
-func GetAPIServer(logger log.Logger, metricsHandler http.Handler) *APIServer {
+func GetAPIServer(logger log.Logger, metricsHandler http.Handler, cm *settings.ConfigurationManager) *APIServer {
 	return &APIServer{
 		pack:           "API",
 		logger:         logger,
 		metricsHandler: metricsHandler,
+		cm:             cm,
 	}
 }
 
@@ -118,7 +120,8 @@ func (api *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *ht
 	endpointName := r.Header.Get("endpointName")
 
 	// Validate the endpoint configuration exists
-	endpointSettings := settings.GetEndpointSetting(endpointName)
+	// endpointSettings := settings.GetEndpointSetting(endpointName)
+	endpointSettings := api.cm.GetEndpointSettingFromAPI(endpointName, api.logger)
 
 	if endpointSettings == nil {
 		monitoring.IncreaseBadRequestsReceived()

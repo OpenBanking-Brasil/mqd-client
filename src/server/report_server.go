@@ -49,4 +49,5 @@ type Report struct {
 // Interface for the report server
 type ReportServer interface {
 	SendReport(report Report) error // Send the report
+	LoadAPIConfigurationFile(filePath string) ([]byte, error)
 }
