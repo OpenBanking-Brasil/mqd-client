@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/OpenBanking-Brasil/MQD_Client/server"
 )
@@ -66,9 +65,8 @@ func (cm *ConfigurationManager) getAPIConfigurationFile(basePath string, apiPath
 // server: Server to request the updates (if any)
 // @return
 // error: error if any
-func (cm *ConfigurationManager) compareSchemaConfiguration(newSttings *APIGroupSettings, server server.MQDServer) (bool, error) {
+func (cm *ConfigurationManager) compareSchemaConfiguration(newSttings *APIGroupSettings, server server.MQDServer) error {
 	cm.logger.Info("Comparing Schemas", cm.pack, "compareSchemaConfiguration")
-	schemaUpdated := false
 
 	if cm.apiGroupSettings != nil {
 		for i, newSet := range newSttings.Settings {
@@ -76,11 +74,9 @@ func (cm *ConfigurationManager) compareSchemaConfiguration(newSttings *APIGroupS
 			oldSet := cm.apiGroupSettings.GetGroupSetting(newSet.Group)
 			if oldSet == nil {
 				for j, newAPI := range newSet.ApiList {
-					schemaUpdated = true
 					epList, err := cm.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version, server)
 					if err != nil {
-						cm.logger.Error(err, "error loading api configuration file", cm.pack, "compareSchemaConfiguration")
-						return false, err
+						return err
 					}
 
 					newSttings.Settings[i].ApiList[j].EndpointList = epList
@@ -90,12 +86,10 @@ func (cm *ConfigurationManager) compareSchemaConfiguration(newSttings *APIGroupS
 					cm.logger.Debug("Cehecking API: "+newAPI.API, cm.pack, "compareSchemaConfiguration")
 					oldAPI := oldSet.GetAPISetting(newAPI.API)
 					if oldAPI == nil || oldAPI.Version != newAPI.Version {
-						schemaUpdated = true
 						cm.logger.Info("Updating API: "+newAPI.API, cm.pack, "compareSchemaConfiguration")
-						epList, err := cm.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version, server)
-						if err != nil {
-							cm.logger.Error(err, "error loading api configuration file", cm.pack, "compareSchemaConfiguration")
-							return false, err
+						epList, error := cm.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version, server)
+						if error != nil {
+							return error
 						}
 
 						newSttings.Settings[i].ApiList[j].EndpointList = epList
@@ -107,11 +101,10 @@ func (cm *ConfigurationManager) compareSchemaConfiguration(newSttings *APIGroupS
 		cm.logger.Info("Executing first load", cm.pack, "compareSchemaConfiguration")
 		for i, newSet := range newSttings.Settings {
 			for j, newAPI := range newSet.ApiList {
-				schemaUpdated = true
 				cm.logger.Info("Loading API: "+newAPI.API, cm.pack, "compareSchemaConfiguration")
-				epList, err := cm.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version, server)
-				if err != nil {
-					return false, err
+				epList, error := cm.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version, server)
+				if error != nil {
+					return error
 				}
 
 				newSttings.Settings[i].ApiList[j].EndpointList = epList
@@ -119,7 +112,7 @@ func (cm *ConfigurationManager) compareSchemaConfiguration(newSttings *APIGroupS
 		}
 	}
 
-	return schemaUpdated, nil
+	return nil
 }
 
 // updateValidationSchemas checks and updates the validation schemas for the endpoints
@@ -133,7 +126,7 @@ func (cm *ConfigurationManager) updateValidationSchemas() error {
 	srv := server.NewMQDServer(cm.logger)
 
 	// Load new schema map
-	data, err := srv.LoadAPIConfigurationFile(api_configuration_name)
+	data, err := srv.LoadAPIConfigurationFile("api_configuration.json")
 	if err != nil {
 		cm.logger.Error(err, "Error loading API configuration", cm.pack, "updateValidationSchemas")
 		return err
@@ -147,19 +140,13 @@ func (cm *ConfigurationManager) updateValidationSchemas() error {
 		return err
 	}
 
-	schemaUpdated, err := cm.compareSchemaConfiguration(&tmpSettings, *srv)
-	if err != nil {
-		cm.logger.Error(err, "Error Comparing API Schemas", cm.pack, "updateValidationSchemas")
-		return err
-	}
+	cm.compareSchemaConfiguration(&tmpSettings, *srv)
 
 	mutex.Lock()
-	if schemaUpdated {
-		cm.apiGroupSettings = &tmpSettings
-		configuration.LastUpdatedDate = time.Now()
-	}
-
+	cm.apiGroupSettings = &tmpSettings
+	// apiGroupSettings = tmpSettings
 	mutex.Unlock()
+
 	return nil
 }
 
@@ -184,8 +171,7 @@ func (cm *ConfigurationManager) getApiGroupSettings() []APIGroupSetting {
 		mutex.Unlock()
 	}()
 
-	result := cm.apiGroupSettings.Settings
-	return result
+	return cm.apiGroupSettings.Settings
 }
 
 // StartResultsProcessor starts the periodic process that prints total results and clears them every 2 minutes
@@ -199,7 +185,7 @@ func (cm *ConfigurationManager) StartUpdateProcess() {
 
 	cm.processRunning = true
 	cm.logger.Info("Starting configuration update Process", cm.pack, "StartUpdateProcess")
-	timeWindow := time.Duration(6) * time.Hour
+	timeWindow := time.Duration(2) * time.Hour
 
 	ticker := time.NewTicker(timeWindow)
 	for {
