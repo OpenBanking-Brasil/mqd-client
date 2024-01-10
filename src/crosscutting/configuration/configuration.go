@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
@@ -18,6 +19,7 @@ var (
 	ReportExecutiontimeFrame = 0  // TimeWindow for report execution
 	Environment              = "" // Indicates the actual Environment the app is running
 	ServerURL                = "" // Server URL to send the reports to
+	LastUpdatedDate          = time.Time{}
 )
 
 // loadEnvironmentSettings Loads settings specified as environment variables, or assigns default values
