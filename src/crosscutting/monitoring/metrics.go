@@ -27,14 +27,15 @@ type Measurement struct {
 }
 
 var (
-	requests                   metric.Float64Counter // Stores the number of requests the application has received
-	endpoint_requests          metric.Float64Counter // Stores the number of requests by endpoint / server
-	endpoint_validation_errors metric.Float64Counter // Stores the number of validation errors by endpoint / server
-	mutex                      = sync.Mutex{}        // Mutex for thread-safe access
-	requestsReceived           = 0                   // Stores the number of requests received
-	badRequestsReceived        = 0                   // Stores the number of bad requests errors
-	measurements               = []Measurement{}     // Create slices to store memory and CPU usage values
-	responseTime               = []time.Duration{}   // Creates a slice to store the response time duration of requests
+	requests                   metric.Float64Counter     // Stores the number of requests the application has received
+	endpoint_requests          metric.Float64Counter     // Stores the number of requests by endpoint / server
+	endpoint_validation_errors metric.Float64Counter     // Stores the number of validation errors by endpoint / server
+	mutex                      = sync.Mutex{}            // Mutex for thread-safe access
+	requestsReceived           = 0                       // Stores the number of requests received
+	badRequestsReceived        = 0                       // Stores the number of bad requests errors
+	measurements               = []Measurement{}         // Create slices to store memory and CPU usage values
+	responseTime               = []time.Duration{}       // Creates a slice to store the response time duration of requests
+	unsupportedEndpoints       = make(map[string]int, 0) // Stores the number of unsupported endpoints
 )
 
 // startMemoryCalculator Starts the memmory calculation for observability
@@ -198,6 +199,17 @@ func IncreaseBadRequestsReceived() {
 	mutex.Unlock()
 }
 
+// IncreaseBadRequestsReceived increses the number of bad requests received metric
+// @author AB
+// @params
+// @return
+func IncreaseBadEndpointsReceived(endpoint string) {
+	mutex.Lock()
+	badRequestsReceived++
+	unsupportedEndpoints[endpoint]++
+	mutex.Unlock()
+}
+
 // IncreaseValidationResult increses the number validation result for a specific server / endpoint, if the validation is false
 // endpoint_validation_errors will also be increased
 // @author AB
@@ -245,6 +257,21 @@ func GetAndCleanBadRequestsReceived() int {
 	}()
 
 	return badRequestsReceived
+}
+
+// GetAndCleanBadRequestsReceived returns and cleans the lists of bad requests
+// @author AB
+// @params
+// @return
+// int: Number of bad requests recevied in the period of time
+func GetAndCleanUnsupportedEndpoints() map[string]int {
+	mutex.Lock()
+	defer func() {
+		unsupportedEndpoints = make(map[string]int, 0)
+		mutex.Unlock()
+	}()
+
+	return unsupportedEndpoints
 }
 
 // GetAndCleanAverageMemmory returns and cleans the average memmory used during the interval time
