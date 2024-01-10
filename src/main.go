@@ -32,7 +32,7 @@ func main() {
 
 	// Start the worker Goroutine to process messages
 	go mp.StartWorker()
-	go rp.StartResultsProcessor()
+	// go rp.StartResultsProcessor()
 
 	apiserver.GetAPIServer(logger, monitoring.GetOpentelemetryHandler(), cm).StartServing()
 }
