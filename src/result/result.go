@@ -12,7 +12,7 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/server"
 )
 
-const version = "1.1.0"
+const version = "1.2.1"
 
 // MessageResult contains the information for a validation
 type MessageResult struct {
@@ -127,7 +127,7 @@ func (rp *ResultProcessor) processAndSendResults(reportServer server.ReportServe
 	rp.logger.Info("Processing and sending results", "result", "processAndSendResults")
 	processStartTime := time.Now()
 	report := server.Report{ClientID: configuration.ClientID}
-	rp.updateMetrics(&report.Metrics)
+	rp.updateMetrics(&report)
 	rp.reportStartTime = time.Now()
 	results := rp.getAndClearResults()
 	rp.logger.Debug("Total Results to process :"+strconv.Itoa(len(results)), rp.pack, "processAndSendResults")
@@ -145,17 +145,26 @@ func (rp *ResultProcessor) processAndSendResults(reportServer server.ReportServe
 // @params
 // metrics: List of metrics to be included
 // @return
-func (rp *ResultProcessor) updateMetrics(metrics *server.ApplicationMetrics) {
+func (rp *ResultProcessor) updateMetrics(report *server.Report) {
 	rp.logger.Info("Updating metrics", rp.pack, "updateMetrics")
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.ReportStartDate", Value: rp.reportStartTime.String()})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.ReportEndDate", Value: time.Now().String()})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.BadRequestErrors", Value: strconv.Itoa(monitoring.GetAndCleanBadRequestsReceived())})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.TotalRequests", Value: strconv.Itoa(monitoring.GetAndCleanRequestsReceived())})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.MemmoryUsageAvg", Value: monitoring.GetAndCleanAverageMemmory()})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "runtime.ResposeTimeAvg", Value: monitoring.GetAndCleanResponseTime()})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "Configuration.Version", Value: version})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "Configuration.Environment", Value: configuration.Environment})
-	metrics.Values = append(metrics.Values, server.MetricObject{Key: "Configuration.REPORT_EXECUTION_WINDOW", Value: strconv.Itoa(configuration.ReportExecutiontimeFrame)})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "runtime.ReportStartDate", Value: rp.reportStartTime.String()})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "runtime.ReportEndDate", Value: time.Now().String()})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "runtime.BadRequestErrors", Value: strconv.Itoa(monitoring.GetAndCleanBadRequestsReceived())})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "runtime.TotalRequests", Value: strconv.Itoa(monitoring.GetAndCleanRequestsReceived())})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "runtime.MemmoryUsageAvg", Value: monitoring.GetAndCleanAverageMemmory()})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "runtime.ResposeTimeAvg", Value: monitoring.GetAndCleanResponseTime()})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "Configuration.Version", Value: version})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "Configuration.Environment", Value: configuration.Environment})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "Configuration.REPORT_EXECUTION_WINDOW", Value: strconv.Itoa(configuration.ReportExecutiontimeFrame)})
+	report.Metrics.Values = append(report.Metrics.Values, server.MetricObject{Key: "Configuration.LAST_CONFIGURATION_UPDATE", Value: configuration.LastUpdatedDate.String()})
+
+	ue := monitoring.GetAndCleanUnsupportedEndpoints()
+	for key, value := range ue {
+		report.UnsupportedEndpoints = append(report.UnsupportedEndpoints, server.UnsupportedEndpoint{
+			EndpointName: key,
+			Count:        value,
+		})
+	}
 }
 
 // getSummary Returns the server summary for a specific set of MessageResults

@@ -124,7 +124,7 @@ func (api *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *ht
 	endpointSettings := api.cm.GetEndpointSettingFromAPI(endpointName, api.logger)
 
 	if endpointSettings == nil {
-		monitoring.IncreaseBadRequestsReceived()
+		monitoring.IncreaseBadEndpointsReceived(endpointName)
 		genericError.Message = "endpointName: Not found or bad format."
 		api.updateReponseError(w, *genericError, http.StatusBadRequest)
 		return
