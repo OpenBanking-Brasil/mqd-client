@@ -1,4 +1,4 @@
-package queue
+package application
 
 // Message contains the information of the payload to be validated
 type Message struct {
@@ -11,13 +11,24 @@ type Message struct {
 }
 
 // Buffered channel for message queue
-var MessageQueue = make(chan *Message, 1000)
+var messageQueue = make(chan *Message, 1000)
+
+type QueueManager struct {
+}
+
+func GetQueueManager() *QueueManager {
+	return &QueueManager{}
+}
 
 // EnqueueMessage is for queueing the message
 // @author AB
 // @params
 // msg: Message to be queued
 // @return
-func EnqueueMessage(msg *Message) {
-	MessageQueue <- msg
+func (q *QueueManager) EnqueueMessage(msg *Message) {
+	messageQueue <- msg
+}
+
+func (q *QueueManager) GetQueue() chan *Message {
+	return messageQueue
 }

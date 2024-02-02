@@ -1,0 +1,83 @@
+@startuml
+entity reports {
+  * id
+  --
+  * receiver_id
+  * report_date
+  * start_date
+  * created_at
+}
+
+entity unsupported_endpoints {
+  * id
+  --
+  * report_id
+  * endpoint_name
+  * version
+  * count
+  * error
+}
+
+entity report_metrics {
+  * report_id
+  * metric_name
+  --
+  * value
+}
+
+entity application_configurations {
+  * id
+  --
+  * report_id
+  * application_version
+  * environment
+  * report_execution_window
+  * application_mode
+  * configuration_version
+  * last_configuration_execution_date
+  * last_configuration_updated_date
+}
+
+entity configuration_update_errors {
+  * id
+  --
+  * application_configuration_id
+  * error_date
+  * error_message
+}
+
+entity report_details {
+  * id
+  --
+  * report_id
+  * transmitter_id
+  * start_date
+  * total_requests
+}
+
+entity transmittter_endpoints {
+  * id
+  --
+  * report_detail_id
+  * name
+  * total_requests
+  * validation_errors
+}
+
+entity endpoint_details {
+  * transmitter_endpoint_id
+  * field
+  * error_type
+  --
+  * total_count
+  * fapi_list
+}
+
+reports }o-- report_details
+reports }o-- report_metrics
+reports }o-- unsupported_endpoints 
+reports ||-- application_configurations
+application_configurations }o-- configuration_update_errors
+report_details }o-- transmittter_endpoints
+transmittter_endpoints }o-- endpoint_details
+@enduml

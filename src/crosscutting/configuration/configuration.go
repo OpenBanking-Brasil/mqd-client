@@ -1,25 +1,27 @@
 package configuration
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 )
 
-const SERVER_ID_ENVIRONMENT = "SERVER_ORG_ID"             // constant  to store name of the server id environment variable
-const REPORT_EXECUTION_WINDOW = "REPORT_EXECUTION_WINDOW" // constant  to store name of the report execution time environment variable
-const LOGGING_LEVEL = "LOGGING_LEVEL"                     // constant  to store name of the Logging level environment variable
-const ENVIRONMENT = "ENVIRONMENT"                         // constant  to store name of the environment variable
+const SERVER_ID_ENVIRONMENT = "SERVER_ORG_ID" // constant  to store name of the server id environment variable
+const LOGGING_LEVEL = "LOGGING_LEVEL"         // constant  to store name of the Logging level environment variable
+const ENVIRONMENT = "ENVIRONMENT"             // constant  to store name of the environment variable
+const APPLICATION_MODE = "APPLICATION_MODE"   // constant  to store name of the application mode environment variable"
+const TRANSMITTER_MODE = "TRANSMITTER"        // TRANSMITTER Application mode Constant
+const RECEIVER_MODE = "RECEIVER"              // RECEIVER Application mode Constant
 
 var (
-	ServerId                 = "" // Organisation id for server
-	ClientID                 = "" // Organisation id for the client
-	ReportExecutiontimeFrame = 0  // TimeWindow for report execution
-	Environment              = "" // Indicates the actual Environment the app is running
-	ServerURL                = "" // Server URL to send the reports to
-	LastUpdatedDate          = time.Time{}
+	ServerId                = ""          // Organisation id for server
+	ClientID                = ""          // Organisation id for the client
+	Environment             = ""          // Indicates the actual Environment the app is running
+	ApplicationMode         = ""          // Indicates the actual Application Mode the app is running in (TRANSMISSOR, RECEPTOR)
+	LastReportExecutionDate = time.Time{} // Indicates the data of the last report execution
+	ServerURL               = ""          // Server URL to send the reports to
+	LastUpdatedDate         = time.Time{} // Indicates the data of the last report update
 )
 
 // loadEnvironmentSettings Loads settings specified as environment variables, or assigns default values
@@ -28,18 +30,15 @@ var (
 // @return
 func loadEnvironmentSettings(logger log.Logger) {
 	Environment = crosscutting.GetEnvironmentValue(logger, ENVIRONMENT, "PROD")
+	ApplicationMode = crosscutting.GetEnvironmentValue(logger, APPLICATION_MODE, "")
+	if !(ApplicationMode == TRANSMITTER_MODE || ApplicationMode == RECEIVER_MODE) {
+		logger.Fatal(nil, "APPLICATION_MODE not found, please set Environment Variable: ["+APPLICATION_MODE+"], as ["+TRANSMITTER_MODE+"] or ["+RECEIVER_MODE+"] ", "Configuration", "loadEnvironmentSettings")
+	}
 
 	if Environment != "PROD" {
 		setupDevEnvironment(logger)
 	} else {
 		logger.SetLoggingGlobalLevelFromString(crosscutting.GetEnvironmentValue(logger, LOGGING_LEVEL, "WARNING"))
-		intVar, err := strconv.Atoi(crosscutting.GetEnvironmentValue(logger, REPORT_EXECUTION_WINDOW, "10"))
-		if err != nil {
-			intVar = 30
-			logger.Log("REPORT_EXECUTION_WINDOW: Bad Format, Loading default: 30.", "Configuration", "loadEnvironmentSettings")
-		}
-
-		ReportExecutiontimeFrame = intVar
 		ClientID = crosscutting.GetEnvironmentValue(logger, SERVER_ID_ENVIRONMENT, "")
 		ServerURL = "https://mqd.openfinancebrasil.org.br"
 	}
@@ -54,10 +53,10 @@ func loadEnvironmentSettings(logger log.Logger) {
 // @params
 // @return
 func setupDevEnvironment(logger log.Logger) {
-	ReportExecutiontimeFrame = 1
 	logger.SetLoggingGlobalLevelFromString(crosscutting.GetEnvironmentValue(logger, LOGGING_LEVEL, "DEBUG"))
 	ClientID = crosscutting.GetEnvironmentValue(logger, SERVER_ID_ENVIRONMENT, "09b20d09-bf30-4497-938e-b0ead8ce9629")
-	ServerURL = "https://auth-gateway-dev.openfinancebrasil.net.br"
+	// ServerURL = "https://auth-gateway-dev.openfinancebrasil.net.br"
+	ServerURL = "http://localhost:8082"
 }
 
 // Initialize Loads all settings requered for the application to run, such as endpoint settings and environment settings

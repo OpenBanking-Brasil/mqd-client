@@ -1,9 +1,10 @@
-package apiserver
+package application
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -11,8 +12,7 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/monitoring"
-	"github.com/OpenBanking-Brasil/MQD_Client/queue"
-	"github.com/OpenBanking-Brasil/MQD_Client/validation/settings"
+	"github.com/OpenBanking-Brasil/MQD_Client/domain/models"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -24,10 +24,11 @@ type GenericError struct {
 
 // APIServer Contains the APIServer
 type APIServer struct {
-	pack           string       // Package name
-	logger         log.Logger   // Logger to be used
-	metricsHandler http.Handler // Handler for the metric endpoint
-	cm             *settings.ConfigurationManager
+	pack           string                // Package name
+	logger         log.Logger            // Logger to be used
+	metricsHandler http.Handler          // Handler for the metric endpoint
+	qm             *QueueManager         // Manager for the message queue
+	cm             *ConfigurationManager // Manager for application settings
 }
 
 // GetAPIServer Creates a new APIServer
@@ -37,11 +38,12 @@ type APIServer struct {
 // metricsHandler: Handler for the metric endpoint
 // @return
 // *APIServer: APIServer
-func GetAPIServer(logger log.Logger, metricsHandler http.Handler, cm *settings.ConfigurationManager) *APIServer {
+func GetAPIServer(logger log.Logger, metricsHandler http.Handler, qm *QueueManager, cm *ConfigurationManager) *APIServer {
 	return &APIServer{
 		pack:           "API",
 		logger:         logger,
 		metricsHandler: metricsHandler,
+		qm:             qm,
 		cm:             cm,
 	}
 }
@@ -50,12 +52,12 @@ func GetAPIServer(logger log.Logger, metricsHandler http.Handler, cm *settings.C
 // @author AB
 // @param
 // @return
-func (api *APIServer) StartServing() {
+func (this *APIServer) StartServing() {
 	r := mux.NewRouter()
-	r.Handle("/metrics", api.metricsHandler)
+	r.Handle("/metrics", this.metricsHandler)
 
 	// Validator for Responses
-	r.HandleFunc("/ValidateResponse", api.handleValidateResponseMessage).Name("ValidateResponse").Methods("POST")
+	r.HandleFunc("/ValidateResponse", this.handleValidateResponseMessage).Name("ValidateResponse").Methods("POST")
 
 	//// TODO handlers for specific endpoints were removed as /ValidateResponse will validate all requests
 	// for _, element := range configuration.GetEndpointSettings() {
@@ -63,10 +65,10 @@ func (api *APIServer) StartServing() {
 	// 	log.Log("handling endpoint: "+element.Endpoint, "API", "Main")
 	// }
 
-	port := crosscutting.GetEnvironmentValue(api.logger, "API_PORT", ":8080")
+	port := crosscutting.GetEnvironmentValue(this.logger, "API_PORT", ":8080")
 
-	api.logger.Log("Starting the server on port "+port, api.pack, "Main")
-	api.logger.Fatal(http.ListenAndServe(port, r), "", api.pack, "Main")
+	this.logger.Log("Starting the server on port "+port, this.pack, "Main")
+	this.logger.Fatal(http.ListenAndServe(port, r), "", this.pack, "Main")
 }
 
 // Func: updateReponseError Handles requests to the specified urls in the settings
@@ -76,7 +78,7 @@ func (api *APIServer) StartServing() {
 // genericError: Error to be returned
 // responseCode: HTTP Status code
 // @return
-func (api *APIServer) updateReponseError(w http.ResponseWriter, genericError GenericError, responseCode int) {
+func (this *APIServer) updateReponseError(w http.ResponseWriter, genericError GenericError, responseCode int) {
 	// Marshal the struct into JSON
 	jsonData, err := json.Marshal(genericError)
 	if err != nil {
@@ -94,17 +96,36 @@ func (api *APIServer) updateReponseError(w http.ResponseWriter, genericError Gen
 	w.Write(jsonData)
 }
 
+func (this *APIServer) mustValidate(endpointSetting *models.APIEndpointSetting) bool {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	value := r.Intn(100)
+	switch endpointSetting.Throughput {
+	case models.ExtremelyHighTroughput:
+		return value < this.cm.ConfigurationSettings.ValidationSettings.ExtremelyHighTroughputValidationRate
+	case models.HighTroughput:
+		return value < this.cm.ConfigurationSettings.ValidationSettings.HighTroughputValidationRate
+	case models.MediumTroughput:
+		return value < this.cm.ConfigurationSettings.ValidationSettings.MediumTroughputValidationRate
+	case models.LowTroughput:
+		return value < this.cm.ConfigurationSettings.ValidationSettings.LowTroughputValidationRate
+	case models.VeryLowTroughput:
+		return value < this.cm.ConfigurationSettings.ValidationSettings.VeryLowTroughputValidationRate
+	}
+
+	return true
+}
+
 // handleValidateResponseMessage Handles requests to the specified urls in the settings
 // @author AB
 // @params
 // w: Writer to create the response
 // r: Request received
 // @return
-func (api *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
+func (this *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *http.Request) {
 	genericError := &GenericError{}
 	startTime := time.Now()
 	monitoring.IncreaseRequestsReceived()
-	var msg queue.Message
+	var msg Message
 
 	// Read the Server Organization ID from the header
 	serverOrgId := r.Header.Get("serverOrgId")
@@ -112,7 +133,7 @@ func (api *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *ht
 	if err != nil {
 		monitoring.IncreaseBadRequestsReceived()
 		genericError.Message = "serverOrgId: Not found or bad format."
-		api.updateReponseError(w, *genericError, http.StatusBadRequest)
+		this.updateReponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
@@ -121,43 +142,55 @@ func (api *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *ht
 
 	// Validate the endpoint configuration exists
 	// endpointSettings := settings.GetEndpointSetting(endpointName)
-	endpointSettings := api.cm.GetEndpointSettingFromAPI(endpointName, api.logger)
+	endpointSettings, version := this.cm.GetEndpointSettingFromAPI(endpointName, this.logger)
 
 	if endpointSettings == nil {
-		monitoring.IncreaseBadEndpointsReceived(endpointName)
+		monitoring.IncreaseBadEndpointsReceived(endpointName, "N.A.", "Endpoint not supported")
 		genericError.Message = "endpointName: Not found or bad format."
-		api.updateReponseError(w, *genericError, http.StatusBadRequest)
+		this.updateReponseError(w, *genericError, http.StatusBadRequest)
 		return
+	} else {
+		// Read the Server Organization ID from the header
+		versionHeader := r.Header.Get("version")
+		if versionHeader != "" && versionHeader != version {
+			monitoring.IncreaseBadEndpointsReceived(endpointName, versionHeader, "Version not supported")
+			genericError.Message = "version: not supported for this endpoint: " + endpointName
+			this.updateReponseError(w, *genericError, http.StatusBadRequest)
+			return
+		}
 	}
 
-	// Read header and create a json object
-	headerMsg, err := api.buildHeaderMsg(&r.Header)
-	if err != nil {
-		api.logger.Error(err, "Error: handleValidateResponseMessage", "API", "handleValidateResponseMessage")
-		genericError.Message = "Error processing request."
-		api.updateReponseError(w, *genericError, http.StatusInternalServerError)
-		return
+	if this.mustValidate(endpointSettings) {
+		// Read header and create a json object
+		headerMsg, err := this.buildHeaderMsg(&r.Header)
+		if err != nil {
+			this.logger.Error(err, "Error: handleValidateResponseMessage", "API", "handleValidateResponseMessage")
+			genericError.Message = "Error processing request."
+			this.updateReponseError(w, *genericError, http.StatusInternalServerError)
+			return
+		}
+
+		// Read the body of the message
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			genericError.Message = "Failed to read request body."
+			this.updateReponseError(w, *genericError, http.StatusInternalServerError)
+			return
+		}
+
+		// Read the Server Organization ID from the header
+		msg.HeaderMessage = headerMsg
+		msg.Message = string(body)
+		msg.Endpoint = endpointName
+		msg.HTTPMethod = r.Method
+		msg.ServerID = serverOrgId
+		xFapiID := r.Header.Get("x-fapi-interaction-id")
+		msg.XFapiInteractionID = xFapiID
+
+		// Enqueue the message for processing using worker's enqueueMessage
+		this.qm.EnqueueMessage(&msg)
 	}
 
-	// Read the body of the message
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		genericError.Message = "Failed to read request body."
-		api.updateReponseError(w, *genericError, http.StatusInternalServerError)
-		return
-	}
-
-	// Read the Server Organization ID from the header
-	msg.HeaderMessage = headerMsg
-	msg.Message = string(body)
-	msg.Endpoint = endpointName
-	msg.HTTPMethod = r.Method
-	msg.ServerID = serverOrgId
-	xFapiID := r.Header.Get("x-fapi-interaction-id")
-	msg.XFapiInteractionID = xFapiID
-
-	// Enqueue the message for processing using worker's enqueueMessage
-	queue.EnqueueMessage(&msg)
 	monitoring.RecordResponseDuration(startTime)
 	fmt.Fprintf(w, "Message enqueued for processing!")
 }
@@ -168,10 +201,10 @@ func (api *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *ht
 // w: Writer to create the response
 // r: Request received
 // @return
-func (api *APIServer) handleMessages(w http.ResponseWriter, r *http.Request) {
+func (this *APIServer) handleMessages(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	monitoring.IncreaseRequestsReceived()
-	var msg queue.Message
+	var msg Message
 
 	// Get Route name, as the EndPoint Name
 	routeName := mux.CurrentRoute(r).GetName()
@@ -187,9 +220,9 @@ func (api *APIServer) handleMessages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Read header and create a json object
-	headerMsg, err := api.buildHeaderMsg(&r.Header)
+	headerMsg, err := this.buildHeaderMsg(&r.Header)
 	if err != nil {
-		api.logger.Error(err, "Error: handleMessages", "API", "handleMessages")
+		this.logger.Error(err, "Error: handleMessages", "API", "handleMessages")
 		return
 	}
 
@@ -207,7 +240,7 @@ func (api *APIServer) handleMessages(w http.ResponseWriter, r *http.Request) {
 	// msg.ClientID = serverOrgId
 
 	// Enqueue the message for processing using worker's enqueueMessage
-	queue.EnqueueMessage(&msg)
+	this.qm.EnqueueMessage(&msg)
 	monitoring.RecordResponseDuration(startTime)
 	fmt.Fprintf(w, "Message enqueued for processing!")
 }
@@ -219,10 +252,10 @@ func (api *APIServer) handleMessages(w http.ResponseWriter, r *http.Request) {
 // @return
 // string: JSON Message created
 // error: in case of parsing error
-func (api *APIServer) buildHeaderMsg(header *http.Header) (string, error) {
+func (this *APIServer) buildHeaderMsg(header *http.Header) (string, error) {
 	// Create a map to store header key-value pairs.
 	objectMap := make(map[string]interface{})
-	headermap := api.getHeaderMap(*header)
+	headermap := this.getHeaderMap(*header)
 	for k, v := range headermap {
 		objectMap[k] = v
 	}
@@ -243,7 +276,7 @@ func (api *APIServer) buildHeaderMsg(header *http.Header) (string, error) {
 // @return
 // string: JSON object created
 // error: Returs error in case a problem is found during the mapping
-func (api *APIServer) getHeaderMap(headers http.Header) map[string]interface{} {
+func (this *APIServer) getHeaderMap(headers http.Header) map[string]interface{} {
 	// Create a map to store header key-value pairs.
 	headerMap := make(map[string]interface{})
 

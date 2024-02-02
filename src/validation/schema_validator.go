@@ -34,24 +34,24 @@ func GetSchemaValidator(logger log.Logger, schema string) *SchemaValidator {
 // schemaPath: Path for the Schema file to be loaded
 // @return
 // Error if validation fails.
-func (v *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error) {
-	v.logger.Info("Starting Validation With Schema", v.pack, "Validate")
+func (this *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error) {
+	this.logger.Info("Starting Validation With Schema", this.pack, "Validate")
 
 	validationResult := ValidationResult{Valid: true}
-	if v.schema == "" {
+	if this.schema == "" {
 		return &validationResult, nil
 	}
 
-	loader := gojsonschema.NewStringLoader(v.schema)
+	loader := gojsonschema.NewStringLoader(this.schema)
 	documentLoader := gojsonschema.NewGoLoader(data)
 	result, err := gojsonschema.Validate(loader, documentLoader)
 	if err != nil {
-		v.logger.Error(err, "error validating message", v.pack, "Validate")
+		this.logger.Error(err, "error validating message", this.pack, "Validate")
 		return nil, err
 	}
 
 	if !result.Valid() {
-		validationResult.Errors = v.cleanErrors(result.Errors())
+		validationResult.Errors = this.cleanErrors(result.Errors())
 		validationResult.Valid = false
 		return &validationResult, nil
 	}
@@ -65,11 +65,11 @@ func (v *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error
 // error: List of errors generated during the validation
 // @return
 // ErrorDetail: List of errors found
-func (v *SchemaValidator) cleanErrors(errors []gojsonschema.ResultError) map[string][]string {
+func (this *SchemaValidator) cleanErrors(errors []gojsonschema.ResultError) map[string][]string {
 	result := make(map[string][]string)
 	for _, desc := range errors {
 		result[desc.Field()] = append(result[desc.Field()], desc.Description())
-		v.logger.Debug(desc.Field()+": "+desc.Description(), v.pack, "cleanErrors")
+		this.logger.Debug(desc.Field()+": "+desc.Description(), this.pack, "cleanErrors")
 	}
 
 	return result

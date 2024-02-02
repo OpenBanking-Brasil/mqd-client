@@ -1,4 +1,4 @@
-package server
+package services
 
 import (
 	"sync"
@@ -21,7 +21,7 @@ func GetReportServer(logger log.Logger) *ReportServer {
 	if singleton == nil {
 		lock.Lock()
 		defer lock.Unlock()
-		singleton = NewMQDServer(logger)
+		singleton = NewReportServerMQD(logger)
 	}
 
 	return &singleton

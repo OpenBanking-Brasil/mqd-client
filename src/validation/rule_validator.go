@@ -101,20 +101,20 @@ func (v *RuleValidator) applyValidationRule(fieldName, validationRule string, va
 // @return
 // ValidationRule: List of validation rules loaded
 // error in case of read error.
-func (v *RuleValidator) loadValidationRules(filename string) error {
+func (this *RuleValidator) loadValidationRules(filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		v.logger.Error(err, "error reading file", "Validator", "LoadValidationRules")
+		this.logger.Error(err, "error reading file", "Validator", "LoadValidationRules")
 		return err
 	}
 
 	var rules []ValidationRule
 	err = json.Unmarshal(data, &rules)
 	if err != nil {
-		v.logger.Error(err, "error unmarshal file", "Validator", "LoadValidationRules")
+		this.logger.Error(err, "error unmarshal file", "Validator", "LoadValidationRules")
 		return err
 	}
 
-	v.Rules = rules
+	this.Rules = rules
 	return nil
 }

@@ -27,15 +27,15 @@ type Measurement struct {
 }
 
 var (
-	requests                   metric.Float64Counter     // Stores the number of requests the application has received
-	endpoint_requests          metric.Float64Counter     // Stores the number of requests by endpoint / server
-	endpoint_validation_errors metric.Float64Counter     // Stores the number of validation errors by endpoint / server
-	mutex                      = sync.Mutex{}            // Mutex for thread-safe access
-	requestsReceived           = 0                       // Stores the number of requests received
-	badRequestsReceived        = 0                       // Stores the number of bad requests errors
-	measurements               = []Measurement{}         // Create slices to store memory and CPU usage values
-	responseTime               = []time.Duration{}       // Creates a slice to store the response time duration of requests
-	unsupportedEndpoints       = make(map[string]int, 0) // Stores the number of unsupported endpoints
+	requests                   metric.Float64Counter                // Stores the number of requests the application has received
+	endpoint_requests          metric.Float64Counter                // Stores the number of requests by endpoint / server
+	endpoint_validation_errors metric.Float64Counter                // Stores the number of validation errors by endpoint / server
+	mutex                      = sync.Mutex{}                       // Mutex for thread-safe access
+	requestsReceived           = 0                                  // Stores the number of requests received
+	badRequestsReceived        = 0                                  // Stores the number of bad requests errors
+	measurements               = []Measurement{}                    // Create slices to store memory and CPU usage values
+	responseTime               = []time.Duration{}                  // Creates a slice to store the response time duration of requests
+	unsupportedEndpoints       = make(map[string]map[string]int, 0) // Stores the number of unsupported endpoints
 )
 
 // startMemoryCalculator Starts the memmory calculation for observability
@@ -109,7 +109,7 @@ func StartOpenTelemetry() {
 	resources := resource.NewWithAttributes(
 		semconv.SchemaURL,
 		semconv.ServiceNameKey.String("Motor de Qualidade de dados"),
-		semconv.ServiceVersionKey.String("v0.0.1"),
+		semconv.ServiceVersionKey.String("v2.0.0"),
 	)
 
 	// The exporter embeds a default OpenTelemetry Reader and
@@ -203,10 +203,14 @@ func IncreaseBadRequestsReceived() {
 // @author AB
 // @params
 // @return
-func IncreaseBadEndpointsReceived(endpoint string) {
+func IncreaseBadEndpointsReceived(endpoint string, version string, errorMessage string) {
 	mutex.Lock()
 	badRequestsReceived++
-	unsupportedEndpoints[endpoint]++
+	if unsupportedEndpoints[endpoint] == nil {
+		unsupportedEndpoints[endpoint] = make(map[string]int)
+	}
+
+	unsupportedEndpoints[endpoint][version]++
 	mutex.Unlock()
 }
 
@@ -264,10 +268,10 @@ func GetAndCleanBadRequestsReceived() int {
 // @params
 // @return
 // int: Number of bad requests recevied in the period of time
-func GetAndCleanUnsupportedEndpoints() map[string]int {
+func GetAndCleanUnsupportedEndpoints() map[string]map[string]int {
 	mutex.Lock()
 	defer func() {
-		unsupportedEndpoints = make(map[string]int, 0)
+		unsupportedEndpoints = make(map[string]map[string]int, 0)
 		mutex.Unlock()
 	}()
 

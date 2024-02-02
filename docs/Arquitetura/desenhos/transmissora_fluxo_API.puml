@@ -1,13 +1,13 @@
 @startuml
-title Fluxo API - Motor Qualidade de Dados
+title TRANSMISSORA: Fluxo API - Motor Qualidade de Dados
 
 box "RECEPTORA" #B1DDF0
-  participant MQD #7EA6E0
   participant Service #7EA6E0
 end box
 
 box TRANSMISORA #D5E8D4
   participant API #7EA6E0
+  participant MQD #7EA6E0
 end box
 
 note over Service 
@@ -18,22 +18,23 @@ end note
 Service -> API
 API -> API: Process Request
 API -> Service: Response (Corpo + Cabecalho)
-  note over Service 
+  note over API 
      2. A solicitacao deve ser atualizada incluindo 
-     a resposta da solicitacao para a TRANSMISORA
+     a resposta enviada para a RECEPTORA
      (Corpo + Cabecalho), adicionando os parâmetros 
-     clientOrgID e endpointName ao cabecalho 
+     clientOrgID(ID RECEPTORA) e endpointName ao cabecalho 
   end note
-Service -> Service: UpdateRequest
+API -> API : UpdateRequest
 
-
-
-Service -> MQD: POST /ValidateResponse
+API -> MQD: POST /ValidateResponse
 note over MQD
   3. MQD valida as informacoes 
   do Cabecalho, se estiver completo, 
+  e se o Endpoint é suportado,
   adiciona a messagem na Fila
 end note
 MQD -> MQD: Queue Messsage
-MQD -> Service: OK
+MQD -> API : OK
+
+
 @enduml

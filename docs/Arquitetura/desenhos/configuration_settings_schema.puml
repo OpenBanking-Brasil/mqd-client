@@ -1,0 +1,41 @@
+@startjson
+!theme blueprint
+{
+  "<b>Version": "Actual version of the ConfigurationSettings(1.0.0)",
+  "<b>ValidationSettings": {
+    "<b>APIGroupSettings": [
+      {
+        "<b>group": "API Group settings(Dados Cadastrais e Transacionais)",
+        "<b>base_path": "Base folder path fo detail configuration files",
+        "<b>api_list": [
+          {
+            "<b>api": "FamilyType(Contas)",
+            "<b>base_path": "Base folder for this api(accounts)",
+            "<b>version": "Actual version for this Family Type(2.1.0)",
+            "<b>endpoint_base": "Url endpoint base (/accounts/v2)",
+            "<b>EndpointList":
+              [
+                {
+                     "<b>endpoint": "Endpoint name (/accounts)",
+                     "<b>body_schema": "JSON schema for this specific endpoint",
+                     "<b>throughput": "Expected troughtput for this endpoint (EXTEMELY_HIGH)"
+                }
+             ]
+          }
+        ]
+      }
+    ],
+    "<b>TransmitterValidationRate":"Validation rate for Transmitter Mode(100)",
+    "<b>ReceiverValidationRate":"Validation rate for Receiver Mode(100)",
+    "<b>ExtremelyHighTroughputValidationRate":"Validation rate for Extremely High Troughtput endpoints(100)",
+    "<b>HighTroughputValidationRate":"Validation rate for High Troughtput endpoints(100)",
+    "<b>MediumTroughputValidationRate":"Validation rate for Medium Troughtput endpoints(100)",
+    "<b>LowTroughputValidationRate":"Validation rate for Low Troughtput endpoints(100)",
+    "<b>VeryLowTroughputValidationRate":"Validation rate for Very Low Troughtput endpoints(100)"
+  },
+  "<b>ReportSettings": {
+    "<b>ReportExecutionWindow":"Time frame for report execution(20)",
+    "<b>SendOnReportNumber": "Number of reports to report on(1000000)"
+  }
+}
+@endjson
