@@ -13,12 +13,14 @@ type ApplicationMetrics struct {
 	Values []MetricObject // List of metrics with its values
 }
 
+// ConfigurationUpdateError Stores the information for the configuration update errors
 type ConfigurationUpdateError struct {
 	ApplicationConfigurationID uint
 	ErrorDate                  time.Time
 	ErrorMessage               string
 }
 
+// ConfigurationUpdateStatus Stores the information for the configuration update status
 type ConfigurationUpdateStatus struct {
 	ConfigurationVersion     string                     // Version of the configuration
 	LastExecutionDate        time.Time                  // Indicates the data execution of the configuration update
@@ -45,7 +47,7 @@ type UnsupportedEndpoint struct {
 
 // ServerSummary contains Summary of a specific server
 type ServerSummary struct {
-	ServerId        string            // Server identifier (UUID)
+	ServerID        string            // Server identifier (UUID)
 	TotalRequests   int               // Total number of requests
 	EndpointSummary []EndPointSummary // Summary of the endpoints requested
 }
@@ -71,7 +73,7 @@ type EndPointSummary struct {
 	Detail           []EndPointSummaryDetail // Detail of the errors
 }
 
-// Object report to be sent to the server
+// Report is the object to be sent to the server
 type Report struct {
 	Metrics                  ApplicationMetrics       // Metris of the application
 	ApplicationConfiguration ApplicationConfiguration // Configuration of the application on the Client Side

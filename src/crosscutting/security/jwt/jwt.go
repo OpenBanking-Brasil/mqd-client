@@ -11,7 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// JWKToken struct
+// JWKToken Struct that stores the properties oj a JWT token
 type JWKToken struct {
 	AccessToken      string `json:"access_token"`       // Access token to be used
 	TokenType        string `json:"token_type"`         // Type of token
@@ -21,12 +21,14 @@ type JWKToken struct {
 	Scope            string `json:"scope"`              // Scope of the token
 }
 
-// validateExpiration validates the expiration date of a jwt token
-// @author AB
-// @params
-// token: JWT token to be validated
-// @return
-// bool: true if token is still valid
+// ValidateExpiration validates the expiration date of a jwt token
+//
+// Parameters:
+//   - logger: Logger to be used
+//   - token: JWT token to be validated
+//
+// Returns:
+//   - bool: true if token is still valid
 func ValidateExpiration(logger log.Logger, token *JWKToken) bool {
 	logger.Info("Validating expiration", "jwt", "validateExpiration")
 
@@ -58,11 +60,14 @@ func ValidateExpiration(logger log.Logger, token *JWKToken) bool {
 }
 
 // GetTokenFromReader reads a jwt token from a reader
-// @author AB
-// @params
-// logger: Logger to be used
-// reader: Reader that contains the information of the token
-// @return
+//
+// Parameters:
+//   - logger: Logger to be used
+//   - reader: Reader that contains the information of the token
+//
+// Returns:
+//   - JWKToken: Token read from the reader
+//   - error: error if any
 func GetTokenFromReader(logger log.Logger, reader io.Reader) (*JWKToken, error) {
 	result := &JWKToken{}
 
@@ -82,12 +87,15 @@ func GetTokenFromReader(logger log.Logger, reader io.Reader) (*JWKToken, error) 
 	return result, nil
 }
 
-// GetTokenFromReader reads a jwt token from a reader
-// @author AB
-// @params
-// logger: Logger to be used
-// reader: Reader that contains the information of the token
-// @return
+// GetTokenFromBinary reads a jwt token from a reader
+//
+// Parameters:
+//   - logger: Logger to be used
+//   - data: Byte array with the token information
+//
+// Returns:
+//   - JWKToken: Token read from the reader
+//   - error: error if any
 func GetTokenFromBinary(logger log.Logger, data []byte) (*JWKToken, error) {
 	result := &JWKToken{}
 

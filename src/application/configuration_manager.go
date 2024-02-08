@@ -2,6 +2,8 @@ package application
 
 import (
 	"encoding/json"
+	"errors"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -12,19 +14,22 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/domain/services"
 )
 
-// const api_configuration_name = "api_configuration.json"
+const reportExecutionWindowEnv = "REPORT_EXECUTION_WINDOW" // constant  to store name of the report execution time environment variable
+const reportExecutionNumberEnv = "REPORT_EXECUTION_NUMBER" // constant  to store name of the report execution total of reports environment variable
 
 var (
 	configurationManagerSingleton *ConfigurationManager // Singleton for configuration management
 	configurationManagerMutex     = sync.Mutex{}        // Mutex for multi processing locks
 )
 
+// ConfigurationUpdateStatus stores the information of the configuration update process
 type ConfigurationUpdateStatus struct {
 	LastExecutionDate time.Time            // Indicates the data execution of the configuration update
 	LastUpdatedDate   time.Time            // Indicates the data of the las succesful configuration update
 	UpdateMessages    map[time.Time]string // List of error messages if any durin the update process
 }
 
+// ConfigurationManager is the manager in charge of handling configuration parameters of the application
 type ConfigurationManager struct {
 	crosscutting.OFBStruct
 	ConfigurationSettings     *models.ConfigurationSettings // Configuration settings for the application
@@ -32,8 +37,19 @@ type ConfigurationManager struct {
 	mqdServer                 services.ReportServer         // Report server for MQD
 	configurationUpdateStatus ConfigurationUpdateStatus     // Last status of the configuration update
 	environment               string
+	reportExecutionWindow     int
+	reportExecutionNumber     int
 }
 
+// NewConfigurationManager creates a new configuration manager for the application
+//
+// Parameters:
+//   - logger: logger to be used
+//   - mqdServer: MQD server to read the configuration files
+//   - environment: Current configured environment of the application
+//
+// Returns:
+//   - ConfigurationManager: new created configuration manager
 func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer, environment string) *ConfigurationManager {
 	if configurationManagerSingleton == nil {
 		configurationManagerSingleton = &ConfigurationManager{
@@ -46,6 +62,30 @@ func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer,
 			environment: environment,
 		}
 
+		reportExecutionWindow := crosscutting.GetEnvironmentValue(logger, reportExecutionWindowEnv, "")
+		if reportExecutionWindow != "" {
+			value, err := strconv.Atoi(reportExecutionWindow)
+			if err != nil {
+				logger.Fatal(errors.New("report execution window environment variable unvalid character"), "Error loading REPORT_EXECUTION_WINDOW", configurationManagerSingleton.Pack, "NewConfigurationManager")
+			}
+
+			configurationManagerSingleton.reportExecutionWindow = value
+		} else {
+			configurationManagerSingleton.reportExecutionWindow = 0
+		}
+
+		reportExecutionNumber := crosscutting.GetEnvironmentValue(logger, reportExecutionNumberEnv, "")
+		if reportExecutionNumber != "" {
+			value, err := strconv.Atoi(reportExecutionWindow)
+			if err != nil {
+				logger.Fatal(errors.New("report execution Number environment variable unvalid character"), "Error loading REPORT_EXECUTION_NUMBER", configurationManagerSingleton.Pack, "NewConfigurationManager")
+			}
+
+			configurationManagerSingleton.reportExecutionNumber = value
+		} else {
+			configurationManagerSingleton.reportExecutionNumber = 0
+		}
+
 		configurationManagerSingleton.configurationUpdateStatus.UpdateMessages = make(map[time.Time]string)
 	}
 
@@ -53,22 +93,31 @@ func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer,
 }
 
 // getAPIConfigurationFile returns configuration settings for the specified parameters
-func (this *ConfigurationManager) getAPIConfigurationFile(basePath string, apiPath string, apiVersion string) ([]models.APIEndpointSetting, error) {
+//
+// Parameters:
+//   - basePath: Base path of the api group
+//   - apiPath: Path for the specific API
+//   - apiVersion: api version of the endpoint
+//
+// Returns:
+//   - []models.APIEndpointSetting: Array with endpoint settings for each of the endpoints in the api
+//   - error: error if any
+func (cm *ConfigurationManager) getAPIConfigurationFile(basePath string, apiPath string, apiVersion string) ([]models.APIEndpointSetting, error) {
 	apiConfigurationpath := basePath + "//" + apiPath + "//" + apiVersion + "//response//"
 	apiConfigurationpath = strings.ReplaceAll(apiConfigurationpath, "ParameterData//", "")
 	apiConfigurationpath = strings.ReplaceAll(apiConfigurationpath, "//", "/")
 	fileName := apiConfigurationpath + "endpoints.json"
-	this.Logger.Debug("loading File Name: "+fileName, this.Pack, "getAPIConfigurationFile")
-	file, err := this.mqdServer.LoadAPIConfigurationFile(fileName)
+	cm.Logger.Debug("loading File Name: "+fileName, cm.Pack, "getAPIConfigurationFile")
+	file, err := cm.mqdServer.LoadAPIConfigurationFile(fileName)
 	if err != nil {
-		this.Logger.Error(err, "Error Reading Header schema file: "+fileName, this.Pack, "getAPIConfigurationFile")
+		cm.Logger.Error(err, "Error Reading Header schema file: "+fileName, cm.Pack, "getAPIConfigurationFile")
 		return nil, err
 	}
 
 	var result []models.APIEndpointSetting
 	err = json.Unmarshal(file, &result)
 	if err != nil {
-		this.Logger.Error(err, "error unmarshal file", this.Pack, "getAPIConfigurationFile")
+		cm.Logger.Error(err, "error unmarshal file", cm.Pack, "getAPIConfigurationFile")
 		return nil, err
 	}
 
@@ -76,24 +125,26 @@ func (this *ConfigurationManager) getAPIConfigurationFile(basePath string, apiPa
 }
 
 // updateValidationSchemas checks and updates the validation schemas for the endpoints
-// @author AB
-// @params
-// @return
-// error: error if any
-func (this *ConfigurationManager) updateValidationSettings(newSettings *models.ConfigurationSettings) error {
-	this.Logger.Info("Updating Validation Schemas.", this.Pack, "updateValidationSchemas")
+//
+// Parameters:
+//   - newSettings: new configuration settings to update
+//
+// Returns:
+//   - error: error if any
+func (cm *ConfigurationManager) updateValidationSettings(newSettings *models.ConfigurationSettings) error {
+	cm.Logger.Info("Updating Validation Schemas.", cm.Pack, "updateValidationSchemas")
 
-	if this.ConfigurationSettings == nil {
-		this.Logger.Info("Executing first load", this.Pack, "updateValidationSettings")
+	if cm.ConfigurationSettings == nil {
+		cm.Logger.Info("Executing first load", cm.Pack, "updateValidationSettings")
 		for i, newSet := range newSettings.ValidationSettings.APIGroupSettings {
-			for j, newAPI := range newSet.ApiList {
-				this.Logger.Info("Loading API: "+newAPI.API, this.Pack, "updateValidationSettings")
-				epList, err := this.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version)
+			for j, newAPI := range newSet.APIList {
+				cm.Logger.Info("Loading API: "+newAPI.API, cm.Pack, "updateValidationSettings")
+				epList, err := cm.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version)
 				if err != nil {
 					return err
 				}
 
-				newSettings.ValidationSettings.APIGroupSettings[i].ApiList[j].EndpointList = epList
+				newSettings.ValidationSettings.APIGroupSettings[i].APIList[j].EndpointList = epList
 			}
 		}
 
@@ -101,32 +152,32 @@ func (this *ConfigurationManager) updateValidationSettings(newSettings *models.C
 	}
 
 	for i, newSet := range newSettings.ValidationSettings.APIGroupSettings {
-		oldSet := this.ConfigurationSettings.ValidationSettings.GetGroupSetting(newSet.Group)
+		oldSet := cm.ConfigurationSettings.ValidationSettings.GetGroupSetting(newSet.Group)
 		if oldSet == nil {
-			for j, newAPI := range newSet.ApiList {
-				epList, err := this.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version)
+			for j, newAPI := range newSet.APIList {
+				epList, err := cm.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version)
 				if err != nil {
-					this.Logger.Error(err, "error loading api configuration file", this.Pack, "updateValidationSettings")
+					cm.Logger.Error(err, "error loading api configuration file", cm.Pack, "updateValidationSettings")
 					return err
 				}
 
-				newSettings.ValidationSettings.APIGroupSettings[i].ApiList[j].EndpointList = epList
+				newSettings.ValidationSettings.APIGroupSettings[i].APIList[j].EndpointList = epList
 			}
 		} else {
-			for j, newAPI := range newSet.ApiList {
-				this.Logger.Debug("Cehecking API: "+newAPI.API, this.Pack, "updateValidationSettings")
+			for j, newAPI := range newSet.APIList {
+				cm.Logger.Debug("Cehecking API: "+newAPI.API, cm.Pack, "updateValidationSettings")
 				oldAPI := oldSet.GetAPISetting(newAPI.API)
 				if oldAPI == nil || oldAPI.Version != newAPI.Version {
-					this.Logger.Info("Updating API: "+newAPI.API, this.Pack, "updateValidationSettings")
-					epList, err := this.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version)
+					cm.Logger.Info("Updating API: "+newAPI.API, cm.Pack, "updateValidationSettings")
+					epList, err := cm.getAPIConfigurationFile(newSet.BasePath, newAPI.BasePath, newAPI.Version)
 					if err != nil {
-						this.Logger.Error(err, "error loading api configuration file", this.Pack, "updateValidationSettings")
+						cm.Logger.Error(err, "error loading api configuration file", cm.Pack, "updateValidationSettings")
 						return err
 					}
 
-					newSettings.ValidationSettings.APIGroupSettings[i].ApiList[j].EndpointList = epList
+					newSettings.ValidationSettings.APIGroupSettings[i].APIList[j].EndpointList = epList
 				} else {
-					newSettings.ValidationSettings.APIGroupSettings[i].ApiList[j].EndpointList = oldAPI.EndpointList
+					newSettings.ValidationSettings.APIGroupSettings[i].APIList[j].EndpointList = oldAPI.EndpointList
 				}
 			}
 		}
@@ -136,100 +187,108 @@ func (this *ConfigurationManager) updateValidationSettings(newSettings *models.C
 }
 
 // updateConfiguration updates all configuration settings of the application
-// @author AB
-// @params
-// @return
-// error: error if any
-func (this *ConfigurationManager) updateConfiguration() error {
-	this.Logger.Info("Executing configuration update", this.Pack, "updateConfiguration")
-	this.configurationUpdateStatus.LastExecutionDate = time.Now()
-	cs, err := this.mqdServer.LoadConfigurationSettings()
+//
+// Parameters:
+//
+// Returns:
+//   - error: error if any
+func (cm *ConfigurationManager) updateConfiguration() error {
+	cm.Logger.Info("Executing configuration update", cm.Pack, "updateConfiguration")
+	cm.configurationUpdateStatus.LastExecutionDate = time.Now()
+	cs, err := cm.mqdServer.LoadConfigurationSettings()
 	if err != nil {
-		this.configurationUpdateStatus.UpdateMessages[time.Now()] = err.Error()
+		cm.configurationUpdateStatus.UpdateMessages[time.Now()] = err.Error()
 		return err
 	}
 
-	if this.ConfigurationSettings != nil && cs.Version == this.ConfigurationSettings.Version {
-		this.Logger.Info("Same configuration version was found.", this.Pack, "updateConfiguration")
+	if cm.ConfigurationSettings != nil && cs.Version == cm.ConfigurationSettings.Version {
+		cm.Logger.Info("Same configuration version was found.", cm.Pack, "updateConfiguration")
 		return nil
 	}
 
-	err = this.updateValidationSettings(cs)
+	err = cm.updateValidationSettings(cs)
 	if err != nil {
-		this.configurationUpdateStatus.UpdateMessages[this.configurationUpdateStatus.LastExecutionDate] = err.Error()
+		cm.configurationUpdateStatus.UpdateMessages[cm.configurationUpdateStatus.LastExecutionDate] = err.Error()
 		return err
 	}
 
 	configurationManagerMutex.Lock()
-	this.ConfigurationSettings = cs
-	this.configurationUpdateStatus.LastUpdatedDate = this.configurationUpdateStatus.LastExecutionDate
-	this.configurationUpdateStatus.UpdateMessages = make(map[time.Time]string)
-	this.Logger.Info("Configuration was updated to the latest version: "+this.ConfigurationSettings.Version, this.Pack, "updateConfiguration")
+	cm.ConfigurationSettings = cs
+	cm.configurationUpdateStatus.LastUpdatedDate = cm.configurationUpdateStatus.LastExecutionDate
+	cm.configurationUpdateStatus.UpdateMessages = make(map[time.Time]string)
+	cm.Logger.Info("Configuration was updated to the latest version: "+cm.ConfigurationSettings.Version, cm.Pack, "updateConfiguration")
 	configurationManagerMutex.Unlock()
-
-	this.configurationUpdateStatus.UpdateMessages[time.Now()] = "Error loading file."
-	this.configurationUpdateStatus.UpdateMessages[time.Now().Add(time.Duration(1)*time.Minute)] = "File Not found."
 
 	return nil
 }
 
-// getApiGroupSettings return the settings of API groups
-// @author AB
-// @params
-// @return
-// array of  APIGroupSetting found
-func (this *ConfigurationManager) getApiGroupSettings() []models.APIGroupSetting {
+// getAPIGroupSettings return the settings of API groups
+//
+// Parameters:
+//
+// Returns:
+//   - []models.APIGroupSetting: Array of APIGroupSetting found
+func (cm *ConfigurationManager) getAPIGroupSettings() []models.APIGroupSetting {
 	configurationManagerMutex.Lock()
 	defer func() {
 		configurationManagerMutex.Unlock()
 	}()
 
-	result := this.ConfigurationSettings.ValidationSettings.APIGroupSettings
+	result := cm.ConfigurationSettings.ValidationSettings.APIGroupSettings
 	return result
 }
 
-// StartResultsProcessor starts the periodic process that prints total results and clears them every 2 minutes
-// @author AB
-// @params
-// @return
-func (this *ConfigurationManager) StartUpdateProcess() {
-	if this.processRunning {
+// StartUpdateProcess starts the periodic process that prints total results and clears them every 2 minutes
+//
+// Parameters:
+//
+// Returns:
+func (cm *ConfigurationManager) StartUpdateProcess() {
+	if cm.processRunning {
 		return
 	}
 
-	this.processRunning = true
-	this.Logger.Info("Starting configuration update Process", this.Pack, "StartUpdateProcess")
+	cm.processRunning = true
+	cm.Logger.Info("Starting configuration update Process", cm.Pack, "StartUpdateProcess")
 	timeWindow := time.Duration(2) * time.Minute
-	if this.environment != "DEBUG" {
-		timeWindow = time.Duration(2) * time.Hour
+	if cm.environment != "DEBUG" {
+		timeWindow = time.Duration(4) * time.Hour
 	}
 
 	ticker := time.NewTicker(timeWindow)
 	for {
 		select {
 		case <-ticker.C:
-			this.updateConfiguration()
+			cm.updateConfiguration()
 		}
 	}
 }
 
-// Initialize starts the initial settings
-func (this *ConfigurationManager) Initialize() error {
-	return this.updateConfiguration()
+// Initialize executes initial settings configuration
+//
+// Parameters:
+//
+// Returns:
+//   - error: error if any
+func (cm *ConfigurationManager) Initialize() error {
+	return cm.updateConfiguration()
 }
 
-// getEndpointSettings loads a specific endpoint setting based on the endpoint name
-// @author AB
-// @params
-// endpointName: Name of the endpoint to lookup for settings
-// @return
-// EndPointSettings: settings found, empty if no endpoint found
-func (this *ConfigurationManager) GetEndpointSettingFromAPI(endpointName string, logger log.Logger) (*models.APIEndpointSetting, string) {
-	this.Logger.Info("loading Settings from API", this.Pack, "GetEndpointSettingFromAPI")
-	settings := this.getApiGroupSettings()
+// GetEndpointSettingFromAPI loads a specific endpoint setting based on the endpoint name
+//
+// Parameters:
+//   - endpointName: Name of the endpoint to lookup for settings
+//   - logger: logger object to be used
+//
+// Returns:
+//   - *models.APIEndpointSetting: error if any
+//   - string: version of the api
+func (cm *ConfigurationManager) GetEndpointSettingFromAPI(endpointName string, logger log.Logger) (*models.APIEndpointSetting, string) {
+	cm.Logger.Info("loading Settings from API", cm.Pack, "GetEndpointSettingFromAPI")
+	settings := cm.getAPIGroupSettings()
 
 	for _, setting := range settings {
-		for _, api := range setting.ApiList {
+		for _, api := range setting.APIList {
 			if strings.Contains(strings.ToLower(endpointName), strings.ToLower(strings.TrimSpace(api.EndpointBase))) {
 				for _, endpoint := range api.EndpointList {
 					apiEndpointName := strings.ToLower(strings.TrimSpace(strings.TrimSpace(api.EndpointBase) + strings.TrimSpace(endpoint.Endpoint)))
@@ -245,30 +304,60 @@ func (this *ConfigurationManager) GetEndpointSettingFromAPI(endpointName string,
 	return nil, ""
 }
 
-func (this *ConfigurationManager) GetLastExecutionDate() time.Time {
-	return this.configurationUpdateStatus.LastExecutionDate
+// GetLastExecutionDate returns the las execution date
+//
+// Parameters:
+//
+// Returns:
+//   - time.Time: Last execution time
+func (cm *ConfigurationManager) GetLastExecutionDate() time.Time {
+	return cm.configurationUpdateStatus.LastExecutionDate
 }
 
-func (this *ConfigurationManager) GetLastUpdatedDate() time.Time {
-	return this.configurationUpdateStatus.LastUpdatedDate
+// GetLastUpdatedDate returns the las updated date
+//
+// Parameters:
+//
+// Returns:
+//   - time.Time: Last updated time
+func (cm *ConfigurationManager) GetLastUpdatedDate() time.Time {
+	return cm.configurationUpdateStatus.LastUpdatedDate
 }
 
-func (this *ConfigurationManager) GetUpdateMessages() map[time.Time]string {
-	return this.configurationUpdateStatus.UpdateMessages
+// GetUpdateMessages returns the list of update messages
+//
+// Parameters:
+//
+// Returns:
+//   - map: map[time.Time]string with the list of messages by date
+func (cm *ConfigurationManager) GetUpdateMessages() map[time.Time]string {
+	return cm.configurationUpdateStatus.UpdateMessages
 }
 
-func (this *ConfigurationManager) GetReportExecutionWindow() int {
-	if this.environment == "DEBUG" {
-		return 3
+// GetReportExecutionWindow returns the report execution window configured
+//
+// Parameters:
+//
+// Returns:
+//   - int: report execution window in minutes
+func (cm *ConfigurationManager) GetReportExecutionWindow() int {
+	if cm.reportExecutionWindow > 0 {
+		return cm.reportExecutionWindow
 	}
 
-	return this.ConfigurationSettings.ReportSettings.ReportExecutionWindow
+	return cm.ConfigurationSettings.ReportSettings.ReportExecutionWindow
 }
 
-func (this *ConfigurationManager) GetSendOnReportNumber() int {
-	if this.environment == "DEBUG" {
-		return 30
+// GetSendOnReportNumber returns the number of reports that should be sent
+//
+// Parameters:
+//
+// Returns:
+//   - int: number of reports to check
+func (cm *ConfigurationManager) GetSendOnReportNumber() int {
+	if cm.reportExecutionNumber > 0 {
+		return cm.reportExecutionNumber
 	}
 
-	return this.ConfigurationSettings.ReportSettings.SendOnReportNumber
+	return cm.ConfigurationSettings.ReportSettings.SendOnReportNumber
 }

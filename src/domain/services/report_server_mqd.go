@@ -23,18 +23,19 @@ const (
 
 // ReportServerMQD Struct has the information to connect to the central server and send the Report
 type ReportServerMQD struct {
-	API_DAO
+	RestAPI
 }
 
-// NewMQDServer Creates a new MQDServer
-// @author AB
-// @params
-// logger: Logger to be used
-// @return
-// MQDServer: Server created
+// NewReportServerMQD Creates a new MQDServer
+//
+// Parameters:
+//   - logger: Logger to be used
+//
+// Returns:
+//   - ReportServerMQD: Server created
 func NewReportServerMQD(logger log.Logger) *ReportServerMQD {
 	result := &ReportServerMQD{
-		API_DAO: API_DAO{
+		RestAPI: RestAPI{
 			OFBStruct: crosscutting.OFBStruct{
 				Pack:   "services.ReportServerMQD",
 				Logger: logger,
@@ -47,20 +48,21 @@ func NewReportServerMQD(logger log.Logger) *ReportServerMQD {
 }
 
 // SendReport Sends a report to the central server
-// @author AB
-// @param
-// report: Report to be sent
-// @return
-// error: Error if any
-func (this *ReportServerMQD) SendReport(report models.Report) error {
-	this.Logger.Info("Sending report to central Server", this.Pack, "sendReportToAPI")
+//
+// Parameters:
+//   - report: Report to be sent
+//
+// Returns:
+//   - error: Error if any
+func (rs *ReportServerMQD) SendReport(report models.Report) error {
+	rs.Logger.Info("Sending report to central Server", rs.Pack, "sendReportToAPI")
 
-	err := this.getJWKToken()
+	err := rs.getJWKToken()
 	if err != nil {
 		return err
 	}
 
-	err = this.postReport(report)
+	err = rs.postReport(report)
 	if err != nil {
 		return err
 	}
@@ -69,15 +71,16 @@ func (this *ReportServerMQD) SendReport(report models.Report) error {
 }
 
 // postReport sends the report to the server using required authorization
-// @author AB
-// @params
-// report: Report to send
-// @return
-// error: will be != of nil in case of error
-func (this *ReportServerMQD) postReport(report models.Report) error {
-	this.Logger.Info("Posting report", this.Pack, "postReport")
+//
+// Parameters:
+//   - report: Report to be sent
+//
+// Returns:
+//   - error: Error if any
+func (rs *ReportServerMQD) postReport(report models.Report) error {
+	rs.Logger.Info("Posting report", rs.Pack, "postReport")
 
-	httpClient := this.getHttpClient()
+	httpClient := rs.getHTTPClient()
 
 	requestBody, err := json.Marshal(report)
 	if err != nil {
@@ -92,19 +95,19 @@ func (this *ReportServerMQD) postReport(report models.Report) error {
 	}
 
 	// Set the Authorization header with your token
-	req.Header.Set("Authorization", "Bearer "+this.token.AccessToken)
+	req.Header.Set("Authorization", "Bearer "+rs.token.AccessToken)
 
 	// Send the request
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		this.Logger.Error(err, "Error sending report.", this.Pack, "postReport")
+		rs.Logger.Error(err, "Error sending report.", rs.Pack, "postReport")
 		return err
 	}
 	defer resp.Body.Close()
 
 	// Check the response status code
 	if resp.StatusCode != http.StatusOK {
-		this.Logger.Warning("Error sending report, Status code: "+fmt.Sprint(resp.StatusCode), this.Pack, "postReport")
+		rs.Logger.Warning("Error sending report, Status code: "+fmt.Sprint(resp.StatusCode), rs.Pack, "postReport")
 	} else {
 		// Read the body of the message
 		body, err := io.ReadAll(resp.Body)
@@ -112,23 +115,38 @@ func (this *ReportServerMQD) postReport(report models.Report) error {
 			return err
 		}
 
-		this.Logger.Info(string(body), this.Pack, "postReport")
+		rs.Logger.Info(string(body), rs.Pack, "postReport")
 	}
 
 	return nil
 }
 
-func (this *ReportServerMQD) LoadAPIConfigurationFile(filePath string) ([]byte, error) {
-	this.Logger.Info("Loading API configuration", this.Pack, "loadAPIConfiguration")
+// LoadAPIConfigurationFile Loads a json configuration file from the server
+//
+// Parameters:
+//   - filePath: Path for the file on the server
+//
+// Returns:
+//   - []byte: Byte array with the info
+//   - error: Error if any
+func (rs *ReportServerMQD) LoadAPIConfigurationFile(filePath string) ([]byte, error) {
+	rs.Logger.Info("Loading API configuration", rs.Pack, "loadAPIConfiguration")
 	serverPath := configuration.ServerURL + settingsPath + "/" + filePath
-	return this.executeGet(serverPath, 3)
+	return rs.executeGet(serverPath, 3)
 }
 
-func (this *ReportServerMQD) LoadConfigurationSettings() (*models.ConfigurationSettings, error) {
-	this.Logger.Info("Loading ConfigurationSettings", this.Pack, "LoadConfigurationSettings")
+// LoadConfigurationSettings Loads the main configuration file for the application
+//
+// Parameters:
+//
+// Returns:
+//   - ConfigurationSettings: configuration file found on the server
+//   - error: Error if any
+func (rs *ReportServerMQD) LoadConfigurationSettings() (*models.ConfigurationSettings, error) {
+	rs.Logger.Info("Loading ConfigurationSettings", rs.Pack, "LoadConfigurationSettings")
 	serverPath := configuration.ServerURL + settingsPath + "/" + configurationSettingsFile
 
-	body, err := this.executeGet(serverPath, 3)
+	body, err := rs.executeGet(serverPath, 3)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +154,7 @@ func (this *ReportServerMQD) LoadConfigurationSettings() (*models.ConfigurationS
 	var result models.ConfigurationSettings
 	err = json.Unmarshal(body, &result)
 	if err != nil {
-		this.Logger.Error(err, "error unmarshal file", this.Pack, "loadAPIConfiguration")
+		rs.Logger.Error(err, "error unmarshal file", rs.Pack, "loadAPIConfiguration")
 		return nil, err
 	}
 

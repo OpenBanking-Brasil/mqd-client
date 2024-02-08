@@ -19,7 +19,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
 )
 
-// Structure to store the different system metrics
+// Measurement is a Structure to store the different system metrics
 type Measurement struct {
 	Timestamp time.Time // Time stamp of the metric
 	Memory    uint64    // memmory value for this timestamp
@@ -27,21 +27,22 @@ type Measurement struct {
 }
 
 var (
-	requests                   metric.Float64Counter                // Stores the number of requests the application has received
-	endpoint_requests          metric.Float64Counter                // Stores the number of requests by endpoint / server
-	endpoint_validation_errors metric.Float64Counter                // Stores the number of validation errors by endpoint / server
-	mutex                      = sync.Mutex{}                       // Mutex for thread-safe access
-	requestsReceived           = 0                                  // Stores the number of requests received
-	badRequestsReceived        = 0                                  // Stores the number of bad requests errors
-	measurements               = []Measurement{}                    // Create slices to store memory and CPU usage values
-	responseTime               = []time.Duration{}                  // Creates a slice to store the response time duration of requests
-	unsupportedEndpoints       = make(map[string]map[string]int, 0) // Stores the number of unsupported endpoints
+	requests                 metric.Float64Counter                // Stores the number of requests the application has received
+	endpointRequests         metric.Float64Counter                // Stores the number of requests by endpoint / server
+	endpointValidationErrors metric.Float64Counter                // Stores the number of validation errors by endpoint / server
+	mutex                    = sync.Mutex{}                       // Mutex for thread-safe access
+	requestsReceived         = 0                                  // Stores the number of requests received
+	badRequestsReceived      = 0                                  // Stores the number of bad requests errors
+	measurements             = []Measurement{}                    // Create slices to store memory and CPU usage values
+	responseTime             = []time.Duration{}                  // Creates a slice to store the response time duration of requests
+	unsupportedEndpoints     = make(map[string]map[string]int, 0) // Stores the number of unsupported endpoints
 )
 
 // startMemoryCalculator Starts the memmory calculation for observability
-// @author AB
-// @params
-// @return
+//
+// Parameters:
+//
+// Returns:
 func startMemoryCalculator() {
 	// Specify the duration for which you want to collect memory statistics in each interval
 	collectionDuration := 1 * time.Minute // Change this as needed
@@ -71,10 +72,12 @@ func startMemoryCalculator() {
 }
 
 // calculateAverageMemory calculates the average memory usage from a slice of measurements.
-// @author AB
-// @params
-// measurements: Lists of measurements to calculate the average
-// @return
+//
+// Parameters:
+//   - measurements: Lists of measurements to calculate the average
+//
+// Returns:
+//   - uint64: Average memmory used
 func calculateAverageMemory(measurements []Measurement) uint64 {
 	if len(measurements) == 0 {
 		return 0
@@ -87,10 +90,11 @@ func calculateAverageMemory(measurements []Measurement) uint64 {
 }
 
 // collectCPUUsage collects the current CPU usage as a percentage.
-// @author AB
-// @params
-// @return
-// float64: Current value of CPU usage
+//
+// Parameters:
+//
+// Returns:
+//   - float64: Average CPU used
 func collectCPUUsage() float64 {
 	// You would need to implement the code to collect CPU usage here.
 	// This could involve using external tools or libraries depending on your platform.
@@ -138,14 +142,14 @@ func StartOpenTelemetry() {
 	)
 
 	// This is the equivalent of prometheus.NewCounterVec
-	endpoint_requests, err = meter.Float64Counter(
+	endpointRequests, err = meter.Float64Counter(
 		"endpoint_requests",
 		metric.WithDescription("Endpoint Requests by Server"),
 		metric.WithUnit("requests"),
 	)
 
 	// This is the equivalent of prometheus.NewCounterVec
-	endpoint_validation_errors, err = meter.Float64Counter(
+	endpointValidationErrors, err = meter.Float64Counter(
 		"endpoint_validation_errors",
 		metric.WithDescription("Endpoint validation errors by Server"),
 		metric.WithUnit("errors"),
@@ -199,10 +203,14 @@ func IncreaseBadRequestsReceived() {
 	mutex.Unlock()
 }
 
-// IncreaseBadRequestsReceived increses the number of bad requests received metric
-// @author AB
-// @params
-// @return
+// IncreaseBadEndpointsReceived increses the number of bad requests received metric
+//
+// Parameters:
+//   - endpoint: Endpoint name
+//   - errorMessage: API Version of the endpoint
+//   - float64: Error message to record
+//
+// Returns:
 func IncreaseBadEndpointsReceived(endpoint string, version string, errorMessage string) {
 	mutex.Lock()
 	badRequestsReceived++
@@ -216,18 +224,19 @@ func IncreaseBadEndpointsReceived(endpoint string, version string, errorMessage 
 
 // IncreaseValidationResult increses the number validation result for a specific server / endpoint, if the validation is false
 // endpoint_validation_errors will also be increased
-// @author AB
-// @params
-// serverid: IIdentifier of the server
-// endpointName: Nmae of the endpoint
-// valid: Validation result
-// @return
-func IncreaseValidationResult(serverId string, endpointName string, valid bool) {
+//
+// Parameters:
+//   - serveriD: Identifier of the server
+//   - endpointName: Nmae of the endpoint
+//   - valid: Validation result
+//
+// Returns:
+func IncreaseValidationResult(serverID string, endpointName string, valid bool) {
 	mutex.Lock()
 
-	endpoint_requests.Add(context.Background(), 1, metric.WithAttributes(attribute.Key("server.name").String(serverId), attribute.Key("endpoint").String(endpointName)))
+	endpointRequests.Add(context.Background(), 1, metric.WithAttributes(attribute.Key("server.name").String(serverID), attribute.Key("endpoint").String(endpointName)))
 	if !valid {
-		endpoint_validation_errors.Add(context.Background(), 1, metric.WithAttributes(attribute.Key("server.name").String(serverId), attribute.Key("endpoint").String(endpointName)))
+		endpointValidationErrors.Add(context.Background(), 1, metric.WithAttributes(attribute.Key("server.name").String(serverID), attribute.Key("endpoint").String(endpointName)))
 	}
 
 	mutex.Unlock()
@@ -263,11 +272,13 @@ func GetAndCleanBadRequestsReceived() int {
 	return badRequestsReceived
 }
 
-// GetAndCleanBadRequestsReceived returns and cleans the lists of bad requests
-// @author AB
-// @params
-// @return
-// int: Number of bad requests recevied in the period of time
+// GetAndCleanUnsupportedEndpoints returns and cleans the lists of bad requests
+// endpoint_validation_errors will also be increased
+//
+// Parameters:
+//
+// Returns:
+//   - map: map[string]map[string]int Number of bad requests recevied in the period of time by endpoint and version
 func GetAndCleanUnsupportedEndpoints() map[string]map[string]int {
 	mutex.Lock()
 	defer func() {

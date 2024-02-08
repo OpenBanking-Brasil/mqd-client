@@ -2,7 +2,6 @@ package services
 
 import (
 	"bytes"
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
@@ -20,23 +19,23 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-type AuthenticationType int
+//
+// type AuthenticationType int
 
-const (
-	NoToken     AuthenticationType = iota // Indicates no authentication needed
-	ApiToken                              // Indicates authentication using Api Token
-	BearerToken                           // Indicates authentication using Bearer Token
-)
+// const (
+// 	NoToken     AuthenticationType = iota // Indicates no authentication needed
+// 	ApiToken                              // Indicates authentication using Api Token
+// 	BearerToken                           // Indicates authentication using Bearer Token
+// )
 
-// API_DAO is the struct to handle connections to APIs
-type API_DAO struct {
+// RestAPI is the struct to handle connections to APIs
+type RestAPI struct {
 	crosscutting.OFBStruct               // Base structure
-	client                 *http.Client  //Client to be used to access the API
+	client                 *http.Client  // Client to be used to access the API
 	apiToken               string        // secure token (if needed)
 	token                  *jwt.JWKToken // Token used by the server
 	needsCertificates      bool          // Indicates if certificates are needed for mTLS
-	// certificates           tls.Certificate // Certificates to be used during server connection
-	clientID string
+	clientID               string
 }
 
 // executeRequest executes a request to the API
@@ -46,11 +45,11 @@ type API_DAO struct {
 // @return
 // Byte array with the result id success
 // error if any
-func (this *API_DAO) executeRequest(url string) ([]byte, *errorhandling.ErrorResponse) {
-	this.Logger.Debug("Executing request: "+url, this.Pack, "executeRequest")
+func (ad *RestAPI) executeRequest(url string) ([]byte, *errorhandling.ErrorResponse) {
+	ad.Logger.Debug("Executing request: "+url, ad.Pack, "executeRequest")
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		this.Logger.Error(err, "There was an error creating the request", this.Pack, "executeRequest")
+		ad.Logger.Error(err, "There was an error creating the request", ad.Pack, "executeRequest")
 		return nil, &errorhandling.ErrorResponse{
 			Error:            "Error creating the request",
 			ErrorDescription: "There was an error creating the request",
@@ -58,13 +57,13 @@ func (this *API_DAO) executeRequest(url string) ([]byte, *errorhandling.ErrorRes
 		}
 	}
 
-	// if this.needsAuthorization {
-	// 	req.Header.Set("Authorization", "Api-Token "+this.apiToken)
+	// if ad.needsAuthorization {
+	// 	req.Header.Set("Authorization", "Api-Token "+ad.apiToken)
 	// }
 
-	resp, err := this.client.Do(req)
+	resp, err := ad.client.Do(req)
 	if err != nil {
-		this.Logger.Error(err, "There was an error executing the request", this.Pack, "executeRequest")
+		ad.Logger.Error(err, "There was an error executing the request", ad.Pack, "executeRequest")
 		return nil, &errorhandling.ErrorResponse{
 			Error:            "Error executing the request",
 			ErrorDescription: "There was an error while executing the request",
@@ -75,7 +74,7 @@ func (this *API_DAO) executeRequest(url string) ([]byte, *errorhandling.ErrorRes
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		this.Logger.Error(err, "There was an error while reading the response body", this.Pack, "executeRequest")
+		ad.Logger.Error(err, "There was an error while reading the response body", ad.Pack, "executeRequest")
 		return nil, &errorhandling.ErrorResponse{
 			Error:            "Error reading the request",
 			ErrorDescription: "There was an error reading the request body",
@@ -84,8 +83,8 @@ func (this *API_DAO) executeRequest(url string) ([]byte, *errorhandling.ErrorRes
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		this.Logger.Warning("Status code not expected: "+http.StatusText(resp.StatusCode), this.Pack, "executeRequest")
-		this.Logger.Debug("Body: "+string(body), this.Pack, "executeRequest")
+		ad.Logger.Warning("Status code not expected: "+http.StatusText(resp.StatusCode), ad.Pack, "executeRequest")
+		ad.Logger.Debug("Body: "+string(body), ad.Pack, "executeRequest")
 		return nil, &errorhandling.ErrorResponse{
 			Error:            "There was an error during the request",
 			ErrorDescription: "Unexpected status code :" + http.StatusText(resp.StatusCode),
@@ -104,26 +103,26 @@ func (this *API_DAO) executeRequest(url string) ([]byte, *errorhandling.ErrorRes
 // body: body of the request
 // @return
 // error if any
-func (this *API_DAO) executeMethod(method string, url string, body []byte) *errorhandling.ErrorResponse {
-	this.Logger.Debug("Id URL: "+url, this.Pack, "executeMethod")
-	this.Logger.Debug("monitor Body: "+string(body), this.Pack, "executeMethod")
+func (ad *RestAPI) executeMethod(method string, url string, body []byte) *errorhandling.ErrorResponse {
+	ad.Logger.Debug("Id URL: "+url, ad.Pack, "executeMethod")
+	ad.Logger.Debug("monitor Body: "+string(body), ad.Pack, "executeMethod")
 
 	req, err := http.NewRequest(method, url, bytes.NewReader(body))
 	if err != nil {
-		this.Logger.Error(err, "Error creating server request", this.Pack, "executeMethod")
+		ad.Logger.Error(err, "Error creating server request", ad.Pack, "executeMethod")
 		return &errorhandling.ErrorResponse{
 			MainError: err,
 		}
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	// if this.needsAuthorization {
-	// 	req.Header.Set("Authorization", "Api-Token "+this.apiToken)
+	// if ad.needsAuthorization {
+	// 	req.Header.Set("Authorization", "Api-Token "+ad.apiToken)
 	// }
 
-	resp, err := this.client.Do(req)
+	resp, err := ad.client.Do(req)
 	if err != nil {
-		this.Logger.Error(err, "Error executing server request", this.Pack, "executeMethod")
+		ad.Logger.Error(err, "Error executing server request", ad.Pack, "executeMethod")
 		return &errorhandling.ErrorResponse{
 			MainError: err,
 		}
@@ -132,7 +131,7 @@ func (this *API_DAO) executeMethod(method string, url string, body []byte) *erro
 
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		this.Logger.Error(err, "Error Reading server Response Body", this.Pack, "executeMethod")
+		ad.Logger.Error(err, "Error Reading server Response Body", ad.Pack, "executeMethod")
 		return &errorhandling.ErrorResponse{
 			Error:            "Error reading the request",
 			ErrorDescription: "There was an error reading the request body",
@@ -141,10 +140,10 @@ func (this *API_DAO) executeMethod(method string, url string, body []byte) *erro
 	}
 
 	if resp.StatusCode >= 300 {
-		this.Logger.Warning("Status code not expected: "+strconv.Itoa(resp.StatusCode), this.Pack, "executeMethod")
-		this.Logger.Warning("Request Body: "+string(body), this.Pack, "executeMethod")
-		this.Logger.Warning("Response Body: "+string(responseBody), this.Pack, "executeMethod")
-		this.Logger.Panic("Status not expected.", this.Pack, "executeMethod")
+		ad.Logger.Warning("Status code not expected: "+strconv.Itoa(resp.StatusCode), ad.Pack, "executeMethod")
+		ad.Logger.Warning("Request Body: "+string(body), ad.Pack, "executeMethod")
+		ad.Logger.Warning("Response Body: "+string(responseBody), ad.Pack, "executeMethod")
+		ad.Logger.Panic("Status not expected.", ad.Pack, "executeMethod")
 		return &errorhandling.ErrorResponse{
 			MainError: fmt.Errorf("unexpected status code: %d", resp.StatusCode),
 		}
@@ -153,27 +152,27 @@ func (this *API_DAO) executeMethod(method string, url string, body []byte) *erro
 	return nil
 }
 
-func (this *API_DAO) getRequest(authenticationType AuthenticationType) (*resty.Request, error) {
-	// Create a Resty Client
-	client := resty.New()
-	request := client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).R()
-	switch authenticationType {
-	case NoToken:
-		return request, nil
-	case ApiToken:
-		request = request.SetAuthScheme("Api-Token").SetAuthToken(this.apiToken)
-	case BearerToken:
-		// err := this.getJWKToken()
-		// if err != nil {
-		// 	this.Logger.Error(err, "Error getting JWK Token", this.Pack, "getRequest")
-		// 	return request, err
-		// }
+// func (ad *API_DAO) getRequest(authenticationType AuthenticationType) (*resty.Request, error) {
+// 	// Create a Resty Client
+// 	client := resty.New()
+// 	request := client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).R()
+// 	switch authenticationType {
+// 	case NoToken:
+// 		return request, nil
+// 	case ApiToken:
+// 		request = request.SetAuthScheme("Api-Token").SetAuthToken(ad.apiToken)
+// 	case BearerToken:
+// 		// err := ad.getJWKToken()
+// 		// if err != nil {
+// 		// 	ad.Logger.Error(err, "Error getting JWK Token", ad.Pack, "getRequest")
+// 		// 	return request, err
+// 		// }
 
-		// request = request.SetAuthToken(this.token.AccessToken)
-	}
+// 		// request = request.SetAuthToken(ad.token.AccessToken)
+// 	}
 
-	return request, nil
-}
+// 	return request, nil
+// }
 
 // getFromAPI executes a request to the API and returns the indicated interface
 // @author AB
@@ -183,42 +182,42 @@ func (this *API_DAO) getRequest(authenticationType AuthenticationType) (*resty.R
 // result: object to be mapped with the response
 // @return
 // error if any
-func (this *API_DAO) getFromAPI(method string, url string, authenticationType AuthenticationType, result interface{}) *errorhandling.ErrorResponse {
-	request, err := this.getRequest(authenticationType)
-	if err != nil {
-		this.Logger.Error(err, "Error getting JWK Token", this.Pack, "getRequest")
-		return &errorhandling.ErrorResponse{
-			Error:            "Error loading the request",
-			ErrorDescription: "There was an error while loading the request",
-			MainError:        err,
-		}
-	}
+// func (ad *API_DAO) getFromAPI(method string, url string, authenticationType AuthenticationType, result interface{}) *errorhandling.ErrorResponse {
+// 	request, err := ad.getRequest(authenticationType)
+// 	if err != nil {
+// 		ad.Logger.Error(err, "Error getting JWK Token", ad.Pack, "getRequest")
+// 		return &errorhandling.ErrorResponse{
+// 			Error:            "Error loading the request",
+// 			ErrorDescription: "There was an error while loading the request",
+// 			MainError:        err,
+// 		}
+// 	}
 
-	resp, err := request.
-		SetResult(&result).
-		Execute(method, url)
-	if err != nil {
-		this.Logger.Error(err, "There was an error executing the request: "+url, this.Pack, "getFromAPI")
-		return &errorhandling.ErrorResponse{
-			Error:            "Error executing the request",
-			ErrorDescription: "There was an error while executing the request",
-			MainError:        err,
-		}
-	}
+// 	resp, err := request.
+// 		SetResult(&result).
+// 		Execute(method, url)
+// 	if err != nil {
+// 		ad.Logger.Error(err, "There was an error executing the request: "+url, ad.Pack, "getFromAPI")
+// 		return &errorhandling.ErrorResponse{
+// 			Error:            "Error executing the request",
+// 			ErrorDescription: "There was an error while executing the request",
+// 			MainError:        err,
+// 		}
+// 	}
 
-	if resp.StatusCode() >= 300 {
-		this.Logger.Warning("Status code not expected: "+strconv.Itoa(resp.StatusCode()), this.Pack, "getFromAPI")
-		this.Logger.Warning("For url: "+url, this.Pack, "getFromAPI")
-		this.Logger.Warning("Body: "+string(resp.Body()), this.Pack, "getFromAPI")
-		return &errorhandling.ErrorResponse{
-			Error:            "There was an error during the request",
-			ErrorDescription: "Unexpected status code :" + http.StatusText(resp.StatusCode()),
-			MainError:        errors.New("unexpected status code: " + strconv.Itoa(resp.StatusCode())),
-		}
-	}
+// 	if resp.StatusCode() >= 300 {
+// 		ad.Logger.Warning("Status code not expected: "+strconv.Itoa(resp.StatusCode()), ad.Pack, "getFromAPI")
+// 		ad.Logger.Warning("For url: "+url, ad.Pack, "getFromAPI")
+// 		ad.Logger.Warning("Body: "+string(resp.Body()), ad.Pack, "getFromAPI")
+// 		return &errorhandling.ErrorResponse{
+// 			Error:            "There was an error during the request",
+// 			ErrorDescription: "Unexpected status code :" + http.StatusText(resp.StatusCode()),
+// 			MainError:        errors.New("unexpected status code: " + strconv.Itoa(resp.StatusCode())),
+// 		}
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 // loadCertificates Loads certificates from environment variables
 // @author AB
@@ -226,8 +225,8 @@ func (this *API_DAO) getFromAPI(method string, url string, authenticationType Au
 // @return
 // error: Error if any
 // Response from server in case of success
-func (this *API_DAO) requestNewJWTToken() (*jwt.JWKToken, error) {
-	this.Logger.Info("Requesting new token", this.Pack, "requestNewJWTToken")
+func (ad *RestAPI) requestNewJWTToken() (*jwt.JWKToken, error) {
+	ad.Logger.Info("Requesting new token", ad.Pack, "requestNewJWTToken")
 
 	// Create a Resty client
 	client := resty.New()
@@ -238,8 +237,8 @@ func (this *API_DAO) requestNewJWTToken() (*jwt.JWKToken, error) {
 	params.Set("client_id", configuration.ClientID)
 	requestBody := params.Encode()
 
-	this.Logger.Debug("ServerURL:"+configuration.ServerURL+tokenPath, this.Pack, "requestNewJWTToken")
-	this.Logger.Debug("Body:"+requestBody, this.Pack, "requestNewJWTToken")
+	ad.Logger.Debug("ServerURL:"+configuration.ServerURL+tokenPath, ad.Pack, "requestNewJWTToken")
+	ad.Logger.Debug("Body:"+requestBody, ad.Pack, "requestNewJWTToken")
 
 	// Send the token request
 	response, err := client.R().
@@ -247,17 +246,17 @@ func (this *API_DAO) requestNewJWTToken() (*jwt.JWKToken, error) {
 		SetHeader("Content-Type", "application/x-www-form-urlencoded").
 		Post(configuration.ServerURL + tokenPath)
 	if err != nil {
-		this.Logger.Error(err, "Error creating request", this.Pack, "requestNewJWTToken")
+		ad.Logger.Error(err, "Error creating request", ad.Pack, "requestNewJWTToken")
 		return nil, err
 	}
 
 	var result *jwt.JWKToken
 	if response.StatusCode() == http.StatusOK {
-		result, _ = jwt.GetTokenFromBinary(this.Logger, response.Body())
+		result, _ = jwt.GetTokenFromBinary(ad.Logger, response.Body())
 	} else {
-		this.Logger.Warning("Request failed with status code: "+strconv.Itoa(response.StatusCode()), this.Pack, "requestNewJWTToken")
-		if this.Logger.GetLoggingGlobalLevel() == log.DebugLevel {
-			this.Logger.Warning("Response Body:"+string(response.Body()), this.Pack, "requestNewJWTToken")
+		ad.Logger.Warning("Request failed with status code: "+strconv.Itoa(response.StatusCode()), ad.Pack, "requestNewJWTToken")
+		if ad.Logger.GetLoggingGlobalLevel() == log.DebugLevel {
+			ad.Logger.Warning("Response Body:"+string(response.Body()), ad.Pack, "requestNewJWTToken")
 		}
 
 		return nil, errors.New("request failed with status code:" + strconv.Itoa(response.StatusCode()))
@@ -271,35 +270,35 @@ func (this *API_DAO) requestNewJWTToken() (*jwt.JWKToken, error) {
 // @params
 // @return
 // Error if any
-func (this *API_DAO) getJWKToken() error {
-	this.Logger.Info("Loading JWT token", this.Pack, "getJWKToken")
+func (ad *RestAPI) getJWKToken() error {
+	ad.Logger.Info("Loading JWT token", ad.Pack, "getJWKToken")
 
-	if this.token != nil && jwt.ValidateExpiration(this.Logger, this.token) {
-		this.Logger.Info("Token is valid, using previous token", this.Pack, "getJWKToken")
+	if ad.token != nil && jwt.ValidateExpiration(ad.Logger, ad.token) {
+		ad.Logger.Info("Token is valid, using previous token", ad.Pack, "getJWKToken")
 		return nil
 	}
 
-	this.Logger.Info("Token is invalid, Requesting new token", this.Pack, "getJWKToken")
+	ad.Logger.Info("Token is invalid, Requesting new token", ad.Pack, "getJWKToken")
 
-	token, err := this.requestNewJWTToken()
+	token, err := ad.requestNewJWTToken()
 	if err != nil {
-		this.Logger.Error(err, "Error sending request", this.Pack, "getJWKToken")
+		ad.Logger.Error(err, "Error sending request", ad.Pack, "getJWKToken")
 		return err
 	}
 
-	this.token = token
+	ad.token = token
 	return nil
 }
 
-// getHttpClient Returns a client configured to use certificates for mTLS communication
+// getHTTPClient Returns a client configured to use certificates for mTLS communication
 // @author AB
 // @return
 // http client: Client created with certificate info
-func (this *API_DAO) getHttpClient() *http.Client {
+func (ad *RestAPI) getHTTPClient() *http.Client {
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			// TLSClientConfig: &tls.Config{
-			// 	Certificates:       []tls.Certificate{this.certificates},
+			// 	Certificates:       []tls.Certificate{ad.certificates},
 			// 	InsecureSkipVerify: true,
 			// },
 		},
@@ -309,36 +308,36 @@ func (this *API_DAO) getHttpClient() *http.Client {
 }
 
 // executeGet returns the response body of a GET request
-func (this *API_DAO) executeGet(url string, reetryTimes int) ([]byte, error) {
-	this.Logger.Info("Executing Get Request", this.Pack, "executeGet")
-	this.Logger.Debug("URL: "+url, this.Pack, "executeGet")
-	httpClient := this.getHttpClient()
+func (ad *RestAPI) executeGet(url string, reetryTimes int) ([]byte, error) {
+	ad.Logger.Info("Executing Get Request", ad.Pack, "executeGet")
+	ad.Logger.Debug("URL: "+url, ad.Pack, "executeGet")
+	httpClient := ad.getHTTPClient()
 
 	// Create a new request
 	response, err := httpClient.Get(url)
 	if err != nil {
-		this.Logger.Error(err, "Error executing request", this.Pack, "executeGet")
+		ad.Logger.Error(err, "Error executing request", ad.Pack, "executeGet")
 		if reetryTimes > 0 {
-			this.Logger.Info("Retrying request", this.Pack, "executeGet")
+			ad.Logger.Info("Retrying request", ad.Pack, "executeGet")
 			time.Sleep(1 * time.Second)
-			return this.executeGet(url, reetryTimes-1)
+			return ad.executeGet(url, reetryTimes-1)
 		}
 
 		return nil, err
 	}
 
 	if response.StatusCode == http.StatusForbidden {
-		this.Logger.Warning("Forbidden status code", this.Pack, "executeGet")
+		ad.Logger.Warning("Forbidden status code", ad.Pack, "executeGet")
 		return nil, errors.New("Forbidden status code")
 	}
 
 	// Check the status code of the response
 	if response.StatusCode != http.StatusOK {
-		this.Logger.Warning("Unexpected status code: "+http.StatusText(response.StatusCode), this.Pack, "executeGet")
+		ad.Logger.Warning("Unexpected status code: "+http.StatusText(response.StatusCode), ad.Pack, "executeGet")
 		if reetryTimes > 0 {
-			this.Logger.Info("Retrying request", this.Pack, "executeGet")
+			ad.Logger.Info("Retrying request", ad.Pack, "executeGet")
 			time.Sleep(1 * time.Second)
-			return this.executeGet(url, reetryTimes-1)
+			return ad.executeGet(url, reetryTimes-1)
 		}
 		return nil, errors.New("invalid status code: " + strconv.Itoa(response.StatusCode))
 	}
@@ -348,13 +347,13 @@ func (this *API_DAO) executeGet(url string, reetryTimes int) ([]byte, error) {
 	// Read the response body
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
-		this.Logger.Error(err, "Error reading response body", this.Pack, "executeGet")
+		ad.Logger.Error(err, "Error reading response body", ad.Pack, "executeGet")
 		return nil, err
 	}
 
 	// Check the status code of the response
 	if strings.Contains(string(body), "NoSuchKey") {
-		this.Logger.Warning("configuration file not found.", this.Pack, "executeGet")
+		ad.Logger.Warning("configuration file not found.", ad.Pack, "executeGet")
 		return nil, errors.New("configuration file not found: " + url)
 	}
 

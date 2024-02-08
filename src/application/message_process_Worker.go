@@ -12,27 +12,31 @@ import (
 )
 
 var (
-	messageProcessorWorkerMutex = sync.Mutex{} // Mutex for multi processing locks
-	singletonMutex              = sync.Mutex{}
-	messageProcessorSingleton   *MessageProcessorWorker
+	messageProcessorWorkerMutex = sync.Mutex{}          // Mutex for multi processing locks
+	singletonMutex              = sync.Mutex{}          // Mutex for the singleton variable
+	messageProcessorSingleton   *MessageProcessorWorker // Message process singleton
 )
 
+// MessageProcessorWorker is in charge of processing the message requests
 type MessageProcessorWorker struct {
 	crosscutting.OFBStruct
-	receivedValues  map[string]int   // Stores the values for the received messages
-	validatedValues map[string]int   // Stores the values for the validated messages
-	resultProcessor *ResultProcessor // Result processor to be used by the package
-	cm              *ConfigurationManager
-	qm              *QueueManager
+	receivedValues  map[string]int        // Stores the values for the received messages
+	validatedValues map[string]int        // Stores the values for the validated messages
+	resultProcessor *ResultProcessor      // Result processor to be used by the package
+	cm              *ConfigurationManager // Configuration manager
+	qm              *QueueManager         // Queue manager to queue the messages
 }
 
 // GetMessageProcessorWorker returns a new message processor
-// @author AB
-// @params
-// logger: Logger to be used by the package
-// resultProcessor: Result processor to be used by the package
-// @return
-// MessageProcessorWorker: New message processor
+//
+// Parameters:
+//   - logger: Logger to be used by the package
+//   - resultProcessor: Result processor to be used by the package
+//   - qm: Queue manager
+//   - cm: Configuration manager
+//
+// Returns:
+//   - MessageProcessorWorker: New message processor
 func GetMessageProcessorWorker(logger log.Logger, resultProcessor *ResultProcessor, qm *QueueManager, cm *ConfigurationManager) *MessageProcessorWorker {
 	if messageProcessorSingleton == nil {
 		singletonMutex.Lock()
@@ -55,25 +59,26 @@ func GetMessageProcessorWorker(logger log.Logger, resultProcessor *ResultProcess
 }
 
 // processMessage Validates and creates a result of a specific message
-// @author AB
-// @params
-// msg: Message to be processed
-// @return
-func (this *MessageProcessorWorker) processMessage(msg *Message) {
+//
+// Parameters:
+//   - msg: Message to be processed
+//
+// Returns:
+func (mpw *MessageProcessorWorker) processMessage(msg *Message) {
 	messageProcessorWorkerMutex.Lock()
-	this.receivedValues[msg.Endpoint]++
+	mpw.receivedValues[msg.Endpoint]++
 	messageProcessorWorkerMutex.Unlock()
 
 	// endpointSettings := settings.GetEndpointSetting(msg.Endpoint)
-	endpointSettings, _ := this.cm.GetEndpointSettingFromAPI(msg.Endpoint, this.Logger)
+	endpointSettings, _ := mpw.cm.GetEndpointSettingFromAPI(msg.Endpoint, mpw.Logger)
 
 	if endpointSettings == nil {
-		this.Logger.Warning("Ignoring message with endpoint: "+msg.Endpoint, this.Pack, "processMessage")
+		mpw.Logger.Warning("Ignoring message with endpoint: "+msg.Endpoint, mpw.Pack, "processMessage")
 	} else {
-		vr, err := this.validateMessage(msg, endpointSettings)
+		vr, err := mpw.validateMessage(msg, endpointSettings)
 		if err != nil {
 			//// TODO handle error
-			this.Logger.Error(err, "Error during Validation", this.Pack, "processMessage")
+			mpw.Logger.Error(err, "Error during Validation", mpw.Pack, "processMessage")
 		} else {
 			// Create a message result entry
 			messageResult := MessageResult{
@@ -86,25 +91,26 @@ func (this *MessageProcessorWorker) processMessage(msg *Message) {
 			}
 
 			monitoring.IncreaseValidationResult(messageResult.ServerID, messageResult.Endpoint, messageResult.Result)
-			this.resultProcessor.AppendResult(&messageResult)
+			mpw.resultProcessor.AppendResult(&messageResult)
 		}
 
 		messageProcessorWorkerMutex.Lock()
-		this.validatedValues[msg.Endpoint]++
+		mpw.validatedValues[msg.Endpoint]++
 		messageProcessorWorkerMutex.Unlock()
 	}
 }
 
 // validateContentWithSchema Validates the content against a specific schema
-// @author AB
-// @params
-// content: Content to be validated
-// Schema: String of the JSON schema
-// validationResult: Result to be filled with details from the validation
-// @return
-// Error in case ther is a problem reading or validating the schema
-func (this *MessageProcessorWorker) validateContentWithSchema(content string, schema string, validationResult *validation.ValidationResult) error {
-	this.Logger.Info("Validating content with schema", this.Pack, "validateContentWithSchema")
+//
+// Parameters:
+//   - content: Content to be validated
+//   - schema: JSON schema to validate with
+//   - validationResult: Result to be filled with details from the validation
+//
+// Returns:
+//   - error: Error in case ther is a problem reading or validating the schema
+func (mpw *MessageProcessorWorker) validateContentWithSchema(content string, schema string, validationResult *validation.Result) error {
+	mpw.Logger.Info("Validating content with schema", mpw.Pack, "validateContentWithSchema")
 	// Create a dynamic structure from the Message content
 	var dynamicStruct validation.DynamicStruct
 	err := json.Unmarshal([]byte(content), &dynamicStruct)
@@ -113,11 +119,11 @@ func (this *MessageProcessorWorker) validateContentWithSchema(content string, sc
 		return err
 	}
 
-	val := validation.GetSchemaValidator(this.Logger, schema)
+	val := validation.GetSchemaValidator(mpw.Logger, schema)
 	valRes, err := val.Validate(dynamicStruct)
 	if err != nil {
 		validationResult.Valid = false
-		this.Logger.Error(err, "Validation error", this.Pack, "validateContentWithSchema")
+		mpw.Logger.Error(err, "Validation error", mpw.Pack, "validateContentWithSchema")
 		return err
 	}
 
@@ -133,25 +139,25 @@ func (this *MessageProcessorWorker) validateContentWithSchema(content string, sc
 }
 
 // ValidateMessage gets the payload on the message and validates its fields
-// @author AB
-// @params
-// msg: Message to be validated
-// settings: Endpoint configuration settings
-// @return
-// ValidationResult: Result of the validation for the specified message
-// error: error in case there is a problem during the validation
-// func (this *MessageProcessorWorker) validateMessage(msg *queue.Message, settings *settings.EndPointSetting) (*validation.ValidationResult, error) {
-func (this *MessageProcessorWorker) validateMessage(msg *Message, settings *models.APIEndpointSetting) (*validation.ValidationResult, error) {
-	this.Logger.Info("Validating message", this.Pack, "validateMessage")
-	validationResult := validation.ValidationResult{Valid: true, Errors: make(map[string][]string)}
+//
+// Parameters:
+//   - msg: Message to be validated
+//   - settings: Endpoint configuration settings
+//
+// Returns:
+//   - ValidationResult: Result of the validation for the specified message
+//   - error: error in case there is a problem during the validation
+func (mpw *MessageProcessorWorker) validateMessage(msg *Message, settings *models.APIEndpointSetting) (*validation.Result, error) {
+	mpw.Logger.Info("Validating message", mpw.Pack, "validateMessage")
+	validationResult := validation.Result{Valid: true, Errors: make(map[string][]string)}
 
-	err := this.validateContentWithSchema(msg.HeaderMessage, settings.JSONHeaderSchema, &validationResult)
+	err := mpw.validateContentWithSchema(msg.HeaderMessage, settings.JSONHeaderSchema, &validationResult)
 	if err != nil {
 		validationResult.Valid = false
 		return &validationResult, err
 	}
 
-	err = this.validateContentWithSchema(msg.Message, settings.JSONBodySchema, &validationResult)
+	err = mpw.validateContentWithSchema(msg.Message, settings.JSONBodySchema, &validationResult)
 	if err != nil {
 		validationResult.Valid = false
 		return &validationResult, err
@@ -168,17 +174,23 @@ func (this *MessageProcessorWorker) validateMessage(msg *Message, settings *mode
 }
 
 // worker is for starting the processing of the queued messages
-// @author AB
-func (this *MessageProcessorWorker) worker() {
-	for msg := range this.qm.GetQueue() {
-		this.processMessage(msg)
+//
+// Parameters:
+//
+// Returns:
+func (mpw *MessageProcessorWorker) worker() {
+	for msg := range mpw.qm.GetQueue() {
+		mpw.processMessage(msg)
 	}
 }
 
 // StartWorker is for starting the worker process
-// @author AB
-func (this *MessageProcessorWorker) StartWorker() {
-	go this.worker() // Start the worker Goroutine to process messages
+//
+// Parameters:
+//
+// Returns:
+func (mpw *MessageProcessorWorker) StartWorker() {
+	go mpw.worker() // Start the worker Goroutine to process messages
 
-	this.Logger.Log("Worker started.", this.Pack, "StartWorker")
+	mpw.Logger.Log("Worker started.", mpw.Pack, "StartWorker")
 }

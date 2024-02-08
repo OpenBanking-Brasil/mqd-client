@@ -1,0 +1,44 @@
+"filename", "language", "XML", "Go", "Makefile", "Go Module File", "Go Checksum File", "Markdown", "YAML", "comment", "blank", "total"
+"c:\Code\OFB\MQD\mqd-client\README.md", "Markdown", 0, 0, 0, 0, 0, 22, 0, 0, 11, 33
+"c:\Code\OFB\MQD\mqd-client\docs\Arquitetura\FLUXO_API.md", "Markdown", 0, 0, 0, 0, 0, 69, 0, 0, 9, 78
+"c:\Code\OFB\MQD\mqd-client\docs\Arquitetura\FLUXO_RESULTS.md", "Markdown", 0, 0, 0, 0, 0, 18, 0, 0, 4, 22
+"c:\Code\OFB\MQD\mqd-client\docs\Arquitetura\FLUXO_VALIDATION.md", "Markdown", 0, 0, 0, 0, 0, 13, 0, 0, 4, 17
+"c:\Code\OFB\MQD\mqd-client\docs\ENDPOINTS.md", "Markdown", 0, 0, 0, 0, 0, 29, 0, 0, 8, 37
+"c:\Code\OFB\MQD\mqd-client\docs\README.md", "Markdown", 0, 0, 0, 0, 0, 12, 0, 0, 5, 17
+"c:\Code\OFB\MQD\mqd-client\docs\specification\mqd-client-openapi.yml", "YAML", 0, 0, 0, 0, 0, 0, 101, 0, 3, 104
+"c:\Code\OFB\MQD\mqd-client\infra\README.md", "Markdown", 0, 0, 0, 0, 0, 23, 0, 0, 13, 36
+"c:\Code\OFB\MQD\mqd-client\infra\dockerfile\docker-compose.yaml", "YAML", 0, 0, 0, 0, 0, 0, 25, 0, 1, 26
+"c:\Code\OFB\MQD\mqd-client\src\Makefile", "Makefile", 0, 0, 13, 0, 0, 0, 0, 4, 4, 21
+"c:\Code\OFB\MQD\mqd-client\src\application\api_server.go", "Go", 0, 180, 0, 0, 0, 0, 0, 77, 41, 298
+"c:\Code\OFB\MQD\mqd-client\src\application\configuration_manager.go", "Go", 0, 203, 0, 0, 0, 0, 0, 28, 44, 275
+"c:\Code\OFB\MQD\mqd-client\src\application\message_process_Worker.go", "Go", 0, 116, 0, 0, 0, 0, 0, 43, 26, 185
+"c:\Code\OFB\MQD\mqd-client\src\application\queue_manager.go", "Go", 0, 21, 0, 0, 0, 0, 0, 7, 7, 35
+"c:\Code\OFB\MQD\mqd-client\src\application\result_processor.go", "Go", 0, 224, 0, 0, 0, 0, 0, 67, 38, 329
+"c:\Code\OFB\MQD\mqd-client\src\crosscutting\configuration\configuration.go", "Go", 0, 47, 0, 0, 0, 0, 0, 14, 10, 71
+"c:\Code\OFB\MQD\mqd-client\src\crosscutting\errorhandling\error.go", "Go", 0, 6, 0, 0, 0, 0, 0, 1, 2, 9
+"c:\Code\OFB\MQD\mqd-client\src\crosscutting\general.go", "Go", 0, 8, 0, 0, 0, 0, 0, 1, 3, 12
+"c:\Code\OFB\MQD\mqd-client\src\crosscutting\log\json_log.go", "Go", 0, 68, 0, 0, 0, 0, 0, 82, 17, 167
+"c:\Code\OFB\MQD\mqd-client\src\crosscutting\log\logger.go", "Go", 0, 28, 0, 0, 0, 0, 0, 11, 6, 45
+"c:\Code\OFB\MQD\mqd-client\src\crosscutting\log\logger_factory.go", "Go", 0, 14, 0, 0, 0, 0, 0, 5, 5, 24
+"c:\Code\OFB\MQD\mqd-client\src\crosscutting\monitoring\metrics.go", "Go", 0, 191, 0, 0, 0, 0, 0, 94, 40, 325
+"c:\Code\OFB\MQD\mqd-client\src\crosscutting\security\jwt\jwt.go", "Go", 0, 70, 0, 0, 0, 0, 0, 24, 18, 112
+"c:\Code\OFB\MQD\mqd-client\src\crosscutting\tools.go", "Go", 0, 21, 0, 0, 0, 0, 0, 11, 7, 39
+"c:\Code\OFB\MQD\mqd-client\src\domain\models\api_configuration_settings.go", "Go", 0, 54, 0, 0, 0, 0, 0, 1, 10, 65
+"c:\Code\OFB\MQD\mqd-client\src\domain\models\configuration_settings.go", "Go", 0, 10, 0, 0, 0, 0, 0, 2, 3, 15
+"c:\Code\OFB\MQD\mqd-client\src\domain\models\endpoint_settings.go", "Go", 0, 76, 0, 0, 0, 0, 0, 23, 18, 117
+"c:\Code\OFB\MQD\mqd-client\src\domain\models\report.go", "Go", 0, 60, 0, 0, 0, 0, 0, 9, 13, 82
+"c:\Code\OFB\MQD\mqd-client\src\domain\services\api_dao.go", "Go", 0, 248, 0, 0, 0, 0, 0, 65, 50, 363
+"c:\Code\OFB\MQD\mqd-client\src\domain\services\report_server.go", "Go", 0, 7, 0, 0, 0, 0, 0, 1, 3, 11
+"c:\Code\OFB\MQD\mqd-client\src\domain\services\report_server_factory.go", "Go", 0, 17, 0, 0, 0, 0, 0, 6, 6, 29
+"c:\Code\OFB\MQD\mqd-client\src\domain\services\report_server_mqd.go", "Go", 0, 94, 0, 0, 0, 0, 0, 25, 26, 145
+"c:\Code\OFB\MQD\mqd-client\src\go.mod", "Go Module File", 0, 0, 0, 43, 0, 0, 0, 0, 5, 48
+"c:\Code\OFB\MQD\mqd-client\src\go.sum", "Go Checksum File", 0, 0, 0, 0, 221, 0, 0, 0, 1, 222
+"c:\Code\OFB\MQD\mqd-client\src\main.go", "Go", 0, 68, 0, 0, 0, 0, 0, 11, 17, 96
+"c:\Code\OFB\MQD\mqd-client\src\validation\rule_validator.go", "Go", 0, 64, 0, 0, 0, 0, 0, 40, 17, 121
+"c:\Code\OFB\MQD\mqd-client\src\validation\schema_validator.go", "Go", 0, 45, 0, 0, 0, 0, 0, 21, 11, 77
+"c:\Code\OFB\MQD\mqd-client\src\validation\validator.go", "Go", 0, 8, 0, 0, 0, 0, 0, 1, 3, 12
+"c:\Code\OFB\MQD\mqd-client\tests\Functional-Responses.jmx", "XML", 5430, 0, 0, 0, 0, 0, 0, 0, 1, 5431
+"c:\Code\OFB\MQD\mqd-client\tests\PoC Tests.jmx", "XML", 148, 0, 0, 0, 0, 0, 0, 0, 1, 149
+"c:\Code\OFB\MQD\mqd-client\tests\performance.jmx", "XML", 253, 0, 0, 0, 0, 0, 0, 0, 1, 254
+"c:\Code\OFB\MQD\mqd-client\tests\performance_limited.jmx", "XML", 262, 0, 0, 0, 0, 0, 0, 0, 1, 263
+"Total", "-", 6093, 1948, 13, 43, 221, 186, 126, 674, 513, 9817

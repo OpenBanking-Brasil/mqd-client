@@ -13,22 +13,35 @@ type Message struct {
 // Buffered channel for message queue
 var messageQueue = make(chan *Message, 1000)
 
+// QueueManager is in charge of managing the queue for messages to process
 type QueueManager struct {
 }
 
+// GetQueueManager returns a new queue manager
+//
+// Parameters:
+//
+// Returns:
+//   - *QueueManager: New queue manager
 func GetQueueManager() *QueueManager {
 	return &QueueManager{}
 }
 
 // EnqueueMessage is for queueing the message
-// @author AB
-// @params
-// msg: Message to be queued
-// @return
-func (q *QueueManager) EnqueueMessage(msg *Message) {
+//
+// Parameters:
+//   - msg: Message to be queued
+// Returns:
+func (qm *QueueManager) EnqueueMessage(msg *Message) {
 	messageQueue <- msg
 }
 
-func (q *QueueManager) GetQueue() chan *Message {
+// GetQueue returns the list of messages in the queue
+//
+// Parameters:
+//
+// Returns:
+//   - chan *Message: List of messages in the queue
+func (qm *QueueManager) GetQueue() chan *Message {
 	return messageQueue
 }

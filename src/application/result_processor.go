@@ -34,7 +34,7 @@ type EndpointSummary struct {
 	InvalidResults int    // Total number of validation marked as "false"
 }
 
-// Contains de detail for a specific error
+// ErrorDetail Contains de detail for a specific error
 type ErrorDetail struct {
 	Field     string // Name of the field with problems
 	ErrorType string // Description of the error found
@@ -47,7 +47,7 @@ var (
 	totalResults             = 0                                // total Number of results validated
 )
 
-// struct in charge of processing results
+// ResultProcessor struct in charge of processing results
 type ResultProcessor struct {
 	crosscutting.OFBStruct
 	reportStartTime time.Time             // Datetime of the start of the report
@@ -56,12 +56,14 @@ type ResultProcessor struct {
 }
 
 // GetResultProcessor returns the singleton instance of the ResultProcessor
-// @author AB
-// @params
-// logger: Logger to be used by the processor
-// startTime: Initial start time for the request
-// @return
-// ResultProcessor instance
+//
+// Parameters:
+//   - logger: Logger to be used by the processor
+//   - mqdServer: MQD Server to send the results
+//   - cm: Configuration manager
+//
+// Returns:
+//   - *ResultProcessor: New result processor created
 func GetResultProcessor(logger log.Logger, mqdServer services.ReportServer, cm *ConfigurationManager) *ResultProcessor {
 	if resultProcessorSingleton.Pack == "" {
 		resultProcessorSingleton = ResultProcessor{
@@ -79,26 +81,29 @@ func GetResultProcessor(logger log.Logger, mqdServer services.ReportServer, cm *
 }
 
 // AppendResult is for appending a message result
-// @author AB
-// @params
-// result: Message rresult to be included
-// @return
-func (this *ResultProcessor) AppendResult(result *MessageResult) {
+//
+// Parameters:
+//   - result: Message result to be included
+//
+// Returns:
+func (rp *ResultProcessor) AppendResult(result *MessageResult) {
 	resultProcessorMutex.Lock()
-	totalResults = totalResults + 1
+	totalResults++
 	groupedResults[result.ServerID] = append(groupedResults[result.ServerID], *result)
-	this.Logger.Debug("Total grouped Results in serverid ["+result.ServerID+"] :"+strconv.Itoa(len(groupedResults[result.ServerID])), this.Pack, "getAndClearResults")
+	rp.Logger.Debug("Total grouped Results in serverid ["+result.ServerID+"] :"+strconv.Itoa(len(groupedResults[result.ServerID])), rp.Pack, "getAndClearResults")
 	resultProcessorMutex.Unlock()
 }
 
 // GetAndClearResults returns the actual results, and cleans the lists
-// @author AB
-// @return
-// List of Message results
-func (this *ResultProcessor) getAndClearResults() map[string][]MessageResult {
-	this.Logger.Info("Loading results", this.Pack, "getAndClearResults")
+//
+// Parameters:
+//
+// Returns:
+//   - map: map[string][]MessageResult List of message results by clientID
+func (rp *ResultProcessor) getAndClearResults() map[string][]MessageResult {
+	rp.Logger.Info("Loading results", rp.Pack, "getAndClearResults")
 	resultProcessorMutex.Lock()
-	this.Logger.Debug("Total Results Found :"+strconv.Itoa(len(groupedResults)), this.Pack, "getAndClearResults")
+	rp.Logger.Debug("Total Results Found :"+strconv.Itoa(len(groupedResults)), rp.Pack, "getAndClearResults")
 	defer func() {
 		groupedResults = make(map[string][]MessageResult)
 		totalResults = 0
@@ -109,24 +114,25 @@ func (this *ResultProcessor) getAndClearResults() map[string][]MessageResult {
 }
 
 // StartResultsProcessor starts the periodic process that prints total results and clears them every 2 minutes
-// @author AB
-// @params
-// @return
-func (this *ResultProcessor) StartResultsProcessor() {
-	this.Logger.Info("Starting result processor, ReportExecutionWindow: "+strconv.Itoa(this.cm.ConfigurationSettings.ReportSettings.ReportExecutionWindow), this.Pack, "StartResultsProcessor")
-	this.reportStartTime = time.Now()
-	timeWindow := time.Duration(this.cm.GetReportExecutionWindow()) * time.Minute
+//
+// Parameters:
+//
+// Returns:
+func (rp *ResultProcessor) StartResultsProcessor() {
+	rp.Logger.Info("Starting result processor, ReportExecutionWindow: "+strconv.Itoa(rp.cm.ConfigurationSettings.ReportSettings.ReportExecutionWindow), rp.Pack, "StartResultsProcessor")
+	rp.reportStartTime = time.Now()
+	timeWindow := time.Duration(rp.cm.GetReportExecutionWindow()) * time.Minute
 
 	// Send a initial report for observability.
-	this.processAndSendResults()
+	rp.processAndSendResults()
 	ticker := time.NewTicker(timeWindow)
 	for {
 		select {
 		case <-ticker.C:
-			this.processAndSendResults()
+			rp.processAndSendResults()
 		case <-time.After(5 * time.Second):
-			if totalResults >= this.cm.GetSendOnReportNumber() {
-				this.processAndSendResults()
+			if totalResults >= rp.cm.GetSendOnReportNumber() {
+				rp.processAndSendResults()
 				ticker.Stop()                       // Stop the current ticker
 				ticker = time.NewTicker(timeWindow) // Restart the ticker
 			}
@@ -135,35 +141,36 @@ func (this *ResultProcessor) StartResultsProcessor() {
 }
 
 // processAndSendResults Processes the current results (creates a summary report) and sends it to the main server
-// @author AB
-// @params
-// reportServer: Server to send the report
-// @return
-func (this *ResultProcessor) processAndSendResults() {
-	this.Logger.Info("Processing and sending results", "result", "processAndSendResults")
+//
+// Parameters:
+//
+// Returns:
+func (rp *ResultProcessor) processAndSendResults() {
+	rp.Logger.Info("Processing and sending results", "result", "processAndSendResults")
 	processStartTime := time.Now()
 	report := models.Report{ClientID: configuration.ClientID}
-	this.updateMetrics(&report)
-	this.reportStartTime = time.Now()
-	results := this.getAndClearResults()
-	this.Logger.Debug("Total Results to process :"+strconv.Itoa(len(results)), this.Pack, "processAndSendResults")
-	report.ServerSummary = this.getSummary(results)
-	this.Logger.Debug("Total ServerSummary processe :"+strconv.Itoa(len(report.ServerSummary)), this.Pack, "processAndSendResults")
+	rp.updateMetrics(&report)
+	rp.reportStartTime = time.Now()
+	results := rp.getAndClearResults()
+	rp.Logger.Debug("Total Results to process :"+strconv.Itoa(len(results)), rp.Pack, "processAndSendResults")
+	report.ServerSummary = rp.getSummary(results)
+	rp.Logger.Debug("Total ServerSummary processe :"+strconv.Itoa(len(report.ServerSummary)), rp.Pack, "processAndSendResults")
 	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ReportGenerationtime", Value: time.Since(processStartTime).String()})
 
-	this.mqdServer.SendReport(report)
-	this.printReport(report)
-	this.Logger.Info("processAndSendResults -> Process finished", "server", "postReport")
+	rp.mqdServer.SendReport(report)
+	rp.printReport(report)
+	rp.Logger.Info("processAndSendResults -> Process finished", "server", "postReport")
 }
 
 // updateMetrics Updates the metrics for the report
-// @author AB
-// @params
-// metrics: List of metrics to be included
-// @return
-func (this *ResultProcessor) updateMetrics(report *models.Report) {
-	this.Logger.Info("Updating metrics", this.Pack, "updateMetrics")
-	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ReportStartDate", Value: this.reportStartTime.String()})
+//
+// Parameters:
+//   - report: Report with the metric information
+//
+// Returns:
+func (rp *ResultProcessor) updateMetrics(report *models.Report) {
+	rp.Logger.Info("Updating metrics", rp.Pack, "updateMetrics")
+	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ReportStartDate", Value: rp.reportStartTime.String()})
 	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ReportEndDate", Value: time.Now().String()})
 	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.BadRequestErrors", Value: strconv.Itoa(monitoring.GetAndCleanBadRequestsReceived())})
 	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.TotalRequests", Value: strconv.Itoa(monitoring.GetAndCleanRequestsReceived())})
@@ -172,17 +179,17 @@ func (this *ResultProcessor) updateMetrics(report *models.Report) {
 
 	report.ApplicationConfiguration.ApplicationVersion = version
 	report.ApplicationConfiguration.Environment = configuration.Environment
-	report.ApplicationConfiguration.ReportExecutionWindow = strconv.Itoa(this.cm.ConfigurationSettings.ReportSettings.ReportExecutionWindow)
-	report.ApplicationConfiguration.ConfigurationUpdateStatus.LastExecutionDate = this.cm.GetLastExecutionDate()
-	report.ApplicationConfiguration.ConfigurationUpdateStatus.LastUpdatedDate = this.cm.GetLastUpdatedDate()
-	for key, value := range this.cm.GetUpdateMessages() {
+	report.ApplicationConfiguration.ReportExecutionWindow = strconv.Itoa(rp.cm.GetReportExecutionWindow())
+	report.ApplicationConfiguration.ConfigurationUpdateStatus.LastExecutionDate = rp.cm.GetLastExecutionDate()
+	report.ApplicationConfiguration.ConfigurationUpdateStatus.LastUpdatedDate = rp.cm.GetLastUpdatedDate()
+	for key, value := range rp.cm.GetUpdateMessages() {
 		report.ApplicationConfiguration.ConfigurationUpdateStatus.ConfigurationUpdateError = append(report.ApplicationConfiguration.ConfigurationUpdateStatus.ConfigurationUpdateError, models.ConfigurationUpdateError{
 			ErrorDate:    key,
 			ErrorMessage: value,
 		})
 	}
 
-	report.ApplicationConfiguration.ConfigurationUpdateStatus.ConfigurationVersion = this.cm.ConfigurationSettings.Version
+	report.ApplicationConfiguration.ConfigurationUpdateStatus.ConfigurationVersion = rp.cm.ConfigurationSettings.Version
 	report.ApplicationConfiguration.ApplicationMode = configuration.ApplicationMode
 
 	ue := monitoring.GetAndCleanUnsupportedEndpoints()
@@ -203,18 +210,19 @@ func (this *ResultProcessor) updateMetrics(report *models.Report) {
 }
 
 // getSummary Returns the server summary for a specific set of MessageResults
-// @author AB
-// @params
-// results: List of results for a specific server
-// @return
-// ServerSummary: Summary by each point for the speciified server
-func (this *ResultProcessor) getSummary(results map[string][]MessageResult) []models.ServerSummary {
+//
+// Parameters:
+//   - results: List of results for a specific server
+//
+// Returns:
+//   - ServerSummary: Summary by each point for the speciified server
+func (rp *ResultProcessor) getSummary(results map[string][]MessageResult) []models.ServerSummary {
 	result := make([]models.ServerSummary, 0)
 	for key, messageResult := range results {
-		newSummary := models.ServerSummary{ServerId: key}
+		newSummary := models.ServerSummary{ServerID: key}
 		for _, endpointResult := range messageResult {
 			newSummary.TotalRequests++
-			newSummary.EndpointSummary = this.updateEndpointSummary(newSummary.EndpointSummary, endpointResult)
+			newSummary.EndpointSummary = rp.updateEndpointSummary(newSummary.EndpointSummary, endpointResult)
 		}
 
 		result = append(result, newSummary)
@@ -224,22 +232,23 @@ func (this *ResultProcessor) getSummary(results map[string][]MessageResult) []mo
 }
 
 // updateEndpointSummary Updates the summary for a specific endpoint
-// @author AB
-// @params
-// endpointSummary: summary to be updated
-// messageResult: Result to be included on the summary
-// @return
-// ServerSummary: Summary updated with the result
-func (this *ResultProcessor) updateEndpointSummary(endpointSummary []models.EndPointSummary, messageResult MessageResult) []models.EndPointSummary {
+//
+// Parameters:
+//   - endpointSummary: summary to be updated
+//   - messageResult: Result to be included on the summary
+//
+// Returns:
+//   - ServerSummary: Summary updated with the result
+func (rp *ResultProcessor) updateEndpointSummary(endpointSummary []models.EndPointSummary, messageResult MessageResult) []models.EndPointSummary {
 	newepSummary := models.EndPointSummary{EndpointName: messageResult.Endpoint, TotalRequests: 1}
 	found := false
 	for i, ep := range endpointSummary {
 		if ep.EndpointName == newepSummary.EndpointName {
 			found = true
-			endpointSummary[i].TotalRequests = endpointSummary[i].TotalRequests + 1
+			endpointSummary[i].TotalRequests++
 			if !messageResult.Result {
-				endpointSummary[i].ValidationErrors = endpointSummary[i].ValidationErrors + 1
-				endpointSummary[i].Detail = this.updateEndpointSummaryDetail(endpointSummary[i].Detail, messageResult.Errors, messageResult.XFapiInteractionID)
+				endpointSummary[i].ValidationErrors++
+				endpointSummary[i].Detail = rp.updateEndpointSummaryDetail(endpointSummary[i].Detail, messageResult.Errors, messageResult.XFapiInteractionID)
 			}
 
 			break
@@ -249,7 +258,7 @@ func (this *ResultProcessor) updateEndpointSummary(endpointSummary []models.EndP
 	if !found {
 		if !messageResult.Result {
 			newepSummary.ValidationErrors = 1
-			newepSummary.Detail = this.updateEndpointSummaryDetail(newepSummary.Detail, messageResult.Errors, messageResult.XFapiInteractionID)
+			newepSummary.Detail = rp.updateEndpointSummaryDetail(newepSummary.Detail, messageResult.Errors, messageResult.XFapiInteractionID)
 		}
 
 		endpointSummary = append(endpointSummary, newepSummary)
@@ -259,13 +268,15 @@ func (this *ResultProcessor) updateEndpointSummary(endpointSummary []models.EndP
 }
 
 // updateEndpointSummaryDetail Updates the summary detail for a specific endpoint / field
-// @author AB
-// @params
-// details: Details to be updated
-// errors: List of errors to be included
-// @return
-// EndPointSummaryDetail: Updated detail with the errors
-func (this *ResultProcessor) updateEndpointSummaryDetail(details []models.EndPointSummaryDetail, errors map[string][]string, xfapiID string) []models.EndPointSummaryDetail {
+//
+// Parameters:
+//   - details: Details to be updated
+//   - errors: List of errors to be included
+//   - xfapiID: xFapi ID of the transaction
+//
+// Returns:
+//   - EndPointSummaryDetail: Updated detail with the errors
+func (rp *ResultProcessor) updateEndpointSummaryDetail(details []models.EndPointSummaryDetail, errors map[string][]string, xfapiID string) []models.EndPointSummaryDetail {
 	for key, val := range errors {
 		newDetail := &models.EndPointSummaryDetail{Field: key}
 		fieldFound := false
@@ -277,7 +288,7 @@ func (this *ResultProcessor) updateEndpointSummaryDetail(details []models.EndPoi
 			}
 		}
 
-		newDetail.Details = this.updateFieldDetails(newDetail.Details, val, xfapiID)
+		newDetail.Details = rp.updateFieldDetails(newDetail.Details, val, xfapiID)
 		if !fieldFound {
 			details = append(details, *newDetail)
 		}
@@ -287,20 +298,22 @@ func (this *ResultProcessor) updateEndpointSummaryDetail(details []models.EndPoi
 }
 
 // updateFieldDetails Updates the summary detail for a specific field
-// @author AB
-// @params
-// details: Field Details to be updated
-// fieldDetails: Field details to include
-// @return
-// FieldDetail: Updated FieldDetail with the errors
-func (this *ResultProcessor) updateFieldDetails(details []models.FieldDetail, fieldDetails []string, xfapiID string) []models.FieldDetail {
+//
+// Parameters:
+//   - details: Details to be updated
+//   - fieldDetails: Field details to include
+//   - xfapiID: xFapi ID of the transaction
+//
+// Returns:
+//   - FieldDetail: Updated FieldDetail with the errors
+func (rp *ResultProcessor) updateFieldDetails(details []models.FieldDetail, fieldDetails []string, xfapiID string) []models.FieldDetail {
 	for _, errorDetail := range fieldDetails {
 		detailFound := false
 		for j, fieldDetail := range details {
 			if fieldDetail.ErrorType == errorDetail {
 				detailFound = true
 				details[j].XFapiList = append(details[j].XFapiList, xfapiID)
-				details[j].TotalCount = details[j].TotalCount + 1
+				details[j].TotalCount++
 			}
 		}
 
@@ -313,16 +326,17 @@ func (this *ResultProcessor) updateFieldDetails(details []models.FieldDetail, fi
 }
 
 // printReport Prits the report to console (Should be used for DEBUG pourpuses only)
-// @author AB
-// @params
-// report: Report to be printed
-// @return
-func (this *ResultProcessor) printReport(report models.Report) {
+//
+// Parameters:
+//   - report: Report to be printed
+//
+// Returns:
+func (rp *ResultProcessor) printReport(report models.Report) {
 	b, err := json.Marshal(report)
 	if err != nil {
-		this.Logger.Error(err, "Error while printing the report.", this.Pack, "printReport")
+		rp.Logger.Error(err, "Error while printing the report.", rp.Pack, "printReport")
 		return
 	}
 
-	this.Logger.Debug(string(b), this.Pack, "printReport")
+	rp.Logger.Debug(string(b), rp.Pack, "printReport")
 }

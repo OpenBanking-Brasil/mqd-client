@@ -5,7 +5,7 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-// Validator of JSON Schema
+// SchemaValidator Validator that uses JSON Schemas
 type SchemaValidator struct {
 	pack   string     // Package name
 	schema string     // JSON Schema
@@ -27,31 +27,31 @@ func GetSchemaValidator(logger log.Logger, schema string) *SchemaValidator {
 	}
 }
 
-// ValidateWithSchema is for Validating a dynamic structure using a JSON Schema
+// Validate is for Validating a dynamic structure using a JSON Schema
 // @author AB
 // @params
 // data: DynamicStruct to be validated
 // schemaPath: Path for the Schema file to be loaded
 // @return
 // Error if validation fails.
-func (this *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, error) {
-	this.logger.Info("Starting Validation With Schema", this.pack, "Validate")
+func (sm *SchemaValidator) Validate(data DynamicStruct) (*Result, error) {
+	sm.logger.Info("Starting Validation With Schema", sm.pack, "Validate")
 
-	validationResult := ValidationResult{Valid: true}
-	if this.schema == "" {
+	validationResult := Result{Valid: true}
+	if sm.schema == "" {
 		return &validationResult, nil
 	}
 
-	loader := gojsonschema.NewStringLoader(this.schema)
+	loader := gojsonschema.NewStringLoader(sm.schema)
 	documentLoader := gojsonschema.NewGoLoader(data)
 	result, err := gojsonschema.Validate(loader, documentLoader)
 	if err != nil {
-		this.logger.Error(err, "error validating message", this.pack, "Validate")
+		sm.logger.Error(err, "error validating message", sm.pack, "Validate")
 		return nil, err
 	}
 
 	if !result.Valid() {
-		validationResult.Errors = this.cleanErrors(result.Errors())
+		validationResult.Errors = sm.cleanErrors(result.Errors())
 		validationResult.Valid = false
 		return &validationResult, nil
 	}
@@ -65,11 +65,11 @@ func (this *SchemaValidator) Validate(data DynamicStruct) (*ValidationResult, er
 // error: List of errors generated during the validation
 // @return
 // ErrorDetail: List of errors found
-func (this *SchemaValidator) cleanErrors(errors []gojsonschema.ResultError) map[string][]string {
+func (sm *SchemaValidator) cleanErrors(errors []gojsonschema.ResultError) map[string][]string {
 	result := make(map[string][]string)
 	for _, desc := range errors {
 		result[desc.Field()] = append(result[desc.Field()], desc.Description())
-		this.logger.Debug(desc.Field()+": "+desc.Description(), this.pack, "cleanErrors")
+		sm.logger.Debug(desc.Field()+": "+desc.Description(), sm.pack, "cleanErrors")
 	}
 
 	return result

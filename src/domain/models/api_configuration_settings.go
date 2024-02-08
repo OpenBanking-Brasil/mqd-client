@@ -1,13 +1,19 @@
 package models
 
 const (
+	// ExtremelyHighTroughput defines the extremely high troughtput keyword
 	ExtremelyHighTroughput = "EXTEMELY_HIGH"
-	HighTroughput          = "HIGH"
-	MediumTroughput        = "MEDIUM"
-	LowTroughput           = "LOW"
-	VeryLowTroughput       = "VERY_LOW"
+	// HighTroughput defines High troughtput keyword
+	HighTroughput = "HIGH"
+	// MediumTroughput defines the Medium troughtput keyword
+	MediumTroughput = "MEDIUM"
+	// LowTroughput defines the Low troughtput keyword
+	LowTroughput = "LOW"
+	// VeryLowTroughput defines the Very Low Troughput keyword
+	VeryLowTroughput = "VERY_LOW"
 )
 
+// APISetting Contains the settings needed to perform validations on API / endpoints
 type APISetting struct {
 	API          string               `json:"api"`           // API name
 	BasePath     string               `json:"base_path"`     // Base path for the folder
@@ -16,6 +22,7 @@ type APISetting struct {
 	EndpointList []APIEndpointSetting `json:"endpoint_List"` // List of settings for this endpoint
 }
 
+// APIEndpointSetting has the specific validation settings for an endpoint
 type APIEndpointSetting struct {
 	Endpoint              string `json:"endpoint"`                // Name of the endpoint requested
 	HeaderValidationRules string `json:"header_validation_rules"` // Header validation rules
@@ -25,10 +32,11 @@ type APIEndpointSetting struct {
 	Throughput            string `json:"throughput"`              // Relation of the amount of requests for this endpoint
 }
 
+// APIGroupSetting Validation sattings for an API group
 type APIGroupSetting struct {
 	Group    string       `json:"group"`     // API Group name
 	BasePath string       `json:"base_path"` // Base path for the folder
-	ApiList  []APISetting `json:"api_list"`  // List of APIs
+	APIList  []APISetting `json:"api_list"`  // List of APIs
 }
 
 // ValidationSettings stores the configuration for validations of the application
@@ -43,20 +51,34 @@ type ValidationSettings struct {
 	VeryLowTroughputValidationRate       int               `json:"VeryLowTroughputValidationRate"`       // Validation rate in % for very low throughput mode 1 - 100
 }
 
-func (this *ValidationSettings) GetGroupSetting(groupName string) *APIGroupSetting {
-	for i, setting := range this.APIGroupSettings {
+// GetGroupSetting returns a group settings based on the group name
+//
+// Parameters:
+//   - groupName: Group name to find the settings
+//
+// Returns:
+//   - *APIGroupSetting: Group settings found, nil if it is not supported
+func (vs *ValidationSettings) GetGroupSetting(groupName string) *APIGroupSetting {
+	for i, setting := range vs.APIGroupSettings {
 		if setting.Group == groupName {
-			return &this.APIGroupSettings[i]
+			return &vs.APIGroupSettings[i]
 		}
 	}
 
 	return nil
 }
 
-func (this *APIGroupSetting) GetAPISetting(apiName string) *APISetting {
-	for i, setting := range this.ApiList {
+// GetAPISetting returns an API settings based on the name
+//
+// Parameters:
+//   - apiName: API name to find the settings
+//
+// Returns:
+//   - *APISetting: API settings found, nil if it is not supported
+func (vs *APIGroupSetting) GetAPISetting(apiName string) *APISetting {
+	for i, setting := range vs.APIList {
 		if setting.API == apiName {
-			return &this.ApiList[i]
+			return &vs.APIList[i]
 		}
 	}
 
