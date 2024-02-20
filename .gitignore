@@ -23,3 +23,6 @@ go.work
 # certificate files
 *.crt
 *.key
+
+# Backup archive of draw.io
+*.bkp

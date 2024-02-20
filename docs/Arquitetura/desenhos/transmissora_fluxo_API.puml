@@ -1,8 +1,8 @@
 @startuml
-title TRANSMISSORA: Fluxo API - Motor Qualidade de Dados
+title Fluxo Transmissora - Motor Qualidade de Dados
 
 box "RECEPTORA" #B1DDF0
-  participant Service #7EA6E0
+  participant SERVICE #7EA6E0
 end box
 
 box TRANSMISORA #D5E8D4
@@ -10,14 +10,14 @@ box TRANSMISORA #D5E8D4
   participant MQD #7EA6E0
 end box
 
-note over Service 
+note over SERVICE 
    1. A RECEPTORA faz a solicitacao para 
    TRANSMISORA com o fluxo normal
 end note
 
-Service -> API
+SERVICE -> API
 API -> API: Process Request
-API -> Service: Response (Corpo + Cabecalho)
+API -> SERVICE: Response (Corpo + Cabecalho)
   note over API 
      2. A solicitacao deve ser atualizada incluindo 
      a resposta enviada para a RECEPTORA
@@ -35,6 +35,5 @@ note over MQD
 end note
 MQD -> MQD: Queue Messsage
 MQD -> API : OK
-
 
 @enduml

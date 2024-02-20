@@ -2,47 +2,56 @@
 title Fluxo: Atualização de configuração
 
 !pragma teoz true
-box "IF" #LightBlue
-   box "Motor Qualidade de Dados" #D5E8D4
-     participant ConfigurationManager #7EA6E0
+box "INSTITUIÇÃO FINANCEIRA" #LightBlue
+   box "Motor Qualidade de Dados (MQD)" #D5E8D4
+     participant CONFIGURATION_MANAGER #7EA6E0
+   end box
+   box "MQD SERVER PROXY" #D5E8D4
+     participant PROXY #7EA6E0
    end box
 end box
 
 box "PERIMETRO CENTRAL" #D5E8D4
-   box "MQD - SERVER" #LightBlue
+   box "MQD SERVER" #LightBlue
      participant API #B1DDF0
-     participant AUTH #B1DDF0
+     participant AUTHORIZATION_AUTHENTICATION #B1DDF0
    end box
 end box
 
-note over ConfigurationManager 
+note over CONFIGURATION_MANAGER 
    1. A cada 6 horas, o MQD
       executa o processo de atualização 
       das configurações
 end note
 
-ConfigurationManager -> AUTH: Request Token
-AUTH -> ConfigurationManager: JWT Token
+CONFIGURATION_MANAGER -> PROXY: Request Token
+PROXY -> AUTHORIZATION_AUTHENTICATION: Request Token
+AUTHORIZATION_AUTHENTICATION -> PROXY: JWT Token
+PROXY -> CONFIGURATION_MANAGER: JWT Token
 
-ConfigurationManager -> API : Request Configuration
-API -> ConfigurationManager: ConfigurationSettings.json
 
-ConfigurationManager -> ConfigurationManager: Check Configuration
+CONFIGURATION_MANAGER -> PROXY : Request Configuration
+PROXY -> API : Request Configuration
+API -> PROXY: ConfigurationSettings.json
+PROXY -> CONFIGURATION_MANAGER: ConfigurationSettings.json
 
-note over ConfigurationManager 
-   casso a configuração seja differente
+CONFIGURATION_MANAGER -> CONFIGURATION_MANAGER: Check Configuration
+
+note over CONFIGURATION_MANAGER 
+   caso a configuração seja differente
    da atual, é iniciado o processo de 
    atualização detalhada
 end note
 
 alt Configuration is different
    loop messages.APIGroups times
-      ConfigurationManager -> API: APIGroup
-      API -> ConfigurationManager :APIGroup Configuration
+      CONFIGURATION_MANAGER -> PROXY: APIGroup
+      PROXY -> API: APIGroup
+      API -> PROXY :APIGroup Configuration
+      PROXY -> CONFIGURATION_MANAGER :APIGroup Configuration
    end
   
-   ConfigurationManager -> ConfigurationManager : Update Configuration Settings
+   CONFIGURATION_MANAGER -> CONFIGURATION_MANAGER : Update Configuration Settings
 
 end
-
-@enduml
+@enduml 
