@@ -15,11 +15,11 @@ Este fluxo representa o processo de validação executado na aplicação
 | 5. | RESULT_PROCESSOR | O componente solicita um token de acesso ao proxy do servidor |
 | 6. | PROXY | Solicita o token ao servidor utilizando certificados para estabelecer mTLS |
 | 7. e 8. | GATEWAY | O Gateway usa as credenciais para validar a ID do Cliente e obtem um token JWT, enviando ao Proxy |
-| 9. | PROXY |  |
+| 9. | PROXY | Proxy retorna as informações recebidas ao cliente |
 | 10. | RESULT_PROCESSOR | O componente envia o resumo criado para o servidor usando o token recebido como autorização |
-| 11. | PROXY |  |
+| 11. | PROXY | O proxy estabelece uma conexão segura e envia as informações do relatório ao servidor |
 | 12. | GATEWAY | O Gateway valida o acesso ao recurso (MQD_SERVER) com base no token recebido |
-| 13. | GATEWAY |  |
+| 13. | GATEWAY | Se tudo estiver correto, o componente armazena as informações do relatório com a data de recebimento |
 | 14. e 15. | GATEWAY | Gateway retorna a resposta do servidor para o componente Result Processor |
 
 ## Esquema de Report Enviado
