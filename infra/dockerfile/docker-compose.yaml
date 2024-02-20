@@ -7,13 +7,15 @@ services:
     environment:
       - API_PORT=:8080
       - SERVER_ORG_ID=09b20d09-bf30-4497-938e-b0ead8ce9629
-      #- REPORT_EXECUTION_WINDOW=30 # Optional Variable
-      #- REPORT_EXECUTION_NUMBER= 200000 # Optional Variable
-      - ENVIRONMENT=DEBUG
-      - LOGGING_LEVEL=DEBUG
-      - APPLICATION_MODE=RECEIVER  #TRANSMITTER / RECEIVER
+      #- REPORT_EXECUTION_WINDOW=30 
+      #- REPORT_EXECUTION_NUMBER= 200000 
+      - ENVIRONMENT=DEV
+      - LOGGING_LEVEL=WARNING
+      - APPLICATION_MODE=TRANSMITTER
       - PROXY_URL=http://127.0.0.1:8082
     network_mode: "host"
+    depends_on:
+      - proxy
     restart: always
     deploy:
       resources:
@@ -28,5 +30,5 @@ services:
     ports:
       - "8082:80"
     volumes:
-     - ./proxy/default.conf:/etc/nginx/conf.d/default.conf:ro  # Adjust paths as needed
-     - ./certificates:/etc/ssl  # Adjust paths as needed
+     - ./proxy/default.sandbox.conf:/etc/nginx/conf.d/default.conf:ro
+     - ./certificates:/etc/ssl  
