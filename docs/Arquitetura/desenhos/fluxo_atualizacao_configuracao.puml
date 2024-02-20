@@ -1,5 +1,5 @@
 @startuml
-title Fluxo: Atualização de configuração
+title Fluxo: Atualização de Configuração
 
 !pragma teoz true
 box "INSTITUIÇÃO FINANCEIRA" #LightBlue
@@ -13,8 +13,7 @@ end box
 
 box "PERIMETRO CENTRAL" #D5E8D4
    box "MQD SERVER" #LightBlue
-     participant API #B1DDF0
-     participant AUTHORIZATION_AUTHENTICATION #B1DDF0
+     participant GATEWAY #B1DDF0
    end box
 end box
 
@@ -24,15 +23,16 @@ note over CONFIGURATION_MANAGER
       das configurações
 end note
 
+autonumber 0
 CONFIGURATION_MANAGER -> PROXY: Request Token
-PROXY -> AUTHORIZATION_AUTHENTICATION: Request Token
-AUTHORIZATION_AUTHENTICATION -> PROXY: JWT Token
+PROXY -> GATEWAY: Request Token
+GATEWAY -> PROXY: JWT Token
 PROXY -> CONFIGURATION_MANAGER: JWT Token
 
 
 CONFIGURATION_MANAGER -> PROXY : Request Configuration
-PROXY -> API : Request Configuration
-API -> PROXY: ConfigurationSettings.json
+PROXY -> GATEWAY : Request Configuration
+GATEWAY -> PROXY: ConfigurationSettings.json
 PROXY -> CONFIGURATION_MANAGER: ConfigurationSettings.json
 
 CONFIGURATION_MANAGER -> CONFIGURATION_MANAGER: Check Configuration
@@ -46,12 +46,12 @@ end note
 alt Configuration is different
    loop messages.APIGroups times
       CONFIGURATION_MANAGER -> PROXY: APIGroup
-      PROXY -> API: APIGroup
-      API -> PROXY :APIGroup Configuration
+      PROXY -> GATEWAY: APIGroup
+      GATEWAY -> PROXY :APIGroup Configuration
       PROXY -> CONFIGURATION_MANAGER :APIGroup Configuration
    end
   
    CONFIGURATION_MANAGER -> CONFIGURATION_MANAGER : Update Configuration Settings
 
 end
-@enduml 
+@enduml

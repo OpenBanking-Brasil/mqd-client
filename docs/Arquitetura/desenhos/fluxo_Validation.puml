@@ -1,29 +1,30 @@
 @startuml
 !theme aws-orange
-title Fluxo Validation - Motor Qualidade de Dados
-
+title Fluxo de Validação - Motor Qualidade de Dados
 
 !pragma teoz true
-box "IF" #LightBlue
-  box "Motor Qualidade de Dados" #LightGreen
-    participant MessageProcessWorker
-    participant QueueManager
-    participant Validator
+box "INSTITUIÇÃO FINANCEIRA" #LightBlue
+  box "Motor Qualidade de Dados (MQD)" #LightGreen
+    participant MESSAGE_PROCESS_WORKER
+    participant QUEUE_MANAGER
+    participant VALIDATOR
   end box
 end box
 
-MessageProcessWorker -> MessageProcessWorker: Check Queue
+autonumber 0
+VALIDATOR -> VALIDATOR: Update ValidantionRules
+MESSAGE_PROCESS_WORKER -> MESSAGE_PROCESS_WORKER: Check Queue
 
-MessageProcessWorker -> QueueManager: Get queued Message
-QueueManager-> MessageProcessWorker: Messages
+MESSAGE_PROCESS_WORKER -> QUEUE_MANAGER: Get queued Message
+QUEUE_MANAGER -> MESSAGE_PROCESS_WORKER: Messages
 loop messages.length times
-    MessageProcessWorker-> Validator : Validate Message
-    Validator -> Validator: Validate Endpoint
-    Validator -> Validator: Unmarshal Payload
-    Validator -> Validator : Validate Object
-    Validator -> MessageProcessWorker: Return valid result
+    MESSAGE_PROCESS_WORKER -> VALIDATOR : Validate Message
+    VALIDATOR -> VALIDATOR: Validate Endpoint
+    VALIDATOR -> VALIDATOR: Unmarshal Payload
+    VALIDATOR -> VALIDATOR : Validate Object
+    VALIDATOR -> MESSAGE_PROCESS_WORKER: Return valid result
 end
 
-MessageProcessWorker -> MessageProcessWorker : Store Result
+MESSAGE_PROCESS_WORKER -> MESSAGE_PROCESS_WORKER : Store Result
 
 @enduml
