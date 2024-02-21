@@ -1,5 +1,4 @@
 @startuml
-!theme aws-orange
 title Fluxo de Validação - Motor Qualidade de Dados
 
 !pragma teoz true
