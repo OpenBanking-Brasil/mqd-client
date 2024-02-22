@@ -2,17 +2,17 @@
 
 1. [Arquitetura](#arquitetura)
 1. [Proxy](./PROXY.md)
-3. Diagramas de Sequencia
-    1. [Fluxo Receptora](./FLUXO_RECEPTORA.md)
-    2. [Fluxo Transmissora](./FLUXO_TRANSMISSORA.md)
+3. Diagramas de Sequência
+    1. [Fluxo da Receptora](./FLUXO_RECEPTORA.md)
+    2. [Fluxo da Transmissora](./FLUXO_TRANSMISSORA.md)
     3. [Fluxo de Atualização de Configuração](./FLUXO_ATUALIZACAO_DE_CONFIGURACAO.md)
-    4. [Fluxo Validation](./FLUXO_VALIDACAO.md)
-    5. [Fluxo Results](./FLUXO_RESULTADOS.md)
+    4. [Fluxo de Validação](./FLUXO_VALIDACAO.md)
+    5. [Fluxo de Envio de Resultados](./FLUXO_RESULTADOS.md)
 
 
 ## Arquitetura 
 
-Apesar de ter sido criada como um monólito, a aplicação MQD – Client foi desenvolvida com um desacoplamento em componentes, o que permitirá futuramente dividi-la em secções menores (microserviços) se necessário.
+Apesar de ter sido criada como um monolito, a aplicação MQD – Client foi desenvolvida com um desacoplamento em componentes, o que permitirá futuramente dividi-la em seções menores (microserviços) se necessário.
 
 ![Imagem 1. Arquitetura](./desenhos/Architecture.png)
 

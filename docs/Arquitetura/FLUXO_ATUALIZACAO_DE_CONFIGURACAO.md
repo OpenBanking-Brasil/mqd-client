@@ -1,12 +1,12 @@
 # Fluxo Atualização de COnfiguração
 
-Este fluxo representa o processo de atualização de configuração
+Este fluxo representa o processo de atualização de configuração.
 
 ![Image 1. ](./desenhos/fluxo_atualizacao_configuracao.png)
 
 ## Passos
 
-| Step | Participante | Descrição |
+| Passos | Participante | Descrição |
 |-|-|-|
 | 0. | CONFIGURATION_MANAGER | CONFIGURATION_MANAGER solicita o proxy para o token usando o OrganizationID configurado |
 | 1. | PROXY | O proxy solicita o token do servidor usando o OrganizationID enviado no cabeçalho usando uma conexão segura |
@@ -26,6 +26,6 @@ Este fluxo representa o processo de atualização de configuração
 
 ## Esquema de Definições de Configuração
 
-O objeto recebido pelo cliente no momento da atualização da configuração está definido abaixo
+O objeto recebido pelo cliente no momento da atualização da configuração está definido abaixo.
 
 ![Image 2. ](./desenhos/configuration_settings_schema.png)

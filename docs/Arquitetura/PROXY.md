@@ -1,6 +1,6 @@
 ### Proxy reverso
 
-Para a versão 2.0 do Motor de Qualidade de Dados (MQD) foi implementada uma camada intermediária encarregada de estabelecer uma conexão segura (mTLS) utilizando os certificados da instituição
+Para a versão 2.0 do Motor de Qualidade de Dados (MQD) foi implementada uma camada intermediária encarregada de estabelecer uma conexão segura (mTLS) utilizando os certificados da instituição.
 
 Neste arquivo docker compose, incluímos um exemplo de proxy reverso usando NGINX como tecnologia, mas qualquer ferramenta pode ser usada conforme a conveniência da Instituição.
 

@@ -6,7 +6,7 @@ Este fluxo representa o processo de enfileramento de messagens e integração co
 
 ## Passos
 
-| Step | Participante | Descrição |
+| Passos | Participante | Descrição |
 |-|-|-|
 | 1. | SERVICE | O serviço gera uma solicitação para a API da TRANSMISORA |
 | 2. | API | A API processa a solicitação recebida |

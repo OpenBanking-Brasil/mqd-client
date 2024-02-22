@@ -1,12 +1,12 @@
-# Fluxo validação
+# Fluxo de Validação
 
-Este fluxo representa o processo de validação executado na aplicação
+Este fluxo representa o processo de validação executado na aplicação.
 
 ![Image 1. ](./desenhos/fluxo_Validation.png)
 
 ## Passos
 
-| Step | Participante | Descrição |
+| Passos | Participante | Descrição |
 |-|-|-|
 | 0. | VALIDATOR | O componente de validação carrega regras de validação com base em arquivos JSON de configuração |
 | 1., 2. e 3. | MESSAGE_PROCESS_WORKER | O componente Message Process Worker checa a Fila e em seguida solicita e recebe da Fila a lista de tarefas enfileiradas a serem processadas |

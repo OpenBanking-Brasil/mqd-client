@@ -1,12 +1,12 @@
 # Fluxo TRANSMISSORA
 
-Este fluxo representa o processo de enfileramento de messagens e integração com o MQD na visão da RECEPTORA
+Este fluxo representa o processo de enfileramento de messagens e integração com o MQD na visão da TRANSMISSORA
 
 ![Image 1. ](./desenhos/transmissora_fluxo_API.png)
 
 ## Passos
 
-| Step | Participante | Descrição |
+| Passos | Participante | Descrição |
 |-|-|-|
 | 1. | SERVICE | O serviço gera uma solicitação para a API da TRANSMISORA |
 | 2. | API | A API processa a solicitação recebida |

@@ -1,12 +1,12 @@
-# Fluxo Resultados
+# Fluxo de Envio de Resultados
 
-Este fluxo representa o processo de validação executado na aplicação
+Este fluxo representa o processo de envio de resultados executado na aplicação.
 
 ![Image 1. ](./desenhos/fluxo_Envio_Results.png)
 
 ## Passos
 
-| Step | Participante | Descrição |
+| Passos | Participante | Descrição |
 |-|-|-|
 | 0. | RESULT_PROCESSOR | A cada intervalo definido o Componente inicia seu processo |
 | 1. | RESULT_PROCESSOR | O componente solicita ao Validador a lista de resultados a serem processados |
