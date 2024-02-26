@@ -1,0 +1,96 @@
+Date : 2024-02-05 17:59:12
+Directory : c:\Code\OFB\MQD\mqd-client
+Total : 42 files,  8630 codes, 674 comments, 513 blanks, all 9817 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| XML              |          4 |      6,093 |          0 |          4 |      6,097 |
+| Go               |         26 |      1,948 |        670 |        441 |      3,059 |
+| Go Checksum File |          1 |        221 |          0 |          1 |        222 |
+| Markdown         |          7 |        186 |          0 |         54 |        240 |
+| YAML             |          2 |        126 |          0 |          4 |        130 |
+| Go Module File   |          1 |         43 |          0 |          5 |         48 |
+| Makefile         |          1 |         13 |          4 |          4 |         21 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                       | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                          |         42 |      8,630 |        674 |        513 |      9,817 |
+| . (Files)                                                                  |          1 |         22 |          0 |         11 |         33 |
+| docs                                                                       |          6 |        242 |          0 |         33 |        275 |
+| docs (Files)                                                               |          2 |         41 |          0 |         13 |         54 |
+| docs\Arquitetura                                                           |          3 |        100 |          0 |         17 |        117 |
+| docs\specification                                                         |          1 |        101 |          0 |          3 |        104 |
+| infra                                                                      |          2 |         48 |          0 |         14 |         62 |
+| infra (Files)                                                              |          1 |         23 |          0 |         13 |         36 |
+| infra\dockerfile                                                           |          1 |         25 |          0 |          1 |         26 |
+| src                                                                        |         29 |      2,225 |        674 |        451 |      3,350 |
+| src (Files)                                                                |          4 |        345 |         15 |         27 |        387 |
+| src\application                                                            |          5 |        744 |        222 |        156 |      1,122 |
+| src\crosscutting                                                           |          9 |        453 |        243 |        108 |        804 |
+| src\crosscutting (Files)                                                   |          2 |         29 |         12 |         10 |         51 |
+| src\crosscutting\configuration                                             |          1 |         47 |         14 |         10 |         71 |
+| src\crosscutting\errorhandling                                             |          1 |          6 |          1 |          2 |          9 |
+| src\crosscutting\log                                                       |          3 |        110 |         98 |         28 |        236 |
+| src\crosscutting\monitoring                                                |          1 |        191 |         94 |         40 |        325 |
+| src\crosscutting\security                                                  |          1 |         70 |         24 |         18 |        112 |
+| src\crosscutting\security\jwt                                              |          1 |         70 |         24 |         18 |        112 |
+| src\domain                                                                 |          8 |        566 |        132 |        129 |        827 |
+| src\domain\models                                                          |          4 |        200 |         35 |         44 |        279 |
+| src\domain\services                                                        |          4 |        366 |         97 |         85 |        548 |
+| src\validation                                                             |          3 |        117 |         62 |         31 |        210 |
+| tests                                                                      |          4 |      6,093 |          0 |          4 |      6,097 |
++----------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                   | language         | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| c:\Code\OFB\MQD\mqd-client\README.md                                       | Markdown         |         22 |          0 |         11 |         33 |
+| c:\Code\OFB\MQD\mqd-client\docs\Arquitetura\FLUXO_API.md                   | Markdown         |         69 |          0 |          9 |         78 |
+| c:\Code\OFB\MQD\mqd-client\docs\Arquitetura\FLUXO_RESULTS.md               | Markdown         |         18 |          0 |          4 |         22 |
+| c:\Code\OFB\MQD\mqd-client\docs\Arquitetura\FLUXO_VALIDATION.md            | Markdown         |         13 |          0 |          4 |         17 |
+| c:\Code\OFB\MQD\mqd-client\docs\ENDPOINTS.md                               | Markdown         |         29 |          0 |          8 |         37 |
+| c:\Code\OFB\MQD\mqd-client\docs\README.md                                  | Markdown         |         12 |          0 |          5 |         17 |
+| c:\Code\OFB\MQD\mqd-client\docs\specification\mqd-client-openapi.yml       | YAML             |        101 |          0 |          3 |        104 |
+| c:\Code\OFB\MQD\mqd-client\infra\README.md                                 | Markdown         |         23 |          0 |         13 |         36 |
+| c:\Code\OFB\MQD\mqd-client\infra\dockerfile\docker-compose.yaml            | YAML             |         25 |          0 |          1 |         26 |
+| c:\Code\OFB\MQD\mqd-client\src\Makefile                                    | Makefile         |         13 |          4 |          4 |         21 |
+| c:\Code\OFB\MQD\mqd-client\src\application\api_server.go                   | Go               |        180 |         77 |         41 |        298 |
+| c:\Code\OFB\MQD\mqd-client\src\application\configuration_manager.go        | Go               |        203 |         28 |         44 |        275 |
+| c:\Code\OFB\MQD\mqd-client\src\application\message_process_Worker.go       | Go               |        116 |         43 |         26 |        185 |
+| c:\Code\OFB\MQD\mqd-client\src\application\queue_manager.go                | Go               |         21 |          7 |          7 |         35 |
+| c:\Code\OFB\MQD\mqd-client\src\application\result_processor.go             | Go               |        224 |         67 |         38 |        329 |
+| c:\Code\OFB\MQD\mqd-client\src\crosscutting\configuration\configuration.go | Go               |         47 |         14 |         10 |         71 |
+| c:\Code\OFB\MQD\mqd-client\src\crosscutting\errorhandling\error.go         | Go               |          6 |          1 |          2 |          9 |
+| c:\Code\OFB\MQD\mqd-client\src\crosscutting\general.go                     | Go               |          8 |          1 |          3 |         12 |
+| c:\Code\OFB\MQD\mqd-client\src\crosscutting\log\json_log.go                | Go               |         68 |         82 |         17 |        167 |
+| c:\Code\OFB\MQD\mqd-client\src\crosscutting\log\logger.go                  | Go               |         28 |         11 |          6 |         45 |
+| c:\Code\OFB\MQD\mqd-client\src\crosscutting\log\logger_factory.go          | Go               |         14 |          5 |          5 |         24 |
+| c:\Code\OFB\MQD\mqd-client\src\crosscutting\monitoring\metrics.go          | Go               |        191 |         94 |         40 |        325 |
+| c:\Code\OFB\MQD\mqd-client\src\crosscutting\security\jwt\jwt.go            | Go               |         70 |         24 |         18 |        112 |
+| c:\Code\OFB\MQD\mqd-client\src\crosscutting\tools.go                       | Go               |         21 |         11 |          7 |         39 |
+| c:\Code\OFB\MQD\mqd-client\src\domain\models\api_configuration_settings.go | Go               |         54 |          1 |         10 |         65 |
+| c:\Code\OFB\MQD\mqd-client\src\domain\models\configuration_settings.go     | Go               |         10 |          2 |          3 |         15 |
+| c:\Code\OFB\MQD\mqd-client\src\domain\models\endpoint_settings.go          | Go               |         76 |         23 |         18 |        117 |
+| c:\Code\OFB\MQD\mqd-client\src\domain\models\report.go                     | Go               |         60 |          9 |         13 |         82 |
+| c:\Code\OFB\MQD\mqd-client\src\domain\services\api_dao.go                  | Go               |        248 |         65 |         50 |        363 |
+| c:\Code\OFB\MQD\mqd-client\src\domain\services\report_server.go            | Go               |          7 |          1 |          3 |         11 |
+| c:\Code\OFB\MQD\mqd-client\src\domain\services\report_server_factory.go    | Go               |         17 |          6 |          6 |         29 |
+| c:\Code\OFB\MQD\mqd-client\src\domain\services\report_server_mqd.go        | Go               |         94 |         25 |         26 |        145 |
+| c:\Code\OFB\MQD\mqd-client\src\go.mod                                      | Go Module File   |         43 |          0 |          5 |         48 |
+| c:\Code\OFB\MQD\mqd-client\src\go.sum                                      | Go Checksum File |        221 |          0 |          1 |        222 |
+| c:\Code\OFB\MQD\mqd-client\src\main.go                                     | Go               |         68 |         11 |         17 |         96 |
+| c:\Code\OFB\MQD\mqd-client\src\validation\rule_validator.go                | Go               |         64 |         40 |         17 |        121 |
+| c:\Code\OFB\MQD\mqd-client\src\validation\schema_validator.go              | Go               |         45 |         21 |         11 |         77 |
+| c:\Code\OFB\MQD\mqd-client\src\validation\validator.go                     | Go               |          8 |          1 |          3 |         12 |
+| c:\Code\OFB\MQD\mqd-client\tests\Functional-Responses.jmx                  | XML              |      5,430 |          0 |          1 |      5,431 |
+| c:\Code\OFB\MQD\mqd-client\tests\PoC Tests.jmx                             | XML              |        148 |          0 |          1 |        149 |
+| c:\Code\OFB\MQD\mqd-client\tests\performance.jmx                           | XML              |        253 |          0 |          1 |        254 |
+| c:\Code\OFB\MQD\mqd-client\tests\performance_limited.jmx                   | XML              |        262 |          0 |          1 |        263 |
+| Total                                                                      |                  |      8,630 |        674 |        513 |      9,817 |
++----------------------------------------------------------------------------+------------------+------------+------------+------------+------------+

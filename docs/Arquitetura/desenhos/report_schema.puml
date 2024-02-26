@@ -1,0 +1,50 @@
+@startjson
+!theme blueprint
+title Fluxo Validation - Motor Qualidade de Dados
+
+{
+"Metrics": {
+        "Values": [
+            {
+                "Key": "metric Name",
+                "Value": "Metric value"
+            }
+        ]
+    },
+    "ClientID": "OrganisationID",
+    "UnsupportedEndpoints": [
+         {
+             "EndpointName":"Endpoint Name",
+             "Count":"Amount of requests",
+             "Version":"Endpoint Version Requested",
+             "Error":"Unsuported endpoint or version"
+         }
+     ],
+    "ServerSummary": [
+        {
+            "ServerID":"OrganisationID",
+            "TotalRequests":"Total requests by this Organisation",
+            "EndpointSummary": [
+                {
+                    "EndpointName":"Endpoint Name",
+                    "TotalRequests":"Amount of requests",
+                    "ValidationErrors":"Requests with errors",
+                    "Detail":[
+                        {
+                            "Field":"Field that presented the error",
+                            "Details":[
+                              {
+                                "ErrorType":"Type of error during the validation",
+                                "TotalCount":"Count of errors of this type",
+                                "XFapiList":"List of xFapi identifiers"
+                              }
+                            ]
+                        }
+                    ]
+                }
+            ]
+
+        }
+    ]
+}
+@endjson

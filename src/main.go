@@ -1,13 +1,11 @@
 package main
 
 import (
-	"github.com/OpenBanking-Brasil/MQD_Client/apiserver"
+	"github.com/OpenBanking-Brasil/MQD_Client/application"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/monitoring"
-	"github.com/OpenBanking-Brasil/MQD_Client/result"
-	"github.com/OpenBanking-Brasil/MQD_Client/validation/settings"
-	"github.com/OpenBanking-Brasil/MQD_Client/worker"
+	"github.com/OpenBanking-Brasil/MQD_Client/domain/services"
 )
 
 // Main is the main function of the api, that is executed on "run"
@@ -18,21 +16,22 @@ func main() {
 	monitoring.StartOpenTelemetry()
 	configuration.Initialize()
 	logger := log.GetLogger()
+	reportServer := services.GetReportServer(logger)
 
-	cm := settings.NewConfigurationManager(logger)
+	cm := application.NewConfigurationManager(logger, *reportServer, configuration.Environment)
 	err := cm.Initialize()
 	if err != nil {
 		logger.Fatal(err, "There was a fatal error loading initial settings.", "Main", "Main")
 	}
 
+	qm := application.GetQueueManager()
+	rp := application.GetResultProcessor(logger, *reportServer, cm)
+	mp := application.GetMessageProcessorWorker(logger, rp, qm, cm)
+
+	// Start workers
 	go cm.StartUpdateProcess()
-
-	rp := result.GetResultProcessor(logger)
-	mp := worker.GetMessageProcessorWorker(logger, rp, cm)
-
-	// Start the worker Goroutine to process messages
 	go mp.StartWorker()
 	go rp.StartResultsProcessor()
 
-	apiserver.GetAPIServer(logger, monitoring.GetOpentelemetryHandler(), cm).StartServing()
+	application.GetAPIServer(logger, monitoring.GetOpentelemetryHandler(), qm, cm).StartServing()
 }

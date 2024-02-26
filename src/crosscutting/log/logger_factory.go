@@ -8,10 +8,11 @@ var (
 )
 
 // GetLogger returns the logger
-// @author AB
-// @param
-// @return
-// Logger created
+//
+// Parameters:
+//
+// Returns:
+//   - logger: Logger created
 func GetLogger() Logger {
 	if singleton == nil {
 		lock.Lock()

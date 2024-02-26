@@ -1,0 +1,41 @@
+@startuml
+title Fluxo Transmissora - Motor Qualidade de Dados
+
+box "RECEPTORA" #B1DDF0
+  participant SERVICE #7EA6E0
+end box
+
+box TRANSMISORA #D5E8D4
+  participant API #7EA6E0
+  participant MQD #7EA6E0
+end box
+
+note over SERVICE 
+   1. A RECEPTORA faz a solicitacao para 
+   TRANSMISORA com o fluxo normal
+end note
+
+SERVICE -> API
+autonumber 2
+API -> API: Process Request
+API -> SERVICE: Response (Corpo + Cabecalho)
+  note over API 
+     2. A solicitacao deve ser atualizada incluindo 
+     a resposta enviada para a RECEPTORA
+     (Corpo + Cabecalho), adicionando os parâmetros 
+     clientOrgID(ID RECEPTORA) e endpointName ao cabecalho 
+  end note
+API -> API : UpdateRequest
+
+API -> MQD: POST /ValidateResponse
+note over MQD
+  3. MQD valida as informacoes 
+  do Cabecalho, se estiver completo, 
+  e se o Endpoint é suportado,
+  adiciona a messagem na Fila
+end note
+MQD -> MQD: ValidateResponse
+MQD -> MQD: Queue Messsage
+MQD -> API : OK
+
+@enduml

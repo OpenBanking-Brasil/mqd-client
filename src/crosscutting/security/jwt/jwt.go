@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// JWKToken struct
+// JWKToken Struct that stores the properties oj a JWT token
 type JWKToken struct {
 	AccessToken      string `json:"access_token"`       // Access token to be used
 	TokenType        string `json:"token_type"`         // Type of token
@@ -20,12 +21,14 @@ type JWKToken struct {
 	Scope            string `json:"scope"`              // Scope of the token
 }
 
-// validateExpiration validates the expiration date of a jwt token
-// @author AB
-// @params
-// token: JWT token to be validated
-// @return
-// bool: true if token is still valid
+// ValidateExpiration validates the expiration date of a jwt token
+//
+// Parameters:
+//   - logger: Logger to be used
+//   - token: JWT token to be validated
+//
+// Returns:
+//   - bool: true if token is still valid
 func ValidateExpiration(logger log.Logger, token *JWKToken) bool {
 	logger.Info("Validating expiration", "jwt", "validateExpiration")
 
@@ -57,13 +60,47 @@ func ValidateExpiration(logger log.Logger, token *JWKToken) bool {
 }
 
 // GetTokenFromReader reads a jwt token from a reader
-// @author AB
-// @params
-// logger: Logger to be used
-// reader: Reader that contains the information of the token
-// @return
+//
+// Parameters:
+//   - logger: Logger to be used
+//   - reader: Reader that contains the information of the token
+//
+// Returns:
+//   - JWKToken: Token read from the reader
+//   - error: error if any
 func GetTokenFromReader(logger log.Logger, reader io.Reader) (*JWKToken, error) {
 	result := &JWKToken{}
+
+	// Decode the JSON response into a JWKToken struct
+	err := json.NewDecoder(reader).Decode(&result)
+	if err != nil {
+		logger.Error(err, "Error decoding JSON response", "jwt", "GetTokenFromReader")
+		return nil, err
+	}
+
+	// Access the fields of the JWKToken object
+	logger.Debug("Access Token: "+result.AccessToken, "jwt", "GetTokenFromReader")
+	logger.Debug("Token Type: "+result.TokenType, "jwt", "GetTokenFromReader")
+	logger.Debug("Expires In: "+strconv.Itoa(result.ExpiresIn), "jwt", "GetTokenFromReader")
+	logger.Debug("Refresh Token: "+strconv.Itoa(result.RefreshExpiresIn), "jwt", "GetTokenFromReader")
+
+	return result, nil
+}
+
+// GetTokenFromBinary reads a jwt token from a reader
+//
+// Parameters:
+//   - logger: Logger to be used
+//   - data: Byte array with the token information
+//
+// Returns:
+//   - JWKToken: Token read from the reader
+//   - error: error if any
+func GetTokenFromBinary(logger log.Logger, data []byte) (*JWKToken, error) {
+	result := &JWKToken{}
+
+	// Create a reader from the binary array
+	reader := bytes.NewReader(data)
 
 	// Decode the JSON response into a JWKToken struct
 	err := json.NewDecoder(reader).Decode(&result)
