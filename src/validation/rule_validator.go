@@ -8,19 +8,19 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 )
 
-// Define a dynamic structure map to represent the dynamic content of Message
+// DynamicStruct Defines a dynamic map to represent the dynamic content of Message
 type DynamicStruct map[string]interface{}
 
-// Structure to store the validation rules
-type ValidationRule struct {
+// Rule stores the validation rules
+type Rule struct {
 	FieldName      string // Name of the field that needs validation
 	ValidationRule string // Name of the validation rule to be applied
 }
 
-// Struture to represent a validator with ValidationRules
+// RuleValidator represents a validator with ValidationRules
 type RuleValidator struct {
 	pack   string
-	Rules  []ValidationRule // List of validation rules to execute
+	Rules  []Rule // List of validation rules to execute
 	logger log.Logger
 }
 
@@ -30,7 +30,7 @@ type RuleValidator struct {
 // rules: List of rules that will apply during the validation
 // @return
 // Validator created
-func NewRuleValidator(logger log.Logger, rules []ValidationRule) *RuleValidator {
+func NewRuleValidator(logger log.Logger, rules []Rule) *RuleValidator {
 	return &RuleValidator{
 		Rules:  rules,
 		pack:   "RuleValidator",
@@ -60,9 +60,9 @@ func NewRuleValidatorFromFile(fileName string) *RuleValidator {
 // data: DynamicStruct to be validated
 // @return
 // Error if validation fails.
-func (v *RuleValidator) Validate(data DynamicStruct) (*ValidationResult, error) {
+func (rv *RuleValidator) Validate(data DynamicStruct) (*Result, error) {
 	//// TODO Update function to return Validation results for each field
-	for _, rule := range v.Rules {
+	for _, rule := range rv.Rules {
 		fieldName := rule.FieldName
 		validationRule := rule.ValidationRule
 
@@ -71,7 +71,7 @@ func (v *RuleValidator) Validate(data DynamicStruct) (*ValidationResult, error) 
 			return nil, fmt.Errorf("Field '%s' not found in data", fieldName)
 		}
 
-		if err := v.applyValidationRule(fieldName, validationRule, fieldValue); err != nil {
+		if err := rv.applyValidationRule(fieldName, validationRule, fieldValue); err != nil {
 			return nil, err
 		}
 	}
@@ -87,7 +87,7 @@ func (v *RuleValidator) Validate(data DynamicStruct) (*ValidationResult, error) 
 // value: Value of the field to be validated
 // @return
 // Returns error if validation fails
-func (v *RuleValidator) applyValidationRule(fieldName, validationRule string, value interface{}) error {
+func (rv *RuleValidator) applyValidationRule(fieldName, validationRule string, value interface{}) error {
 	//// Implement validation logic based on the validation rule
 	//// might need to use a validation library or custom logic here
 	//// fmt.Printf("Validating field '%s' with rule '%s' and value '%v'\n", fieldName, validationRule, value)
@@ -101,20 +101,20 @@ func (v *RuleValidator) applyValidationRule(fieldName, validationRule string, va
 // @return
 // ValidationRule: List of validation rules loaded
 // error in case of read error.
-func (v *RuleValidator) loadValidationRules(filename string) error {
+func (rv *RuleValidator) loadValidationRules(filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		v.logger.Error(err, "error reading file", "Validator", "LoadValidationRules")
+		rv.logger.Error(err, "error reading file", "Validator", "LoadValidationRules")
 		return err
 	}
 
-	var rules []ValidationRule
+	var rules []Rule
 	err = json.Unmarshal(data, &rules)
 	if err != nil {
-		v.logger.Error(err, "error unmarshal file", "Validator", "LoadValidationRules")
+		rv.logger.Error(err, "error unmarshal file", "Validator", "LoadValidationRules")
 		return err
 	}
 
-	v.Rules = rules
+	rv.Rules = rules
 	return nil
 }

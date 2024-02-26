@@ -2,12 +2,12 @@ package log
 
 import "context"
 
-// LogLevel - Custom type to hold value for weekday ranging from 1-7
-type LogLevel int
+// Level - Custom type to hold value for weekday ranging from 1-7
+type Level int
 
 // Declare related constants for each LogLevel starting with index 0
 const (
-	DebugLevel LogLevel = iota // DebugLevel defines debug log level.
+	DebugLevel Level = iota // DebugLevel defines debug log level.
 	// InfoLevel defines info log level.
 	InfoLevel
 	// WarnLevel defines warn log level.
@@ -24,15 +24,15 @@ const (
 	Disabled
 
 	// TraceLevel defines trace log level.
-	TraceLevel LogLevel = -1
+	TraceLevel Level = -1
 )
 
 // Logger - Interface to log
 type Logger interface {
 	WithContext(context context.Context) Logger                     // indicates wich context to use
-	SetLoggingGlobalLevel(level LogLevel)                           // Sets the global level for the globbing feature
+	SetLoggingGlobalLevel(level Level)                              // Sets the global level for the globbing feature
 	SetLoggingGlobalLevelFromString(level string)                   // Sets the global level for the globbing feature based on a string,
-	GetLoggingGlobalLevel() LogLevel                                // Gets the global level for the globbing feature
+	GetLoggingGlobalLevel() Level                                   // Gets the global level for the globbing feature
 	Trace(message string, pack string, component string)            // Trace logs a message at trace level.
 	Log(message string, pack string, component string)              // Trace writes a message to the LOG level
 	Debug(message string, pack string, component string)            // Trace writes a message to the DEBUG level

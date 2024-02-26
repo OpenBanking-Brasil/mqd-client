@@ -1,0 +1,57 @@
+@startuml
+title Fluxo: Atualização de Configuração
+
+!pragma teoz true
+box "INSTITUIÇÃO FINANCEIRA" #LightBlue
+   box "Motor Qualidade de Dados (MQD)" #D5E8D4
+     participant CONFIGURATION_MANAGER #7EA6E0
+   end box
+   box "MQD SERVER PROXY" #D5E8D4
+     participant PROXY #7EA6E0
+   end box
+end box
+
+box "PERIMETRO CENTRAL" #D5E8D4
+   box "MQD SERVER" #LightBlue
+     participant GATEWAY #B1DDF0
+   end box
+end box
+
+note over CONFIGURATION_MANAGER 
+   1. A cada 6 horas, o MQD
+      executa o processo de atualização 
+      das configurações
+end note
+
+autonumber 0
+CONFIGURATION_MANAGER -> PROXY: Request Token
+PROXY -> GATEWAY: Request Token
+GATEWAY -> PROXY: JWT Token
+PROXY -> CONFIGURATION_MANAGER: JWT Token
+
+
+CONFIGURATION_MANAGER -> PROXY : Request Configuration
+PROXY -> GATEWAY : Request Configuration
+GATEWAY -> PROXY: ConfigurationSettings.json
+PROXY -> CONFIGURATION_MANAGER: ConfigurationSettings.json
+
+CONFIGURATION_MANAGER -> CONFIGURATION_MANAGER: Check Configuration
+
+note over CONFIGURATION_MANAGER 
+   caso a configuração seja differente
+   da atual, é iniciado o processo de 
+   atualização detalhada
+end note
+
+alt Configuration is different
+   loop messages.APIGroups times
+      CONFIGURATION_MANAGER -> PROXY: APIGroup
+      PROXY -> GATEWAY: APIGroup
+      GATEWAY -> PROXY :APIGroup Configuration
+      PROXY -> CONFIGURATION_MANAGER :APIGroup Configuration
+   end
+  
+   CONFIGURATION_MANAGER -> CONFIGURATION_MANAGER : Update Configuration Settings
+
+end
+@enduml
