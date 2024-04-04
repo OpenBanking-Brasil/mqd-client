@@ -11,7 +11,7 @@ Este fluxo representa o processo de enfileramento de messagens e integração co
 | 1. | SERVICE | O serviço gera uma solicitação para a API da TRANSMISORA |
 | 2. | API | A API processa a solicitação recebida |
 | 3. | API | A API retorna um resultado para a solicitação |
-| 4. | SERVICE | O Serviço gera uma nova requisição, tendo como base a Resposta da TRANSMISORA, incluindo no cabeçalho o valor de [EndpointName] e [serverOrgId] que indica o ID do transmissor |
+| 4. | SERVICE | O Serviço gera uma nova requisição, tendo como base a Resposta da TRANSMISORA, incluindo no cabeçalho o valor de [EndpointName] e [serverOrgId] que indica o ID do transmissor (enviar somente validações de solicitações bem-sucedidas - 2xx) |
 | 5. | SERVICE | O serviço envia a nova solicitação para a API do MQD  |
 | 6. | MQD | MQD Valida se as informações do cabeçalho estão completas e corretas |
 | 7. | MQD | MQD encaminha as informações para serem processadas posteriormente |
