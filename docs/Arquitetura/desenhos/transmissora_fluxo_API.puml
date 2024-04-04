@@ -16,13 +16,15 @@ note over SERVICE
 end note
 
 SERVICE -> API
+autonumber 2
 API -> API: Process Request
 API -> SERVICE: Response (Corpo + Cabecalho)
   note over API 
      2. A solicitacao deve ser atualizada incluindo 
      a resposta enviada para a RECEPTORA
      (Corpo + Cabecalho), adicionando os parâmetros 
-     clientOrgID(ID RECEPTORA) e endpointName ao cabecalho 
+     clientOrgID(ID RECEPTORA) e endpointName ao cabecalho
+     (enviar somente validações de solicitações bem-sucedidas - 2xx) 
   end note
 API -> API : UpdateRequest
 
@@ -33,7 +35,8 @@ note over MQD
   e se o Endpoint é suportado,
   adiciona a messagem na Fila
 end note
-MQD -> MQD: Queue Messsage
+MQD -> MQD : ValidateResponse
+MQD -> MQD : Queue Messsage
 MQD -> API : OK
 
 @enduml
