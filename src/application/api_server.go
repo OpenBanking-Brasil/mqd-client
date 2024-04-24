@@ -1,10 +1,11 @@
 package application
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
-	"math/rand"
+	"math/big"
 	"net/http"
 	"strings"
 	"time"
@@ -103,8 +104,7 @@ func (as *APIServer) updateReponseError(w http.ResponseWriter, genericError Gene
 // Returns:
 //   - bool: true if the endpoint should be validated
 func (as *APIServer) mustValidate(endpointSetting *models.APIEndpointSetting) bool {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	value := r.Intn(100)
+	value := as.getRandomNumber()
 	switch endpointSetting.Throughput {
 	case models.ExtremelyHighTroughput:
 		return value < as.cm.ConfigurationSettings.ValidationSettings.ExtremelyHighTroughputValidationRate
@@ -119,6 +119,27 @@ func (as *APIServer) mustValidate(endpointSetting *models.APIEndpointSetting) bo
 	}
 
 	return true
+}
+
+// getRandomNumber generates a new random number using Cryptographic Randomness
+//
+// Returns:
+//   - int: Random number generated
+func (as *APIServer) getRandomNumber() int {
+	// Define the upper limit (101 for inclusive range of 0-100)
+	max := big.NewInt(101)
+
+	// Generate a random number between 0 (inclusive) and max (exclusive)
+	num, err := rand.Int(rand.Reader, max)
+	if err != nil {
+		as.logger.Error(err, "Error generating random number:", as.pack, "getRandomNumber")
+		return 100
+	}
+
+	// Convert the big.Int to an int for easier use
+	number := int(num.Int64())
+
+	return number
 }
 
 // handleValidateResponseMessage Handles requests to the specified urls in the settings

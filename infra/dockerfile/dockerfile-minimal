@@ -1,15 +1,40 @@
 FROM docker.io/golang:alpine as builder
+
+# Install necessary dependencies
 RUN apk update && apk add --no-cache git
+
+# Set up work directory
 WORKDIR /src
+
+# Copy go.mod and go.sum separately to leverage caching
 COPY /src/go.mod .
 COPY /src/go.sum .
 RUN go mod download
+
+# Copy the rest of the source code
 COPY /src/. .
+
+# Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./server/mqd-client .
 
 FROM docker.io/alpine
-WORKDIR /usr/
-COPY --from=builder /src/server .
+
+# Set up an unprivileged user
+RUN adduser -D mqd_user
+
+#WORKDIR /usr/
+#COPY --from=builder /src/server .
+
+#Copy the built binary and set up unprivileged user
+COPY --from=builder /src/server /usr/server
+COPY --from=builder --chown=mqd_user /src/server/mqd-client /usr/mqd-client
+
+# Switch to the unprivileged user
+USER mqd_user
+
 EXPOSE 8080
 EXPOSE 8081
-CMD ./mqd-client
+
+#CMD ./mqd-client
+# Run the application
+CMD ["/usr/mqd-client"]

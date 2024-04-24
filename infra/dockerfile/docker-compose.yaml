@@ -31,4 +31,5 @@ services:
       - "8082:80"
     volumes:
      - ./proxy/default.sandbox.conf:/etc/nginx/conf.d/default.conf:ro
+     - ./proxy/nginx.conf:/etc/nginx/nginx.conf
      - ./certificates:/etc/ssl  
