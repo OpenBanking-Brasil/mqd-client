@@ -2,7 +2,6 @@ package application
 
 import (
 	"encoding/json"
-	"errors"
 	"strconv"
 	"strings"
 	"sync"
@@ -64,9 +63,15 @@ func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer,
 
 		reportExecutionWindow := crosscutting.GetEnvironmentValue(logger, reportExecutionWindowEnv, "")
 		if reportExecutionWindow != "" {
-			value, err := strconv.Atoi(reportExecutionWindow)
+			value, err := strconv.Atoi(strings.TrimSpace(reportExecutionWindow))
 			if err != nil {
-				logger.Fatal(errors.New("report execution window environment variable unvalid character"), "Error loading REPORT_EXECUTION_WINDOW", configurationManagerSingleton.Pack, "NewConfigurationManager")
+				logger.Warning("Error loading REPORT_EXECUTION_WINDOW", configurationManagerSingleton.Pack, "NewConfigurationManager")
+				value = 0
+			}
+
+			if value > 60 || value < 0 {
+				logger.Warning("Value out of range for  REPORT_EXECUTION_WINDOW(1 - 60), using default value from system", configurationManagerSingleton.Pack, "NewConfigurationManager")
+				value = 0
 			}
 
 			configurationManagerSingleton.reportExecutionWindow = value
@@ -76,9 +81,15 @@ func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer,
 
 		reportExecutionNumber := crosscutting.GetEnvironmentValue(logger, reportExecutionNumberEnv, "")
 		if reportExecutionNumber != "" {
-			value, err := strconv.Atoi(reportExecutionWindow)
+			value, err := strconv.Atoi(strings.TrimSpace(reportExecutionNumber))
 			if err != nil {
-				logger.Fatal(errors.New("report execution Number environment variable unvalid character"), "Error loading REPORT_EXECUTION_NUMBER", configurationManagerSingleton.Pack, "NewConfigurationManager")
+				logger.Warning("Error loading REPORT_EXECUTION_NUMBER: ["+reportExecutionNumber+"]", configurationManagerSingleton.Pack, "NewConfigurationManager")
+				value = 0
+			}
+
+			if value > 200000 || value < 10000 {
+				logger.Warning("Value out of range for REPORT_EXECUTION_NUMBER (10000 - 200000), using default value from system", configurationManagerSingleton.Pack, "NewConfigurationManager")
+				value = 0
 			}
 
 			configurationManagerSingleton.reportExecutionNumber = value

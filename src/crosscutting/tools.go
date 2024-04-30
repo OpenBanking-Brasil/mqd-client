@@ -2,6 +2,7 @@ package crosscutting
 
 import (
 	"os"
+	"strings"
 
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 )
@@ -20,7 +21,7 @@ func GetEnvironmentValue(logger log.Logger, key string, defaultValue string) str
 	}
 
 	logger.Log("Evironment Variable: ["+key+"] = ["+result+"]", "configuration", "GetEnvironmentValue")
-	return result
+	return strings.TrimSpace(result)
 }
 
 // GetWorkingFolder returns the actual working folder of the application
