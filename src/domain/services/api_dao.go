@@ -70,7 +70,12 @@ func (ad *RestAPI) executeRequest(url string) ([]byte, *errorhandling.ErrorRespo
 			MainError:        err,
 		}
 	}
-	defer resp.Body.Close()
+	// defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			ad.Logger.Error(err, "Error closing response body", ad.Pack, "executeGet")
+		}
+	}()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -127,7 +132,11 @@ func (ad *RestAPI) executeMethod(method string, url string, body []byte) *errorh
 			MainError: err,
 		}
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			ad.Logger.Error(err, "Error closing response body", ad.Pack, "executeGet")
+		}
+	}()
 
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -151,73 +160,6 @@ func (ad *RestAPI) executeMethod(method string, url string, body []byte) *errorh
 
 	return nil
 }
-
-// func (ad *API_DAO) getRequest(authenticationType AuthenticationType) (*resty.Request, error) {
-// 	// Create a Resty Client
-// 	client := resty.New()
-// 	request := client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).R()
-// 	switch authenticationType {
-// 	case NoToken:
-// 		return request, nil
-// 	case ApiToken:
-// 		request = request.SetAuthScheme("Api-Token").SetAuthToken(ad.apiToken)
-// 	case BearerToken:
-// 		// err := ad.getJWKToken()
-// 		// if err != nil {
-// 		// 	ad.Logger.Error(err, "Error getting JWK Token", ad.Pack, "getRequest")
-// 		// 	return request, err
-// 		// }
-
-// 		// request = request.SetAuthToken(ad.token.AccessToken)
-// 	}
-
-// 	return request, nil
-// }
-
-// getFromAPI executes a request to the API and returns the indicated interface
-// @author AB
-// @param
-// method: method of the request
-// url: url of the API
-// result: object to be mapped with the response
-// @return
-// error if any
-// func (ad *API_DAO) getFromAPI(method string, url string, authenticationType AuthenticationType, result interface{}) *errorhandling.ErrorResponse {
-// 	request, err := ad.getRequest(authenticationType)
-// 	if err != nil {
-// 		ad.Logger.Error(err, "Error getting JWK Token", ad.Pack, "getRequest")
-// 		return &errorhandling.ErrorResponse{
-// 			Error:            "Error loading the request",
-// 			ErrorDescription: "There was an error while loading the request",
-// 			MainError:        err,
-// 		}
-// 	}
-
-// 	resp, err := request.
-// 		SetResult(&result).
-// 		Execute(method, url)
-// 	if err != nil {
-// 		ad.Logger.Error(err, "There was an error executing the request: "+url, ad.Pack, "getFromAPI")
-// 		return &errorhandling.ErrorResponse{
-// 			Error:            "Error executing the request",
-// 			ErrorDescription: "There was an error while executing the request",
-// 			MainError:        err,
-// 		}
-// 	}
-
-// 	if resp.StatusCode() >= 300 {
-// 		ad.Logger.Warning("Status code not expected: "+strconv.Itoa(resp.StatusCode()), ad.Pack, "getFromAPI")
-// 		ad.Logger.Warning("For url: "+url, ad.Pack, "getFromAPI")
-// 		ad.Logger.Warning("Body: "+string(resp.Body()), ad.Pack, "getFromAPI")
-// 		return &errorhandling.ErrorResponse{
-// 			Error:            "There was an error during the request",
-// 			ErrorDescription: "Unexpected status code :" + http.StatusText(resp.StatusCode()),
-// 			MainError:        errors.New("unexpected status code: " + strconv.Itoa(resp.StatusCode())),
-// 		}
-// 	}
-
-// 	return nil
-// }
 
 // loadCertificates Loads certificates from environment variables
 // @author AB
@@ -328,7 +270,7 @@ func (ad *RestAPI) executeGet(url string, reetryTimes int) ([]byte, error) {
 
 	if response.StatusCode == http.StatusForbidden {
 		ad.Logger.Warning("Forbidden status code", ad.Pack, "executeGet")
-		return nil, errors.New("Forbidden status code")
+		return nil, errors.New("forbidden status code")
 	}
 
 	// Check the status code of the response
@@ -342,7 +284,13 @@ func (ad *RestAPI) executeGet(url string, reetryTimes int) ([]byte, error) {
 		return nil, errors.New("invalid status code: " + strconv.Itoa(response.StatusCode))
 	}
 
-	defer response.Body.Close()
+	defer func() {
+		if err := response.Body.Close(); err != nil {
+			ad.Logger.Error(err, "Error closing response body", ad.Pack, "executeGet")
+		}
+	}()
+
+	// defer response.Body.Close()
 
 	// Read the response body
 	body, err := io.ReadAll(response.Body)

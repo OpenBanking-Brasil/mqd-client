@@ -68,31 +68,32 @@ func (mpw *MessageProcessorWorker) processMessage(msg *Message) {
 	messageProcessorWorkerMutex.Lock()
 	mpw.receivedValues[msg.Endpoint]++
 	messageProcessorWorkerMutex.Unlock()
-
-	// endpointSettings := settings.GetEndpointSetting(msg.Endpoint)
 	endpointSettings, _ := mpw.cm.GetEndpointSettingFromAPI(msg.Endpoint, mpw.Logger)
 
 	if endpointSettings == nil {
 		mpw.Logger.Warning("Ignoring message with endpoint: "+msg.Endpoint, mpw.Pack, "processMessage")
 	} else {
+		messageResult := MessageResult{
+			Endpoint:           msg.Endpoint,
+			HTTPMethod:         msg.HTTPMethod,
+			ServerID:           msg.ServerID,
+			XFapiInteractionID: msg.XFapiInteractionID,
+		}
 		vr, err := mpw.validateMessage(msg, endpointSettings)
 		if err != nil {
-			//// TODO handle error
-			mpw.Logger.Error(err, "Error during Validation", mpw.Pack, "processMessage")
+			mpw.Logger.Error(err, "Error during Validation for endpoint: "+msg.Endpoint, mpw.Pack, "processMessage")
+			messageResult.Result = false
+			messageResult.Errors = map[string][]string{
+				"(error)": {err.Error()},
+			}
 		} else {
 			// Create a message result entry
-			messageResult := MessageResult{
-				Endpoint:           msg.Endpoint,
-				HTTPMethod:         msg.HTTPMethod,
-				Result:             vr.Valid,
-				Errors:             vr.Errors,
-				ServerID:           msg.ServerID,
-				XFapiInteractionID: msg.XFapiInteractionID,
-			}
-
-			monitoring.IncreaseValidationResult(messageResult.ServerID, messageResult.Endpoint, messageResult.Result)
-			mpw.resultProcessor.AppendResult(&messageResult)
+			messageResult.Result = vr.Valid
+			messageResult.Errors = vr.Errors
 		}
+
+		monitoring.IncreaseValidationResult(messageResult.ServerID, messageResult.Endpoint, messageResult.Result)
+		mpw.resultProcessor.AppendResult(&messageResult)
 
 		messageProcessorWorkerMutex.Lock()
 		mpw.validatedValues[msg.Endpoint]++
@@ -111,10 +112,13 @@ func (mpw *MessageProcessorWorker) processMessage(msg *Message) {
 //   - error: Error in case ther is a problem reading or validating the schema
 func (mpw *MessageProcessorWorker) validateContentWithSchema(content string, schema string, validationResult *validation.Result) error {
 	mpw.Logger.Info("Validating content with schema", mpw.Pack, "validateContentWithSchema")
+
 	// Create a dynamic structure from the Message content
 	var dynamicStruct validation.DynamicStruct
 	err := json.Unmarshal([]byte(content), &dynamicStruct)
 	if err != nil {
+		mpw.Logger.Error(err, "Error unmarshalling content", mpw.Pack, "validateContentWithSchema")
+		mpw.Logger.Debug("Content message: "+content, mpw.Pack, "validateContentWithSchema")
 		validationResult.Valid = false
 		return err
 	}
@@ -148,27 +152,22 @@ func (mpw *MessageProcessorWorker) validateContentWithSchema(content string, sch
 //   - ValidationResult: Result of the validation for the specified message
 //   - error: error in case there is a problem during the validation
 func (mpw *MessageProcessorWorker) validateMessage(msg *Message, settings *models.APIEndpointSetting) (*validation.Result, error) {
-	mpw.Logger.Info("Validating message", mpw.Pack, "validateMessage")
+	mpw.Logger.Info("Validating message for endpoint: "+msg.Endpoint, mpw.Pack, "validateMessage")
 	validationResult := validation.Result{Valid: true, Errors: make(map[string][]string)}
 
 	err := mpw.validateContentWithSchema(msg.HeaderMessage, settings.JSONHeaderSchema, &validationResult)
 	if err != nil {
+		mpw.Logger.Error(err, "Error during header validation", mpw.Pack, "validateMessage")
 		validationResult.Valid = false
 		return &validationResult, err
 	}
 
 	err = mpw.validateContentWithSchema(msg.Message, settings.JSONBodySchema, &validationResult)
 	if err != nil {
+		mpw.Logger.Error(err, "Error during body validation", mpw.Pack, "validateMessage")
 		validationResult.Valid = false
 		return &validationResult, err
 	}
-
-	// // Load validation rules from the CSV file
-	//// rules, err := validator.LoadValidationRules("ParameterData\\validation_rules.json")
-	//// if err != nil {
-	//// 	validationResult.Valid = false
-	//// 	return validationResult, err
-	//// }
 
 	return &validationResult, nil
 }

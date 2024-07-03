@@ -1,7 +1,7 @@
-FROM docker.io/golang:alpine as builder
+FROM docker.io/golang:1.22.4 as builder
 
 # Install necessary dependencies
-RUN apk update && apk add --no-cache git
+#RUN apk update && apk add --no-cache git
 
 # Set up work directory
 WORKDIR /src
