@@ -34,7 +34,9 @@ type ApplicationConfiguration struct {
 	Environment               string                    // Environment of the application
 	ConfigurationUpdateStatus ConfigurationUpdateStatus // Status of the configuration update
 	ReportExecutionWindow     string                    // Report Execution Window of the application
+	ReportExecutionNumber     string                    // Report Execution Number limit of the application
 	ApplicationMode           string                    // Mode of the application - TRANSMITTER / RECEIVER
+	ApplicationID             string                    // unique identifier for the application
 }
 
 // UnsupportedEndpoint shows the list of unsupported endpoints requested to the API

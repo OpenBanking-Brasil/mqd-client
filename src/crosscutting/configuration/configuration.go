@@ -5,6 +5,7 @@ import (
 
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
+	"github.com/google/uuid"
 )
 
 const (
@@ -30,6 +31,7 @@ var (
 	// ServerURL to send the reports to
 	ServerURL       = ""
 	lastUpdatedDate = time.Time{} // Indicates the data of the last report update
+	ApplicationID   = uuid.New()
 )
 
 // loadEnvironmentSettings Loads settings specified as environment variables, or assigns default values
@@ -50,7 +52,6 @@ func loadEnvironmentSettings(logger log.Logger) {
 	} else {
 		logger.SetLoggingGlobalLevelFromString(crosscutting.GetEnvironmentValue(logger, loggingLevelEnv, "WARNING"))
 		ClientID = crosscutting.GetEnvironmentValue(logger, serverOrgIDEnv, "")
-		// ServerURL = "https://mqd.openfinancebrasil.org.br"
 		ServerURL = crosscutting.GetEnvironmentValue(logger, proxyURL, "http://localhost:8082")
 	}
 
@@ -68,7 +69,6 @@ func loadEnvironmentSettings(logger log.Logger) {
 func setupDevEnvironment(logger log.Logger) {
 	logger.SetLoggingGlobalLevelFromString(crosscutting.GetEnvironmentValue(logger, loggingLevelEnv, "DEBUG"))
 	ClientID = crosscutting.GetEnvironmentValue(logger, serverOrgIDEnv, "09b20d09-bf30-4497-938e-b0ead8ce9629")
-	// ServerURL = "https://auth-gateway-dev.openfinancebrasil.net.br"
 	ServerURL = crosscutting.GetEnvironmentValue(logger, proxyURL, "http://localhost:8082")
 }
 

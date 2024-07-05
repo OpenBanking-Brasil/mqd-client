@@ -14,7 +14,8 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/domain/services"
 )
 
-const version = "2.0.0"
+// version indicates the current version of the application
+const version = "2.1.0"
 
 // MessageResult contains the information for a validation
 type MessageResult struct {
@@ -157,7 +158,11 @@ func (rp *ResultProcessor) processAndSendResults() {
 	rp.Logger.Debug("Total ServerSummary processe :"+strconv.Itoa(len(report.ServerSummary)), rp.Pack, "processAndSendResults")
 	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ReportGenerationtime", Value: time.Since(processStartTime).String()})
 
-	rp.mqdServer.SendReport(report)
+	err := rp.mqdServer.SendReport(report)
+	if err != nil {
+		rp.Logger.Error(err, "Error sending report", rp.Pack, "processAndSendResults")
+		return
+	}
 	rp.printReport(report)
 	rp.Logger.Info("processAndSendResults -> Process finished", "server", "postReport")
 }
@@ -172,14 +177,19 @@ func (rp *ResultProcessor) updateMetrics(report *models.Report) {
 	rp.Logger.Info("Updating metrics", rp.Pack, "updateMetrics")
 	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ReportStartDate", Value: rp.reportStartTime.String()})
 	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ReportEndDate", Value: time.Now().String()})
-	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.BadRequestErrors", Value: strconv.Itoa(monitoring.GetAndCleanBadRequestsReceived())})
-	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.TotalRequests", Value: strconv.Itoa(monitoring.GetAndCleanRequestsReceived())})
-	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.MemmoryUsageAvg", Value: monitoring.GetAndCleanAverageMemmory()})
-	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ResposeTimeAvg", Value: monitoring.GetAndCleanResponseTime()})
+	systemMetrics := monitoring.GetAndCleanSystemMetrics()
+	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.BadRequestErrors", Value: systemMetrics.BadRequestsReceived})
+	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.TotalRequests", Value: systemMetrics.RequestsReceived})
+	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.MemmoryUsageAvg", Value: systemMetrics.AverageMemmory})
+	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.MemmoryUsageMax", Value: systemMetrics.MaxUsedMemory})
+	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.CPUNumber", Value: systemMetrics.AllowedCPUs})
+	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ResposeTimeAvg", Value: systemMetrics.AverageResponseTime})
 
 	report.ApplicationConfiguration.ApplicationVersion = version
 	report.ApplicationConfiguration.Environment = configuration.Environment
+	report.ApplicationConfiguration.ApplicationID = configuration.ApplicationID.String()
 	report.ApplicationConfiguration.ReportExecutionWindow = strconv.Itoa(rp.cm.GetReportExecutionWindow())
+	report.ApplicationConfiguration.ReportExecutionNumber = strconv.Itoa(rp.cm.GetSendOnReportNumber())
 	report.ApplicationConfiguration.ConfigurationUpdateStatus.LastExecutionDate = rp.cm.GetLastExecutionDate()
 	report.ApplicationConfiguration.ConfigurationUpdateStatus.LastUpdatedDate = rp.cm.GetLastUpdatedDate()
 	for key, value := range rp.cm.GetUpdateMessages() {
