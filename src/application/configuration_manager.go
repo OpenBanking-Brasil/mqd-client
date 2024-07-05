@@ -270,7 +270,10 @@ func (cm *ConfigurationManager) StartUpdateProcess() {
 	for {
 		select {
 		case <-ticker.C:
-			cm.updateConfiguration()
+			err := cm.updateConfiguration()
+			if err != nil {
+				cm.Logger.Error(err, "Error updating configuration", cm.Pack, "StartUpdateProcess")
+			}
 		}
 	}
 }

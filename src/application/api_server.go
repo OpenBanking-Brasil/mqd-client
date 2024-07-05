@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"math/big"
 	"net/http"
@@ -66,8 +67,15 @@ func (as *APIServer) StartServing() {
 
 	port := crosscutting.GetEnvironmentValue(as.logger, "API_PORT", ":8080")
 
+	server := &http.Server{
+		Addr:         port,
+		Handler:      r,
+		ReadTimeout:  20 * time.Second,
+		WriteTimeout: 20 * time.Second,
+	}
+
 	as.logger.Log("Starting the server on port "+port, as.pack, "Main")
-	as.logger.Fatal(http.ListenAndServe(port, r), "", as.pack, "Main")
+	as.logger.Fatal(server.ListenAndServe(), "", as.pack, "Main")
 }
 
 // updateReponseError Handles requests to the specified urls in the settings
@@ -93,7 +101,11 @@ func (as *APIServer) updateReponseError(w http.ResponseWriter, genericError Gene
 	w.WriteHeader(responseCode)
 
 	// Write the JSON data to the response
-	w.Write(jsonData)
+	_, err = w.Write(jsonData)
+	if err != nil {
+		as.logger.Error(err, "Error writing JSON response:", as.pack, "updateReponseError")
+		return
+	}
 }
 
 // mustValidate indicates if the endpoint should be validated or not base on the validation rate configured
@@ -165,6 +177,32 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 		return
 	}
 
+	xFapiID := r.Header.Get("x-fapi-interaction-id")
+	_, err = uuid.Parse(xFapiID)
+	if err != nil {
+		monitoring.IncreaseBadRequestsReceived()
+		genericError.Message = "x-fapi-interaction-id: Not found or bad format."
+		as.updateReponseError(w, *genericError, http.StatusBadRequest)
+		return
+	}
+
+	// Read the body of the message
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		genericError.Message = "Failed to read request body."
+		as.updateReponseError(w, *genericError, http.StatusInternalServerError)
+		return
+	}
+
+	var js json.RawMessage
+	validJson := json.Unmarshal(body, &js) == nil
+	if !validJson {
+		monitoring.IncreaseBadRequestsReceived()
+		genericError.Message = "body: Not a Valid JSON Message."
+		as.updateReponseError(w, *genericError, http.StatusBadRequest)
+		return
+	}
+
 	// Read the Server Organization ID from the header
 	endpointName := r.Header.Get("endpointName")
 
@@ -195,78 +233,19 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 			return
 		}
 
-		// Read the body of the message
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			genericError.Message = "Failed to read request body."
-			as.updateReponseError(w, *genericError, http.StatusInternalServerError)
-			return
-		}
-
 		// Read the Server Organization ID from the header
 		msg.HeaderMessage = headerMsg
 		msg.Message = string(body)
 		msg.Endpoint = endpointName
 		msg.HTTPMethod = r.Method
 		msg.ServerID = serverOrgID
-		xFapiID := r.Header.Get("x-fapi-interaction-id")
+
 		msg.XFapiInteractionID = xFapiID
 
 		// Enqueue the message for processing using worker's enqueueMessage
 		as.qm.EnqueueMessage(&msg)
 	}
 
-	monitoring.RecordResponseDuration(startTime)
-	fmt.Fprintf(w, "Message enqueued for processing!")
-}
-
-// handleMessages Handles requests to the specified urls in the settings
-//
-// Parameters:
-//   - w: Writer to create the response
-//   - r: Request received
-//
-// Returns:
-func (as *APIServer) handleMessages(w http.ResponseWriter, r *http.Request) {
-	startTime := time.Now()
-	monitoring.IncreaseRequestsReceived()
-	var msg Message
-
-	// Get Route name, as the EndPoint Name
-	routeName := mux.CurrentRoute(r).GetName()
-
-	// Read the Server Organization ID from the header
-	serverOrgID := r.Header.Get("serverOrgId")
-	_, err := uuid.Parse(serverOrgID)
-	if err != nil {
-		monitoring.IncreaseBadRequestsReceived()
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("serverOrgId: Not found or bad format."))
-		return
-	}
-
-	// Read header and create a json object
-	headerMsg, err := as.buildHeaderMsg(&r.Header)
-	if err != nil {
-		as.logger.Error(err, "Error: handleMessages", "API", "handleMessages")
-		return
-	}
-
-	// Read the body of the message
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
-		return
-	}
-
-	msg.HeaderMessage = headerMsg
-	msg.Message = string(body)
-	msg.Endpoint = routeName
-	msg.HTTPMethod = r.Method
-	// msg.ClientID = serverOrgID
-
-	// Enqueue the message for processing using worker's enqueueMessage
-	as.qm.EnqueueMessage(&msg)
 	monitoring.RecordResponseDuration(startTime)
 	fmt.Fprintf(w, "Message enqueued for processing!")
 }
@@ -280,15 +259,10 @@ func (as *APIServer) handleMessages(w http.ResponseWriter, r *http.Request) {
 //   - string: JSON Message created
 //   - error: in case of parsing error
 func (as *APIServer) buildHeaderMsg(header *http.Header) (string, error) {
-	// Create a map to store header key-value pairs.
-	objectMap := make(map[string]interface{})
 	headermap := as.getHeaderMap(*header)
-	for k, v := range headermap {
-		objectMap[k] = v
-	}
 
 	// Convert the map to a JSON string.
-	jsonData, err := json.Marshal(objectMap)
+	jsonData, err := json.Marshal(headermap)
 	if err != nil {
 		return "", err
 	}
@@ -309,15 +283,13 @@ func (as *APIServer) getHeaderMap(headers http.Header) map[string]interface{} {
 
 	// Iterate through the header parameters and add them to the map.
 	for key, values := range headers {
-
 		key = strings.ToLower(key)
-		// If there's only one value for the header, store it directly.
-		if len(values) == 1 {
-			headerMap[key] = values[0]
-		} else {
-			// If there are multiple values, store them as an array.
-			headerMap[key] = values
+		// Sanitize each header value using html.EscapeString (adjust based on data type)
+		sanitizedValues := make([]string, 0, len(values))
+		for _, value := range values {
+			sanitizedValues = append(sanitizedValues, html.EscapeString(value))
 		}
+		headerMap[key] = sanitizedValues
 	}
 
 	return headerMap

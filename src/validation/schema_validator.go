@@ -1,9 +1,15 @@
 package validation
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/xeipuuv/gojsonschema"
 )
+
+// DynamicStruct Defines a dynamic map to represent the dynamic content of Message
+type DynamicStruct map[string]interface{}
 
 // SchemaValidator Validator that uses JSON Schemas
 type SchemaValidator struct {
@@ -68,9 +74,50 @@ func (sm *SchemaValidator) Validate(data DynamicStruct) (*Result, error) {
 func (sm *SchemaValidator) cleanErrors(errors []gojsonschema.ResultError) map[string][]string {
 	result := make(map[string][]string)
 	for _, desc := range errors {
-		result[desc.Field()] = append(result[desc.Field()], desc.Description())
-		sm.logger.Debug(desc.Field()+": "+desc.Description(), sm.pack, "cleanErrors")
+		field := sm.cleanString(desc.Field())
+		desc := sm.cleanString(desc.Description())
+		result[field] = append(result[field], desc)
+		sm.logger.Debug(field+": "+desc, sm.pack, "cleanErrors")
 	}
 
 	return result
+}
+
+// cleanString removes unnecesary information from the field an error fields
+//
+// Parameters:
+//   - value: string to be cleaned
+//
+// Returns:
+//   - string: clean string
+func (sm *SchemaValidator) cleanString(value string) string {
+	if !strings.Contains(value, "data") {
+		return value
+	}
+
+	values := strings.Split(value, ".")
+	result := ""
+	for _, v := range values {
+		if !sm.isNumeric(v) {
+			if result == "" {
+				result = v
+			} else {
+				result = result + "." + v
+			}
+		}
+	}
+
+	return result
+}
+
+// isNumeric indicates if a string contains a numeric value
+//
+// Parameters:
+//   - s: String to validate
+//
+// Returns:
+//   - bool: tru if value is numeric
+func (sm *SchemaValidator) isNumeric(s string) bool {
+	_, err := strconv.ParseFloat(s, 64)
+	return err == nil
 }

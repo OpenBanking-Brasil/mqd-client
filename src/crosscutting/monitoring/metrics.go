@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"runtime"
+	"strconv"
 	"sync"
 	"time"
 
@@ -21,9 +22,21 @@ import (
 
 // Measurement is a Structure to store the different system metrics
 type Measurement struct {
-	Timestamp time.Time // Time stamp of the metric
-	Memory    uint64    // memmory value for this timestamp
-	CPU       float64   // CPU value for this timestamp
+	Timestamp     time.Time // Time stamp of the metric
+	Memory        uint64    // memmory value for this timestamp
+	MaxUSedMemory uint64    // max memmory value for this timestamp
+	CPU           float64   // CPU value for this timestamp
+	NumCPU        int
+}
+
+type SystemMetrics struct {
+	AverageMemmory      string
+	MaxUsedMemory       string
+	CPUUsage            string
+	AllowedCPUs         string
+	RequestsReceived    string
+	BadRequestsReceived string
+	AverageResponseTime string
 }
 
 var (
@@ -62,9 +75,11 @@ func startMemoryCalculator() {
 
 			// Append the measurements to the slice
 			measurements = append(measurements, Measurement{
-				Timestamp: time.Now(),
-				Memory:    memStats.Alloc,
-				CPU:       cpuUsage,
+				Timestamp:     time.Now(),
+				Memory:        memStats.Alloc,
+				MaxUSedMemory: memStats.TotalAlloc,
+				CPU:           cpuUsage,
+				NumCPU:        runtime.NumCPU(),
 			})
 			mutex.Unlock()
 		}
@@ -78,15 +93,26 @@ func startMemoryCalculator() {
 //
 // Returns:
 //   - uint64: Average memmory used
-func calculateAverageMemory(measurements []Measurement) uint64 {
+func calculateAverageMemory(measurements []Measurement) (uint64, uint64, int) {
 	if len(measurements) == 0 {
-		return 0
+		return 0, 0, 0
 	}
 	var sum uint64
+	var maxMemmory uint64
+	maxMemmory = 0
+	maxCpu := 0
 	for _, m := range measurements {
 		sum += m.Memory
+		if m.MaxUSedMemory > maxMemmory {
+			maxMemmory = m.MaxUSedMemory
+		}
+
+		if m.NumCPU >= maxCpu {
+			maxCpu = m.NumCPU
+		}
 	}
-	return sum / uint64(len(measurements))
+
+	return sum / uint64(len(measurements)), maxMemmory, maxCpu
 }
 
 // collectCPUUsage collects the current CPU usage as a percentage.
@@ -247,11 +273,9 @@ func IncreaseValidationResult(serverID string, endpointName string, valid bool) 
 // @params
 // @return
 // int: Number of requests recevied in the period of time
-func GetAndCleanRequestsReceived() int {
-	mutex.Lock()
+func getAndCleanRequestsReceived() int {
 	defer func() {
 		requestsReceived = 0
-		mutex.Unlock()
 	}()
 
 	return requestsReceived
@@ -262,11 +286,9 @@ func GetAndCleanRequestsReceived() int {
 // @params
 // @return
 // int: Number of bad requests recevied in the period of time
-func GetAndCleanBadRequestsReceived() int {
-	mutex.Lock()
+func getAndCleanBadRequestsReceived() int {
 	defer func() {
 		badRequestsReceived = 0
-		mutex.Unlock()
 	}()
 
 	return badRequestsReceived
@@ -289,32 +311,14 @@ func GetAndCleanUnsupportedEndpoints() map[string]map[string]int {
 	return unsupportedEndpoints
 }
 
-// GetAndCleanAverageMemmory returns and cleans the average memmory used during the interval time
-// @author AB
-// @params
-// @return
-// string: Avg memmory used
-func GetAndCleanAverageMemmory() string {
-	mutex.Lock()
-	// Calculate the average memory usage and CPU consumption and print them
-	avgMemory := calculateAverageMemory(measurements)
-	// Reset measurements for the next interval
-	measurements = []Measurement{}
-	mutex.Unlock()
-	result := fmt.Sprintf("%.2f MB", float64(avgMemory)/1024/1024)
-	return result
-}
-
 // GetAndCleanResponseTime Returns and clenas the metric fot average response time
 // @author AB
 // @params
 // @return
 // string: Avg memmory used
-func GetAndCleanResponseTime() string {
-	mutex.Lock()
+func getAndCleanResponseTime() string {
 	avgTime := calculateAverageDuration(responseTime)
 	responseTime = []time.Duration{}
-	mutex.Unlock()
 	return fmt.Sprint(avgTime)
 }
 
@@ -332,4 +336,26 @@ func calculateAverageDuration(durations []time.Duration) int64 {
 		sum += m.Microseconds()
 	}
 	return sum / int64(len(durations))
+}
+
+func GetAndCleanSystemMetrics() SystemMetrics {
+	mutex.Lock()
+	// Calculate the average memory usage and CPU consumption and print them
+	avgMemmory, maxMemmory, numCPU := calculateAverageMemory(measurements)
+
+	result := SystemMetrics{
+		AverageMemmory:      fmt.Sprintf("%.2f MB", float64(avgMemmory)/1024/1024),
+		MaxUsedMemory:       fmt.Sprintf("%.2f MB", float64(maxMemmory)/1024/1024),
+		CPUUsage:            "",
+		AllowedCPUs:         strconv.Itoa(numCPU),
+		RequestsReceived:    strconv.Itoa(getAndCleanRequestsReceived()),
+		BadRequestsReceived: strconv.Itoa(getAndCleanBadRequestsReceived()),
+		AverageResponseTime: getAndCleanResponseTime(),
+	}
+
+	// Reset measurements for the next interval
+	measurements = []Measurement{}
+	mutex.Unlock()
+
+	return result
 }
