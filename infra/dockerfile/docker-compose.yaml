@@ -7,11 +7,16 @@ services:
     environment:
       - API_PORT=:8080
       - SERVER_ORG_ID=09b20d09-bf30-4497-938e-b0ead8ce9629
-      #- REPORT_EXECUTION_WINDOW=30 
+      #- REPORT_EXECUTION_WINDOW=30
       - ENVIRONMENT=DEV
       - LOGGING_LEVEL=WARNING
       - APPLICATION_MODE=TRANSMITTER
       - PROXY_URL=http://127.0.0.1:8082
+      - ENABLE_HTTPS=FALSE # CHANGE TO TRUE TO ENABLE HTTPS
+    # Enable volumes in case of HTTPS enabled
+#   Certificates should be with the following names: server.crt, server.key
+#    volumes:
+#      - ./certificates:/certificates/
     network_mode: "host"
     depends_on:
       - proxy

@@ -19,6 +19,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
+//const ENV_CLIENT_CRT_FILE = "CLIENT_CRT_FILE" // Certificate file
+//const ENV_CLIENT_KEY_FILE = "CLIENT_KEY_FILE" // Private key file
+
 // GenericError contains information message when error needs to be returned
 type GenericError struct {
 	Message string // Error message
@@ -31,7 +34,6 @@ type APIServer struct {
 	metricsHandler http.Handler          // Handler for the metric endpoint
 	qm             *QueueManager         // Manager for the message queue
 	cm             *ConfigurationManager // Manager for application settings
-
 }
 
 // GetAPIServer Creates a new APIServer
@@ -74,11 +76,15 @@ func (as *APIServer) StartServing() {
 		WriteTimeout: 20 * time.Second,
 	}
 
-	as.logger.Log("Starting the server on port "+port, as.pack, "Main")
-	as.logger.Fatal(server.ListenAndServe(), "", as.pack, "Main")
+	as.logger.Log("Starting the server on port "+port, as.pack, "StartServing")
+	if as.cm.EnableHTTPS {
+		as.logger.Fatal(server.ListenAndServeTLS(as.cm.CertFilePath, as.cm.KeyFilePath), "", as.pack, "StartServing")
+	} else {
+		as.logger.Fatal(server.ListenAndServe(), "", as.pack, "StartServing")
+	}
 }
 
-// updateReponseError Handles requests to the specified urls in the settings
+// updateResponseError Handles requests to the specified urls in the settings
 //
 // Parameters:
 //   - w: Writer to create the response
@@ -86,7 +92,7 @@ func (as *APIServer) StartServing() {
 //   - responseCode: HTTP response code
 //
 // Returns:
-func (as *APIServer) updateReponseError(w http.ResponseWriter, genericError GenericError, responseCode int) {
+func (as *APIServer) updateResponseError(w http.ResponseWriter, genericError GenericError, responseCode int) {
 	// Marshal the struct into JSON
 	jsonData, err := json.Marshal(genericError)
 	if err != nil {
@@ -103,7 +109,7 @@ func (as *APIServer) updateReponseError(w http.ResponseWriter, genericError Gene
 	// Write the JSON data to the response
 	_, err = w.Write(jsonData)
 	if err != nil {
-		as.logger.Error(err, "Error writing JSON response:", as.pack, "updateReponseError")
+		as.logger.Error(err, "Error writing JSON response:", as.pack, "updateResponseError")
 		return
 	}
 }
@@ -139,10 +145,10 @@ func (as *APIServer) mustValidate(endpointSetting *models.APIEndpointSetting) bo
 //   - int: Random number generated
 func (as *APIServer) getRandomNumber() int {
 	// Define the upper limit (101 for inclusive range of 0-100)
-	max := big.NewInt(101)
+	maxRandomNumber := big.NewInt(101)
 
-	// Generate a random number between 0 (inclusive) and max (exclusive)
-	num, err := rand.Int(rand.Reader, max)
+	// Generate a random number between 0 (inclusive) and maxRandomNumber (exclusive)
+	num, err := rand.Int(rand.Reader, maxRandomNumber)
 	if err != nil {
 		as.logger.Error(err, "Error generating random number:", as.pack, "getRandomNumber")
 		return 100
@@ -173,7 +179,7 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 	if err != nil {
 		monitoring.IncreaseBadRequestsReceived()
 		genericError.Message = "serverOrgId: Not found or bad format."
-		as.updateReponseError(w, *genericError, http.StatusBadRequest)
+		as.updateResponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
@@ -182,7 +188,7 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 	if err != nil {
 		monitoring.IncreaseBadRequestsReceived()
 		genericError.Message = "x-fapi-interaction-id: Not found or bad format."
-		as.updateReponseError(w, *genericError, http.StatusBadRequest)
+		as.updateResponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
@@ -190,16 +196,16 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		genericError.Message = "Failed to read request body."
-		as.updateReponseError(w, *genericError, http.StatusInternalServerError)
+		as.updateResponseError(w, *genericError, http.StatusInternalServerError)
 		return
 	}
 
 	var js json.RawMessage
-	validJson := json.Unmarshal(body, &js) == nil
-	if !validJson {
+	validJSON := json.Unmarshal(body, &js) == nil
+	if !validJSON {
 		monitoring.IncreaseBadRequestsReceived()
 		genericError.Message = "body: Not a Valid JSON Message."
-		as.updateReponseError(w, *genericError, http.StatusBadRequest)
+		as.updateResponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
@@ -214,12 +220,12 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 	if endpointSettings == nil {
 		monitoring.IncreaseBadEndpointsReceived(endpointName, "N.A.", "Endpoint not supported")
 		genericError.Message = "endpointName: Not found or bad format."
-		as.updateReponseError(w, *genericError, http.StatusBadRequest)
+		as.updateResponseError(w, *genericError, http.StatusBadRequest)
 		return
 	} else if versionHeader != "" && versionHeader != version {
 		monitoring.IncreaseBadEndpointsReceived(endpointName, versionHeader, "Version not supported")
 		genericError.Message = "version: not supported for as endpoint: " + endpointName
-		as.updateReponseError(w, *genericError, http.StatusBadRequest)
+		as.updateResponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
@@ -229,7 +235,7 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 		if err != nil {
 			as.logger.Error(err, "Error: handleValidateResponseMessage", "API", "handleValidateResponseMessage")
 			genericError.Message = "Error processing request."
-			as.updateReponseError(w, *genericError, http.StatusInternalServerError)
+			as.updateResponseError(w, *genericError, http.StatusInternalServerError)
 			return
 		}
 
@@ -247,7 +253,10 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 	}
 
 	monitoring.RecordResponseDuration(startTime)
-	fmt.Fprintf(w, "Message enqueued for processing!")
+	_, err = fmt.Fprintf(w, "Message enqueued for processing!")
+	if err != nil {
+		as.logger.Error(err, "Error writing response:", as.pack, "handleValidateResponseMessage")
+	}
 }
 
 // buildHeaderMsg Creates a JSON message based on the headers
@@ -259,10 +268,10 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 //   - string: JSON Message created
 //   - error: in case of parsing error
 func (as *APIServer) buildHeaderMsg(header *http.Header) (string, error) {
-	headermap := as.getHeaderMap(*header)
+	headerMap := as.getHeaderMap(*header)
 
 	// Convert the map to a JSON string.
-	jsonData, err := json.Marshal(headermap)
+	jsonData, err := json.Marshal(headerMap)
 	if err != nil {
 		return "", err
 	}

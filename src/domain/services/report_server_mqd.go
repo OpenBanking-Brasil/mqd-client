@@ -103,7 +103,12 @@ func (rs *ReportServerMQD) postReport(report models.Report) error {
 		rs.Logger.Error(err, "Error sending report.", rs.Pack, "postReport")
 		return err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(resp.Body)
 
 	// Check the response status code
 	if resp.StatusCode != http.StatusOK {

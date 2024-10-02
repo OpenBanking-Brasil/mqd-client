@@ -3,7 +3,7 @@ package log
 import "context"
 
 // Level - Custom type to hold value for weekday ranging from 1-7
-type Level int
+type Level int8
 
 // Declare related constants for each LogLevel starting with index 0
 const (

@@ -14,9 +14,6 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/domain/services"
 )
 
-// version indicates the current version of the application
-const version = "2.1.0"
-
 // MessageResult contains the information for a validation
 type MessageResult struct {
 	Endpoint           string              // Name of the endpoint
@@ -185,7 +182,7 @@ func (rp *ResultProcessor) updateMetrics(report *models.Report) {
 	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.CPUNumber", Value: systemMetrics.AllowedCPUs})
 	report.Metrics.Values = append(report.Metrics.Values, models.MetricObject{Key: "runtime.ResposeTimeAvg", Value: systemMetrics.AverageResponseTime})
 
-	report.ApplicationConfiguration.ApplicationVersion = version
+	report.ApplicationConfiguration.ApplicationVersion = monitoring.Version
 	report.ApplicationConfiguration.Environment = configuration.Environment
 	report.ApplicationConfiguration.ApplicationID = configuration.ApplicationID.String()
 	report.ApplicationConfiguration.ReportExecutionWindow = strconv.Itoa(rp.cm.GetReportExecutionWindow())
