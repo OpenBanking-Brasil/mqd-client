@@ -2,6 +2,8 @@ package application
 
 import (
 	"encoding/json"
+	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -13,19 +15,23 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/domain/services"
 )
 
-const reportExecutionWindowEnv = "REPORT_EXECUTION_WINDOW" // constant  to store name of the report execution time environment variable
-const reportExecutionNumberEnv = "REPORT_EXECUTION_NUMBER" // constant  to store name of the report execution total of reports environment variable
+const (
+	reportExecutionWindowEnv = "REPORT_EXECUTION_WINDOW" // constant  to store name of the report execution time environment variable
+	reportExecutionNumberEnv = "REPORT_EXECUTION_NUMBER" // constant  to store name of the report execution total of reports environment variable
+	enableHTTPSEnv           = "ENABLE_HTTPS"
+	certPath                 = "/certificates/"
+)
 
 var (
 	configurationManagerSingleton *ConfigurationManager // Singleton for configuration management
-	configurationManagerMutex     = sync.Mutex{}        // Mutex for multi processing locks
+	configurationManagerMutex     = sync.Mutex{}        // Mutex for multiprocessing locks
 )
 
 // ConfigurationUpdateStatus stores the information of the configuration update process
 type ConfigurationUpdateStatus struct {
 	LastExecutionDate time.Time            // Indicates the data execution of the configuration update
-	LastUpdatedDate   time.Time            // Indicates the data of the las succesful configuration update
-	UpdateMessages    map[time.Time]string // List of error messages if any durin the update process
+	LastUpdatedDate   time.Time            // Indicates the data of the las successful configuration update
+	UpdateMessages    map[time.Time]string // List of error messages if any during the update process
 }
 
 // ConfigurationManager is the manager in charge of handling configuration parameters of the application
@@ -38,6 +44,9 @@ type ConfigurationManager struct {
 	environment               string
 	reportExecutionWindow     int
 	reportExecutionNumber     int
+	EnableHTTPS               bool
+	CertFilePath              string
+	KeyFilePath               string
 }
 
 // NewConfigurationManager creates a new configuration manager for the application
@@ -98,12 +107,14 @@ func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer,
 		}
 
 		configurationManagerSingleton.configurationUpdateStatus.UpdateMessages = make(map[time.Time]string)
+
+		configurationManagerSingleton.EnableHTTPS = crosscutting.GetEnvironmentValue(logger, enableHTTPSEnv, "FALSE") == "TRUE"
 	}
 
 	return configurationManagerSingleton
 }
 
-// getAPIConfigurationFile returns configuration settings for the specified parameters
+// getAPIConfigurationFile returns configuration settings for the specified API
 //
 // Parameters:
 //   - basePath: Base path of the api group
@@ -114,10 +125,10 @@ func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer,
 //   - []models.APIEndpointSetting: Array with endpoint settings for each of the endpoints in the api
 //   - error: error if any
 func (cm *ConfigurationManager) getAPIConfigurationFile(basePath string, apiPath string, apiVersion string) ([]models.APIEndpointSetting, error) {
-	apiConfigurationpath := basePath + "//" + apiPath + "//" + apiVersion + "//response//"
-	apiConfigurationpath = strings.ReplaceAll(apiConfigurationpath, "ParameterData//", "")
-	apiConfigurationpath = strings.ReplaceAll(apiConfigurationpath, "//", "/")
-	fileName := apiConfigurationpath + "endpoints.json"
+	apiConfigurationPath := basePath + "//" + apiPath + "//" + apiVersion + "//response//"
+	apiConfigurationPath = strings.ReplaceAll(apiConfigurationPath, "ParameterData//", "")
+	apiConfigurationPath = strings.ReplaceAll(apiConfigurationPath, "//", "/")
+	fileName := apiConfigurationPath + "endpoints.json"
 	cm.Logger.Debug("loading File Name: "+fileName, cm.Pack, "getAPIConfigurationFile")
 	file, err := cm.mqdServer.LoadAPIConfigurationFile(fileName)
 	if err != nil {
@@ -205,6 +216,11 @@ func (cm *ConfigurationManager) updateValidationSettings(newSettings *models.Con
 //   - error: error if any
 func (cm *ConfigurationManager) updateConfiguration() error {
 	cm.Logger.Info("Executing configuration update", cm.Pack, "updateConfiguration")
+
+	if cm.EnableHTTPS {
+		cm.validateHTTPSCertificates()
+	}
+
 	cm.configurationUpdateStatus.LastExecutionDate = time.Now()
 	cs, err := cm.mqdServer.LoadConfigurationSettings()
 	if err != nil {
@@ -231,6 +247,25 @@ func (cm *ConfigurationManager) updateConfiguration() error {
 	configurationManagerMutex.Unlock()
 
 	return nil
+}
+
+func (cm *ConfigurationManager) validateHTTPSCertificates() bool {
+	certFile := "server.crt"
+	keyFile := "server.key"
+
+	cm.KeyFilePath = fmt.Sprintf("%s%s", certPath, keyFile)
+	cm.CertFilePath = fmt.Sprintf("%s%s", certPath, certFile)
+	_, err := os.Stat(cm.KeyFilePath)
+	if os.IsNotExist(err) {
+		cm.Logger.Panic("Key certificate not found: "+cm.KeyFilePath, cm.Pack, "validateHTTPSCertificates")
+	}
+
+	_, err = os.Stat(cm.CertFilePath)
+	if os.IsNotExist(err) {
+		cm.Logger.Panic("Certificate file not found: "+cm.CertFilePath, cm.Pack, "validateHTTPSCertificates")
+	}
+
+	return true
 }
 
 // getAPIGroupSettings return the settings of API groups
@@ -267,15 +302,22 @@ func (cm *ConfigurationManager) StartUpdateProcess() {
 	}
 
 	ticker := time.NewTicker(timeWindow)
-	for {
-		select {
-		case <-ticker.C:
-			err := cm.updateConfiguration()
-			if err != nil {
-				cm.Logger.Error(err, "Error updating configuration", cm.Pack, "StartUpdateProcess")
-			}
+	for range ticker.C {
+		err := cm.updateConfiguration()
+		if err != nil {
+			cm.Logger.Error(err, "Error updating configuration", cm.Pack, "StartUpdateProcess")
 		}
 	}
+
+	//for {
+	//	select {
+	//	case <-ticker.C:
+	//		err := cm.updateConfiguration()
+	//		if err != nil {
+	//			cm.Logger.Error(err, "Error updating configuration", cm.Pack, "StartUpdateProcess")
+	//		}
+	//	}
+	//}
 }
 
 // Initialize executes initial settings configuration

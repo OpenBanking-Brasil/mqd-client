@@ -20,6 +20,9 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
 )
 
+// Version indicates the current version of the application
+const Version = "2.2.0"
+
 // Measurement is a Structure to store the different system metrics
 type Measurement struct {
 	Timestamp     time.Time // Time stamp of the metric
@@ -29,6 +32,7 @@ type Measurement struct {
 	NumCPU        int
 }
 
+// SystemMetrics information about system metrics
 type SystemMetrics struct {
 	AverageMemmory      string
 	MaxUsedMemory       string
@@ -64,26 +68,44 @@ func startMemoryCalculator() {
 	ticker := time.NewTicker(collectionDuration)
 	defer ticker.Stop()
 
-	for {
-		select {
-		case <-ticker.C:
-			mutex.Lock()
-			// Collect memory and CPU statistics for the specified duration
-			var memStats runtime.MemStats
-			runtime.ReadMemStats(&memStats)
-			cpuUsage := collectCPUUsage()
+	for range ticker.C {
+		mutex.Lock()
+		// Collect memory and CPU statistics for the specified duration
+		var memStats runtime.MemStats
+		runtime.ReadMemStats(&memStats)
+		cpuUsage := collectCPUUsage()
 
-			// Append the measurements to the slice
-			measurements = append(measurements, Measurement{
-				Timestamp:     time.Now(),
-				Memory:        memStats.Alloc,
-				MaxUSedMemory: memStats.TotalAlloc,
-				CPU:           cpuUsage,
-				NumCPU:        runtime.NumCPU(),
-			})
-			mutex.Unlock()
-		}
+		// Append the measurements to the slice
+		measurements = append(measurements, Measurement{
+			Timestamp:     time.Now(),
+			Memory:        memStats.Alloc,
+			MaxUSedMemory: memStats.TotalAlloc,
+			CPU:           cpuUsage,
+			NumCPU:        runtime.NumCPU(),
+		})
+		mutex.Unlock()
 	}
+
+	//for {
+	//	select {
+	//	case <-ticker.C:
+	//		mutex.Lock()
+	//		// Collect memory and CPU statistics for the specified duration
+	//		var memStats runtime.MemStats
+	//		runtime.ReadMemStats(&memStats)
+	//		cpuUsage := collectCPUUsage()
+	//
+	//		// Append the measurements to the slice
+	//		measurements = append(measurements, Measurement{
+	//			Timestamp:     time.Now(),
+	//			Memory:        memStats.Alloc,
+	//			MaxUSedMemory: memStats.TotalAlloc,
+	//			CPU:           cpuUsage,
+	//			NumCPU:        runtime.NumCPU(),
+	//		})
+	//		mutex.Unlock()
+	//	}
+	//}
 }
 
 // calculateAverageMemory calculates the average memory usage from a slice of measurements.
@@ -92,27 +114,27 @@ func startMemoryCalculator() {
 //   - measurements: Lists of measurements to calculate the average
 //
 // Returns:
-//   - uint64: Average memmory used
+//   - uint64: Average memory used
 func calculateAverageMemory(measurements []Measurement) (uint64, uint64, int) {
 	if len(measurements) == 0 {
 		return 0, 0, 0
 	}
 	var sum uint64
-	var maxMemmory uint64
-	maxMemmory = 0
-	maxCpu := 0
+	var maxMemory uint64
+	maxMemory = 0
+	maxCPU := 0
 	for _, m := range measurements {
 		sum += m.Memory
-		if m.MaxUSedMemory > maxMemmory {
-			maxMemmory = m.MaxUSedMemory
+		if m.MaxUSedMemory > maxMemory {
+			maxMemory = m.MaxUSedMemory
 		}
 
-		if m.NumCPU >= maxCpu {
-			maxCpu = m.NumCPU
+		if m.NumCPU >= maxCPU {
+			maxCPU = m.NumCPU
 		}
 	}
 
-	return sum / uint64(len(measurements)), maxMemmory, maxCpu
+	return sum / uint64(len(measurements)), maxMemory, maxCPU
 }
 
 // collectCPUUsage collects the current CPU usage as a percentage.
@@ -139,7 +161,7 @@ func StartOpenTelemetry() {
 	resources := resource.NewWithAttributes(
 		semconv.SchemaURL,
 		semconv.ServiceNameKey.String("Motor de Qualidade de dados"),
-		semconv.ServiceVersionKey.String("v2.0.0"),
+		semconv.ServiceVersionKey.String(Version),
 	)
 
 	// The exporter embeds a default OpenTelemetry Reader and
@@ -166,6 +188,9 @@ func StartOpenTelemetry() {
 		metric.WithDescription("Incoming request count"),
 		metric.WithUnit("request"),
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// This is the equivalent of prometheus.NewCounterVec
 	endpointRequests, err = meter.Float64Counter(
@@ -173,6 +198,9 @@ func StartOpenTelemetry() {
 		metric.WithDescription("Endpoint Requests by Server"),
 		metric.WithUnit("requests"),
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// This is the equivalent of prometheus.NewCounterVec
 	endpointValidationErrors, err = meter.Float64Counter(
@@ -180,7 +208,6 @@ func StartOpenTelemetry() {
 		metric.WithDescription("Endpoint validation errors by Server"),
 		metric.WithUnit("errors"),
 	)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -326,7 +353,7 @@ func getAndCleanResponseTime() string {
 // @author AB
 // @params
 // @return
-// string: Avg memmory used
+// string: Avg memory used
 func calculateAverageDuration(durations []time.Duration) int64 {
 	if len(durations) == 0 {
 		return 0
@@ -338,6 +365,11 @@ func calculateAverageDuration(durations []time.Duration) int64 {
 	return sum / int64(len(durations))
 }
 
+// GetAndCleanSystemMetrics returns and cleans all system metrics
+// @author AB
+// @params
+// @return
+// SystemMetrics: instance of the system metrics object
 func GetAndCleanSystemMetrics() SystemMetrics {
 	mutex.Lock()
 	// Calculate the average memory usage and CPU consumption and print them
