@@ -21,7 +21,7 @@ import (
 )
 
 // Version indicates the current version of the application
-const Version = "2.1.0"
+const Version = "2.2.0"
 
 // Measurement is a Structure to store the different system metrics
 type Measurement struct {
