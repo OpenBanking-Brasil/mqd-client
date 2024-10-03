@@ -1,8 +1,6 @@
 package configuration
 
 import (
-	"time"
-
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/google/uuid"
@@ -26,12 +24,11 @@ var (
 	// Environment Indicates the actual Environment the app is running
 	Environment = ""
 	// ApplicationMode Indicates the actual Application Mode the app is running in (TRANSMISSOR, RECEPTOR)
-	ApplicationMode         = ""
-	lastReportExecutionDate = time.Time{} // Indicates the data of the last report execution
+	ApplicationMode = ""
 	// ServerURL to send the reports to
-	ServerURL       = ""
-	lastUpdatedDate = time.Time{} // Indicates the data of the last report update
-	ApplicationID   = uuid.New()
+	ServerURL = ""
+	// ApplicationID generates a unique identifier for the application
+	ApplicationID = uuid.New()
 )
 
 // loadEnvironmentSettings Loads settings specified as environment variables, or assigns default values
