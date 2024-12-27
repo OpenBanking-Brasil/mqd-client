@@ -4,14 +4,12 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
-	"html"
 	"io"
 	"math/big"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/monitoring"
 	"github.com/OpenBanking-Brasil/MQD_Client/domain/models"
@@ -19,8 +17,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//const ENV_CLIENT_CRT_FILE = "CLIENT_CRT_FILE" // Certificate file
-//const ENV_CLIENT_KEY_FILE = "CLIENT_KEY_FILE" // Private key file
+const (
+	xFAPIInteractionID = "x-fapi-interaction-id"
+	srvOrgID           = "serverOrgId"
+	transmitterID      = "transmitterID"
+)
 
 // GenericError contains information message when error needs to be returned
 type GenericError struct {
@@ -67,18 +68,20 @@ func (as *APIServer) StartServing() {
 	// Validator for Responses
 	r.HandleFunc("/ValidateResponse", as.handleValidateResponseMessage).Name("ValidateResponse").Methods("POST")
 
-	port := crosscutting.GetEnvironmentValue(as.logger, "API_PORT", ":8080")
+	port := as.cm.settings.ConfigurationSettings.APIPort
+	// Remove ":" if found
+	port = strings.Replace(port, ":", "", -1)
 
 	server := &http.Server{
-		Addr:         port,
+		Addr:         ":" + port,
 		Handler:      r,
 		ReadTimeout:  20 * time.Second,
 		WriteTimeout: 20 * time.Second,
 	}
 
 	as.logger.Log("Starting the server on port "+port, as.pack, "StartServing")
-	if as.cm.EnableHTTPS {
-		as.logger.Fatal(server.ListenAndServeTLS(as.cm.CertFilePath, as.cm.KeyFilePath), "", as.pack, "StartServing")
+	if as.cm.IsHTTPS() {
+		as.logger.Fatal(server.ListenAndServeTLS(as.cm.GetCertFilePath(), as.cm.GetKeyFilePath()), "", as.pack, "StartServing")
 	} else {
 		as.logger.Fatal(server.ListenAndServe(), "", as.pack, "StartServing")
 	}
@@ -160,6 +163,53 @@ func (as *APIServer) getRandomNumber() int {
 	return number
 }
 
+func (as *APIServer) loadMessageHeaderValues(r *http.Request, message *Message) *GenericError {
+	genericError := &GenericError{}
+	// Read the Server Organization ID from the header
+	serverOrgID := r.Header.Get(srvOrgID)
+	_, err := uuid.Parse(serverOrgID)
+	if err != nil {
+		monitoring.IncreaseBadRequestsReceived()
+		genericError.Message = srvOrgID + ": Not found or bad format."
+		return genericError
+	}
+
+	xFapiID := r.Header.Get(xFAPIInteractionID)
+	_, err = uuid.Parse(xFapiID)
+	if err != nil {
+		monitoring.IncreaseBadRequestsReceived()
+		genericError.Message = xFAPIInteractionID + ": Not found or bad format."
+		return genericError
+	}
+
+	txServerID := r.Header.Get(transmitterID)
+	if txServerID != "" {
+		_, err = uuid.Parse(txServerID)
+		if err != nil {
+			monitoring.IncreaseBadRequestsReceived()
+			genericError.Message = transmitterID + ": bad format."
+			return genericError
+		}
+	}
+
+	// Read the Server Organization ID from the header
+	endpointName := r.Header.Get("endpointName")
+
+	// Read the api version from the header
+	versionHeader := r.Header.Get("version")
+
+	// Read the api version from the header
+	consentID := r.Header.Get("consentID")
+
+	message.APIVersion = versionHeader
+	message.Endpoint = endpointName
+	message.ServerID = serverOrgID
+	message.XFapiInteractionID = xFapiID
+	message.TransmitterID = txServerID
+	message.ConsentID = consentID
+	return nil
+}
+
 // handleValidateResponseMessage Handles requests to the specified urls in the settings
 //
 // Parameters:
@@ -173,22 +223,9 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 	monitoring.IncreaseRequestsReceived()
 	var msg Message
 
-	// Read the Server Organization ID from the header
-	serverOrgID := r.Header.Get("serverOrgId")
-	_, err := uuid.Parse(serverOrgID)
-	if err != nil {
-		monitoring.IncreaseBadRequestsReceived()
-		genericError.Message = "serverOrgId: Not found or bad format."
-		as.updateResponseError(w, *genericError, http.StatusBadRequest)
-		return
-	}
-
-	xFapiID := r.Header.Get("x-fapi-interaction-id")
-	_, err = uuid.Parse(xFapiID)
-	if err != nil {
-		monitoring.IncreaseBadRequestsReceived()
-		genericError.Message = "x-fapi-interaction-id: Not found or bad format."
-		as.updateResponseError(w, *genericError, http.StatusBadRequest)
+	loadError := as.loadMessageHeaderValues(r, &msg)
+	if loadError != nil {
+		as.updateResponseError(w, *loadError, http.StatusBadRequest)
 		return
 	}
 
@@ -209,44 +246,24 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 		return
 	}
 
-	// Read the Server Organization ID from the header
-	endpointName := r.Header.Get("endpointName")
-
 	// Validate the endpoint configuration exists
-	endpointSettings, version := as.cm.GetEndpointSettingFromAPI(endpointName, as.logger)
-	// Read the api version from the header
-	versionHeader := r.Header.Get("version")
+	validationSettings := as.cm.GetEndpointSettingFromAPI(msg.Endpoint, as.logger)
 
-	if endpointSettings == nil {
-		monitoring.IncreaseBadEndpointsReceived(endpointName, "N.A.", "Endpoint not supported")
+	if validationSettings == nil {
+		monitoring.IncreaseBadEndpointsReceived(msg.Endpoint, "N.A.", "Endpoint not supported")
 		genericError.Message = "endpointName: Not found or bad format."
 		as.updateResponseError(w, *genericError, http.StatusBadRequest)
 		return
-	} else if versionHeader != "" && versionHeader != version {
-		monitoring.IncreaseBadEndpointsReceived(endpointName, versionHeader, "Version not supported")
-		genericError.Message = "version: not supported for as endpoint: " + endpointName
+	} else if msg.APIVersion != "" && msg.APIVersion != validationSettings.APIVersion {
+		monitoring.IncreaseBadEndpointsReceived(msg.Endpoint, msg.APIVersion, "Version not supported")
+		genericError.Message = "version: not supported for as endpoint: " + msg.Endpoint
 		as.updateResponseError(w, *genericError, http.StatusBadRequest)
 		return
 	}
 
-	if as.mustValidate(endpointSettings) {
-		// Read header and create a json object
-		headerMsg, err := as.buildHeaderMsg(&r.Header)
-		if err != nil {
-			as.logger.Error(err, "Error: handleValidateResponseMessage", "API", "handleValidateResponseMessage")
-			genericError.Message = "Error processing request."
-			as.updateResponseError(w, *genericError, http.StatusInternalServerError)
-			return
-		}
-
-		// Read the Server Organization ID from the header
-		msg.HeaderMessage = headerMsg
+	if as.mustValidate(validationSettings.EndpointSettings) {
 		msg.Message = string(body)
-		msg.Endpoint = endpointName
 		msg.HTTPMethod = r.Method
-		msg.ServerID = serverOrgID
-
-		msg.XFapiInteractionID = xFapiID
 
 		// Enqueue the message for processing using worker's enqueueMessage
 		as.qm.EnqueueMessage(&msg)
@@ -257,49 +274,4 @@ func (as *APIServer) handleValidateResponseMessage(w http.ResponseWriter, r *htt
 	if err != nil {
 		as.logger.Error(err, "Error writing response:", as.pack, "handleValidateResponseMessage")
 	}
-}
-
-// buildHeaderMsg Creates a JSON message based on the headers
-//
-// Parameters:
-//   - header: List of headers
-//
-// Returns:
-//   - string: JSON Message created
-//   - error: in case of parsing error
-func (as *APIServer) buildHeaderMsg(header *http.Header) (string, error) {
-	headerMap := as.getHeaderMap(*header)
-
-	// Convert the map to a JSON string.
-	jsonData, err := json.Marshal(headerMap)
-	if err != nil {
-		return "", err
-	}
-
-	return string(jsonData), nil
-}
-
-// headersToJSON Maps all the headers found in the request to a JSON object
-//
-// Parameters:
-//   - headers: List of headers to map
-//
-// Returns:
-//   - map: map[string]interface{} that contains the list of headers and its values
-func (as *APIServer) getHeaderMap(headers http.Header) map[string]interface{} {
-	// Create a map to store header key-value pairs.
-	headerMap := make(map[string]interface{})
-
-	// Iterate through the header parameters and add them to the map.
-	for key, values := range headers {
-		key = strings.ToLower(key)
-		// Sanitize each header value using html.EscapeString (adjust based on data type)
-		sanitizedValues := make([]string, 0, len(values))
-		for _, value := range values {
-			sanitizedValues = append(sanitizedValues, html.EscapeString(value))
-		}
-		headerMap[key] = sanitizedValues
-	}
-
-	return headerMap
 }

@@ -24,6 +24,7 @@ const (
 // ReportServerMQD Struct has the information to connect to the central server and send the Report
 type ReportServerMQD struct {
 	RestAPI
+	settings configuration.Settings
 }
 
 // NewReportServerMQD Creates a new MQDServer
@@ -33,14 +34,16 @@ type ReportServerMQD struct {
 //
 // Returns:
 //   - ReportServerMQD: Server created
-func NewReportServerMQD(logger log.Logger) *ReportServerMQD {
+func NewReportServerMQD(logger log.Logger, serverURL string, settings configuration.Settings) *ReportServerMQD {
 	result := &ReportServerMQD{
 		RestAPI: RestAPI{
 			OFBStruct: crosscutting.OFBStruct{
 				Pack:   "services.ReportServerMQD",
 				Logger: logger,
 			},
+			serverURL: serverURL,
 		},
+		settings: settings,
 	}
 
 	// result.loadCertificates()
@@ -57,7 +60,7 @@ func NewReportServerMQD(logger log.Logger) *ReportServerMQD {
 func (rs *ReportServerMQD) SendReport(report models.Report) error {
 	rs.Logger.Info("Sending report to central Server", rs.Pack, "sendReportToAPI")
 
-	err := rs.getJWKToken()
+	err := rs.getJWKToken(rs.settings.ApplicationSettings.OrganisationID)
 	if err != nil {
 		return err
 	}
@@ -88,7 +91,7 @@ func (rs *ReportServerMQD) postReport(report models.Report) error {
 	}
 
 	// Create a new request
-	req, err := http.NewRequest("POST", configuration.ServerURL+reportPath, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", rs.serverURL+reportPath, bytes.NewBuffer(requestBody))
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 		return err
@@ -106,7 +109,7 @@ func (rs *ReportServerMQD) postReport(report models.Report) error {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-
+			rs.Logger.Error(err, "Error closing resp.Body", rs.Pack, "postReport")
 		}
 	}(resp.Body)
 
@@ -136,7 +139,7 @@ func (rs *ReportServerMQD) postReport(report models.Report) error {
 //   - error: Error if any
 func (rs *ReportServerMQD) LoadAPIConfigurationFile(filePath string) ([]byte, error) {
 	rs.Logger.Info("Loading API configuration", rs.Pack, "loadAPIConfiguration")
-	serverPath := configuration.ServerURL + settingsPath + "/" + filePath
+	serverPath := rs.serverURL + settingsPath + "/" + filePath
 	return rs.executeGet(serverPath, 3)
 }
 
@@ -149,7 +152,7 @@ func (rs *ReportServerMQD) LoadAPIConfigurationFile(filePath string) ([]byte, er
 //   - error: Error if any
 func (rs *ReportServerMQD) LoadConfigurationSettings() (*models.ConfigurationSettings, error) {
 	rs.Logger.Info("Loading ConfigurationSettings", rs.Pack, "LoadConfigurationSettings")
-	serverPath := configuration.ServerURL + settingsPath + "/" + configurationSettingsFile
+	serverPath := rs.serverURL + settingsPath + "/" + configurationSettingsFile
 
 	body, err := rs.executeGet(serverPath, 3)
 	if err != nil {

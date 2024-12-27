@@ -8,17 +8,25 @@ import (
 	"github.com/OpenBanking-Brasil/MQD_Client/domain/services"
 )
 
+var (
+	logger   log.Logger
+	settings configuration.Settings
+)
+
+func init() {
+	monitoring.StartOpenTelemetry()
+	cnf := configuration.Configuration{}
+	settings = cnf.GetApplicationSettings()
+	logger = log.GetLogger()
+}
+
 // Main is the main function of the api, that is executed on "run"
 // @author AB
 // @params
 // @return
 func main() {
-	monitoring.StartOpenTelemetry()
-	configuration.Initialize()
-	logger := log.GetLogger()
-	reportServer := services.GetReportServer(logger)
-
-	cm := application.NewConfigurationManager(logger, *reportServer, configuration.Environment)
+	reportServer := services.GetReportServer(logger, settings.SecuritySettings.ProxyURL, settings)
+	cm := application.NewConfigurationManager(logger, *reportServer, settings)
 	err := cm.Initialize()
 	if err != nil {
 		logger.Fatal(err, "There was a fatal error loading initial settings.", "Main", "Main")
@@ -26,12 +34,14 @@ func main() {
 
 	qm := application.GetQueueManager()
 	rp := application.GetResultProcessor(logger, *reportServer, cm)
-	mp := application.GetMessageProcessorWorker(logger, rp, qm, cm)
+	lrm := application.NewLocalResultManager(logger, cm)
+	mp := application.GetMessageProcessorWorker(logger, rp, qm, cm, lrm)
 
 	// Start workers
 	go cm.StartUpdateProcess()
 	go mp.StartWorker()
 	go rp.StartResultsProcessor()
+	go lrm.StartResultProcess()
 
 	application.GetAPIServer(logger, monitoring.GetOpentelemetryHandler(), qm, cm).StartServing()
 }

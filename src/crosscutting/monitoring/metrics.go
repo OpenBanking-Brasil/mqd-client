@@ -21,20 +21,20 @@ import (
 )
 
 // Version indicates the current version of the application
-const Version = "2.2.0"
+const Version = "2.3.0"
 
 // Measurement is a Structure to store the different system metrics
 type Measurement struct {
 	Timestamp     time.Time // Time stamp of the metric
-	Memory        uint64    // memmory value for this timestamp
-	MaxUSedMemory uint64    // max memmory value for this timestamp
+	Memory        uint64    // memory value for this timestamp
+	MaxUSedMemory uint64    // max memory value for this timestamp
 	CPU           float64   // CPU value for this timestamp
 	NumCPU        int
 }
 
 // SystemMetrics information about system metrics
 type SystemMetrics struct {
-	AverageMemmory      string
+	AverageMemory       string
 	MaxUsedMemory       string
 	CPUUsage            string
 	AllowedCPUs         string
@@ -44,18 +44,18 @@ type SystemMetrics struct {
 }
 
 var (
-	requests                 metric.Float64Counter                // Stores the number of requests the application has received
-	endpointRequests         metric.Float64Counter                // Stores the number of requests by endpoint / server
-	endpointValidationErrors metric.Float64Counter                // Stores the number of validation errors by endpoint / server
-	mutex                    = sync.Mutex{}                       // Mutex for thread-safe access
-	requestsReceived         = 0                                  // Stores the number of requests received
-	badRequestsReceived      = 0                                  // Stores the number of bad requests errors
-	measurements             = []Measurement{}                    // Create slices to store memory and CPU usage values
-	responseTime             = []time.Duration{}                  // Creates a slice to store the response time duration of requests
-	unsupportedEndpoints     = make(map[string]map[string]int, 0) // Stores the number of unsupported endpoints
+	requests                 metric.Float64Counter // Stores the number of requests the application has received
+	endpointRequests         metric.Float64Counter // Stores the number of requests by endpoint / server
+	endpointValidationErrors metric.Float64Counter // Stores the number of validation errors by endpoint / server
+	mutex                    = sync.Mutex{}        // Mutex for thread-safe access
+	requestsReceived         = 0                   // Stores the number of requests received
+	badRequestsReceived      = 0                   // Stores the number of bad requests errors
+	measurements             []Measurement
+	responseTime             []time.Duration
+	unsupportedEndpoints     = make(map[string]map[string]int) // Stores the number of unsupported endpoints
 )
 
-// startMemoryCalculator Starts the memmory calculation for observability
+// startMemoryCalculator Starts the memory calculation for observability
 //
 // Parameters:
 //
@@ -85,27 +85,6 @@ func startMemoryCalculator() {
 		})
 		mutex.Unlock()
 	}
-
-	//for {
-	//	select {
-	//	case <-ticker.C:
-	//		mutex.Lock()
-	//		// Collect memory and CPU statistics for the specified duration
-	//		var memStats runtime.MemStats
-	//		runtime.ReadMemStats(&memStats)
-	//		cpuUsage := collectCPUUsage()
-	//
-	//		// Append the measurements to the slice
-	//		measurements = append(measurements, Measurement{
-	//			Timestamp:     time.Now(),
-	//			Memory:        memStats.Alloc,
-	//			MaxUSedMemory: memStats.TotalAlloc,
-	//			CPU:           cpuUsage,
-	//			NumCPU:        runtime.NumCPU(),
-	//		})
-	//		mutex.Unlock()
-	//	}
-	//}
 }
 
 // calculateAverageMemory calculates the average memory usage from a slice of measurements.
@@ -235,7 +214,7 @@ func RecordResponseDuration(startTime time.Time) {
 	mutex.Unlock()
 }
 
-// IncreaseRequestsReceived increses the number of requests received metric
+// IncreaseRequestsReceived increases the number of requests received metric
 // @author AB
 // @params
 // @return
@@ -246,7 +225,7 @@ func IncreaseRequestsReceived() {
 	mutex.Unlock()
 }
 
-// IncreaseBadRequestsReceived increses the number of bad requests received metric
+// IncreaseBadRequestsReceived increases the number of bad requests received metric
 // @author AB
 // @params
 // @return
@@ -256,7 +235,7 @@ func IncreaseBadRequestsReceived() {
 	mutex.Unlock()
 }
 
-// IncreaseBadEndpointsReceived increses the number of bad requests received metric
+// IncreaseBadEndpointsReceived increases the number of bad requests received metric
 //
 // Parameters:
 //   - endpoint: Endpoint name
@@ -275,12 +254,12 @@ func IncreaseBadEndpointsReceived(endpoint string, version string, errorMessage 
 	mutex.Unlock()
 }
 
-// IncreaseValidationResult increses the number validation result for a specific server / endpoint, if the validation is false
+// IncreaseValidationResult increases the number validation result for a specific server / endpoint, if the validation is false
 // endpoint_validation_errors will also be increased
 //
 // Parameters:
-//   - serveriD: Identifier of the server
-//   - endpointName: Nmae of the endpoint
+//   - serverID: Identifier of the server
+//   - endpointName: Name of the endpoint
 //   - valid: Validation result
 //
 // Returns:
@@ -299,7 +278,7 @@ func IncreaseValidationResult(serverID string, endpointName string, valid bool) 
 // @author AB
 // @params
 // @return
-// int: Number of requests recevied in the period of time
+// int: Number of requests received in the period of time
 func getAndCleanRequestsReceived() int {
 	defer func() {
 		requestsReceived = 0
@@ -312,7 +291,7 @@ func getAndCleanRequestsReceived() int {
 // @author AB
 // @params
 // @return
-// int: Number of bad requests recevied in the period of time
+// int: Number of bad requests received in the period of time
 func getAndCleanBadRequestsReceived() int {
 	defer func() {
 		badRequestsReceived = 0
@@ -327,22 +306,22 @@ func getAndCleanBadRequestsReceived() int {
 // Parameters:
 //
 // Returns:
-//   - map: map[string]map[string]int Number of bad requests recevied in the period of time by endpoint and version
+//   - map: map[string]map[string]int Number of bad requests received in the period of time by endpoint and version
 func GetAndCleanUnsupportedEndpoints() map[string]map[string]int {
 	mutex.Lock()
 	defer func() {
-		unsupportedEndpoints = make(map[string]map[string]int, 0)
+		unsupportedEndpoints = make(map[string]map[string]int)
 		mutex.Unlock()
 	}()
 
 	return unsupportedEndpoints
 }
 
-// GetAndCleanResponseTime Returns and clenas the metric fot average response time
+// GetAndCleanResponseTime Returns and cleans the metric fot average response time
 // @author AB
 // @params
 // @return
-// string: Avg memmory used
+// string: Avg memory used
 func getAndCleanResponseTime() string {
 	avgTime := calculateAverageDuration(responseTime)
 	responseTime = []time.Duration{}
@@ -373,11 +352,11 @@ func calculateAverageDuration(durations []time.Duration) int64 {
 func GetAndCleanSystemMetrics() SystemMetrics {
 	mutex.Lock()
 	// Calculate the average memory usage and CPU consumption and print them
-	avgMemmory, maxMemmory, numCPU := calculateAverageMemory(measurements)
+	avgMemory, maxMemory, numCPU := calculateAverageMemory(measurements)
 
 	result := SystemMetrics{
-		AverageMemmory:      fmt.Sprintf("%.2f MB", float64(avgMemmory)/1024/1024),
-		MaxUsedMemory:       fmt.Sprintf("%.2f MB", float64(maxMemmory)/1024/1024),
+		AverageMemory:       fmt.Sprintf("%.2f MB", float64(avgMemory)/1024/1024),
+		MaxUsedMemory:       fmt.Sprintf("%.2f MB", float64(maxMemory)/1024/1024),
 		CPUUsage:            "",
 		AllowedCPUs:         strconv.Itoa(numCPU),
 		RequestsReceived:    strconv.Itoa(getAndCleanRequestsReceived()),

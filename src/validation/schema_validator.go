@@ -74,6 +74,10 @@ func (sm *SchemaValidator) Validate(data DynamicStruct) (*Result, error) {
 func (sm *SchemaValidator) cleanErrors(errors []gojsonschema.ResultError) map[string][]string {
 	result := make(map[string][]string)
 	for _, desc := range errors {
+		if strings.Contains(desc.String(), "\"if\"") {
+			continue
+		}
+
 		field := sm.cleanString(desc.Field())
 		desc := sm.cleanString(desc.Description())
 		result[field] = append(result[field], desc)
@@ -83,7 +87,7 @@ func (sm *SchemaValidator) cleanErrors(errors []gojsonschema.ResultError) map[st
 	return result
 }
 
-// cleanString removes unnecesary information from the field an error fields
+// cleanString removes unnecessary information from the field an error fields
 //
 // Parameters:
 //   - value: string to be cleaned

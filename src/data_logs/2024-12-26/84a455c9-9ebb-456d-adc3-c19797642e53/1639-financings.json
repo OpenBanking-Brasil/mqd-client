@@ -1,0 +1,41 @@
+[
+  {
+    "EndpointName": "/contracts",
+    "Requests": 2,
+    "RequestsWithErrors": 1,
+    "PayloadDetails": [
+      {
+        "XFapiInteractionID": "1e1e5181-8555-4d8b-8984-c6bc66c2706c",
+        "ConsentID": "",
+        "Payload": {
+          "data": [
+            {
+              "brandName": "Organização A",
+              "contractId": "9***************************************6",
+              "ipocCode": "92792126019929279212650822221989319252576",
+              "productSubType": "AQUISICAO_BENS_VEICULOS_AUTOMOTORES",
+              "productType": "FINANCIAMENTOS"
+            }
+          ],
+          "links": {
+            "first": "https://api.banco.com.br/open-banking/api/v1/resource",
+            "last": "https://api.banco.com.br/open-banking/api/v1/resource",
+            "next": "https://api.banco.com.br/open-banking/api/v1/resource",
+            "prev": "https://api.banco.com.br/open-banking/api/v1/resource",
+            "self": "https://api.banco.com.br/open-banking/api/v1/resource"
+          },
+          "meta": {
+            "requestDateTime": "2021-05-21T08:30:00Z",
+            "totalPages": 1,
+            "totalRecords": 1
+          }
+        },
+        "Errors": {
+          "data": [
+            "companyCnpj is required"
+          ]
+        }
+      }
+    ]
+  }
+]
