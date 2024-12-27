@@ -1,0 +1,43 @@
+  ConfigurationSettings:
+    ### Indicates the logging level that will be used by the application
+    ### ALLOWED VALUES: DEBUG, INFO, WARNING, ERROR, FATAL, PANIC
+    LoggingLevel: INFO
+    ### Sets the environment you are currently running in
+    ### ALLOWED VALUES: PRD, DEV, HML
+    Environment: PRD
+    ### API port where the API will be exposed to receive messages
+    APIPort: 8080
+  ### Instance-specific settings
+  ApplicationSettings:
+    ### Indicates whether the application will be used as a TRANSMITTER or as a RECEIVER
+    ### ALLOWED VALUES: TRANSMITTER, RECEIVER
+    Mode: TRANSMITTER
+    ### Unique identifier of the organization in which the instance is installed
+    ##1749427a-9fc0-4838-a781-9497cc585a9c
+    OrganisationID: d7384bd0-842f-43c5-be02-9d2b2d5efc2c
+  ### Specific settings for message reporting
+  ReportSettings:
+    ### Time in minutes that indicates how often the report will be sent to the server, by default the value is 30
+    ### Value of 0 will allow the application to use the default Value
+    ExecutionWindow: 0
+    ### Indicates the number of validations that will be included in a report, by default the value is 50000
+    ### Value of 0 will allow the application to use the default Value
+    ExecutionNumber: 0
+  # System Security Settings
+  SecuritySettings:
+    ### Indicates whether to enable or disable HTTPS for the service
+    EnableHTTPS: false
+    ### Indicates the URL where the Proxy is located that allows access to the server through the use of ICP-BRAZIL certificates
+    ProxyURL: http://127.0.0.1:8082
+  ### Configuration settings for storing results locally
+  ResultSettings:
+    ### Indicates whether to save results locally
+    Enabled: true
+    ### Indicates the number of files that should be created each day
+    FilesPerDay: 8
+    ### Indicates the number of days that will be stored by the application
+    DaysToStore: 7
+    ### Indicates the number of results that will be saved for each type of error
+    SamplesPerError: 5
+    ### Indicates if privileged information should be masked before writing log data
+    MaskPrivateContent: true

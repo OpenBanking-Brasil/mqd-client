@@ -24,11 +24,11 @@ type ConfigurationUpdateError struct {
 type ConfigurationUpdateStatus struct {
 	ConfigurationVersion     string                     // Version of the configuration
 	LastExecutionDate        time.Time                  // Indicates the data execution of the configuration update
-	LastUpdatedDate          time.Time                  // Indicates the data of the las succesful configuration update
+	LastUpdatedDate          time.Time                  // Indicates the data of the las successful configuration update
 	ConfigurationUpdateError []ConfigurationUpdateError // List of error messages if any durin the update process
 }
 
-// ApplicationConfiguration Contains the information of the actual configuration of the applicaiton
+// ApplicationConfiguration Contains the information of the actual configuration of the application
 type ApplicationConfiguration struct {
 	ApplicationVersion        string                    // Version of the application
 	Environment               string                    // Environment of the application
@@ -70,16 +70,17 @@ type EndPointSummaryDetail struct {
 // EndPointSummary Contains a summary for a specific endpoint
 type EndPointSummary struct {
 	EndpointName     string                  // Name of the endpoint
-	TotalRequests    int                     // Totla number of requests
+	TotalRequests    int                     // Total number of requests
 	ValidationErrors int                     // Total number of validation errors
 	Detail           []EndPointSummaryDetail // Detail of the errors
 }
 
 // Report is the object to be sent to the server
 type Report struct {
-	Metrics                  ApplicationMetrics       // Metris of the application
+	Metrics                  ApplicationMetrics       // Metrics of the application
 	ApplicationConfiguration ApplicationConfiguration // Configuration of the application on the Client Side
 	ClientID                 string                   // Client identifier (UUID)
-	UnsupportedEndpoints     []UnsupportedEndpoint    // List with the unsuported endpoint requests
+	DataOwnerID              string                   // OrganisationID of the institution reporting the information
+	UnsupportedEndpoints     []UnsupportedEndpoint    // List with the unsupported endpoint requests
 	ServerSummary            []ServerSummary          // List of Servers requested
 }
