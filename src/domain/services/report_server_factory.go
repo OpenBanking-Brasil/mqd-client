@@ -3,6 +3,7 @@ package services
 import (
 	"sync"
 
+	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 )
 
@@ -18,11 +19,11 @@ var (
 //
 // Returns:
 //   - ReportServer: ReportServer instance
-func GetReportServer(logger log.Logger) *ReportServer {
+func GetReportServer(logger log.Logger, serverURL string, settings configuration.Settings) *ReportServer {
 	if singleton == nil {
 		lock.Lock()
 		defer lock.Unlock()
-		singleton = NewReportServerMQD(logger)
+		singleton = NewReportServerMQD(logger, serverURL, settings)
 	}
 
 	return &singleton

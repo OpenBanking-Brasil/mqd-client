@@ -29,3 +29,6 @@ go.work
 
 # IDE
 .idea/
+/infra/dockerfile/settings/
+/infra/dockerfile/certificates/
+/infra/dockerfile/data_logs/

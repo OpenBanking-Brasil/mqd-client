@@ -2,24 +2,15 @@ package application
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
+	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/OpenBanking-Brasil/MQD_Client/domain/models"
 	"github.com/OpenBanking-Brasil/MQD_Client/domain/services"
-)
-
-const (
-	reportExecutionWindowEnv = "REPORT_EXECUTION_WINDOW" // constant  to store name of the report execution time environment variable
-	reportExecutionNumberEnv = "REPORT_EXECUTION_NUMBER" // constant  to store name of the report execution total of reports environment variable
-	enableHTTPSEnv           = "ENABLE_HTTPS"
-	certPath                 = "/certificates/"
 )
 
 var (
@@ -34,6 +25,15 @@ type ConfigurationUpdateStatus struct {
 	UpdateMessages    map[time.Time]string // List of error messages if any during the update process
 }
 
+// APIValidationSettings groups the validation settings for a specific API
+type APIValidationSettings struct {
+	EndpointSettings *models.APIEndpointSetting
+	APIGroup         string
+	API              string
+	APIVersion       string
+	BasePath         string
+}
+
 // ConfigurationManager is the manager in charge of handling configuration parameters of the application
 type ConfigurationManager struct {
 	crosscutting.OFBStruct
@@ -41,12 +41,7 @@ type ConfigurationManager struct {
 	processRunning            bool                          // Indicates that the process is running
 	mqdServer                 services.ReportServer         // Report server for MQD
 	configurationUpdateStatus ConfigurationUpdateStatus     // Last status of the configuration update
-	environment               string
-	reportExecutionWindow     int
-	reportExecutionNumber     int
-	EnableHTTPS               bool
-	CertFilePath              string
-	KeyFilePath               string
+	settings                  configuration.Settings
 }
 
 // NewConfigurationManager creates a new configuration manager for the application
@@ -58,7 +53,7 @@ type ConfigurationManager struct {
 //
 // Returns:
 //   - ConfigurationManager: new created configuration manager
-func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer, environment string) *ConfigurationManager {
+func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer, settings configuration.Settings) *ConfigurationManager {
 	if configurationManagerSingleton == nil {
 		configurationManagerSingleton = &ConfigurationManager{
 			OFBStruct: crosscutting.OFBStruct{
@@ -66,49 +61,11 @@ func NewConfigurationManager(logger log.Logger, mqdServer services.ReportServer,
 				Logger: logger,
 			},
 
-			mqdServer:   mqdServer,
-			environment: environment,
-		}
-
-		reportExecutionWindow := crosscutting.GetEnvironmentValue(logger, reportExecutionWindowEnv, "")
-		if reportExecutionWindow != "" {
-			value, err := strconv.Atoi(strings.TrimSpace(reportExecutionWindow))
-			if err != nil {
-				logger.Warning("Error loading REPORT_EXECUTION_WINDOW", configurationManagerSingleton.Pack, "NewConfigurationManager")
-				value = 0
-			}
-
-			if value > 60 || value < 0 {
-				logger.Warning("Value out of range for  REPORT_EXECUTION_WINDOW(1 - 60), using default value from system", configurationManagerSingleton.Pack, "NewConfigurationManager")
-				value = 0
-			}
-
-			configurationManagerSingleton.reportExecutionWindow = value
-		} else {
-			configurationManagerSingleton.reportExecutionWindow = 0
-		}
-
-		reportExecutionNumber := crosscutting.GetEnvironmentValue(logger, reportExecutionNumberEnv, "")
-		if reportExecutionNumber != "" {
-			value, err := strconv.Atoi(strings.TrimSpace(reportExecutionNumber))
-			if err != nil {
-				logger.Warning("Error loading REPORT_EXECUTION_NUMBER: ["+reportExecutionNumber+"]", configurationManagerSingleton.Pack, "NewConfigurationManager")
-				value = 0
-			}
-
-			if value > 200000 || value < 10000 {
-				logger.Warning("Value out of range for REPORT_EXECUTION_NUMBER (10000 - 200000), using default value from system", configurationManagerSingleton.Pack, "NewConfigurationManager")
-				value = 0
-			}
-
-			configurationManagerSingleton.reportExecutionNumber = value
-		} else {
-			configurationManagerSingleton.reportExecutionNumber = 0
+			mqdServer: mqdServer,
+			settings:  settings,
 		}
 
 		configurationManagerSingleton.configurationUpdateStatus.UpdateMessages = make(map[time.Time]string)
-
-		configurationManagerSingleton.EnableHTTPS = crosscutting.GetEnvironmentValue(logger, enableHTTPSEnv, "FALSE") == "TRUE"
 	}
 
 	return configurationManagerSingleton
@@ -217,10 +174,6 @@ func (cm *ConfigurationManager) updateValidationSettings(newSettings *models.Con
 func (cm *ConfigurationManager) updateConfiguration() error {
 	cm.Logger.Info("Executing configuration update", cm.Pack, "updateConfiguration")
 
-	if cm.EnableHTTPS {
-		cm.validateHTTPSCertificates()
-	}
-
 	cm.configurationUpdateStatus.LastExecutionDate = time.Now()
 	cs, err := cm.mqdServer.LoadConfigurationSettings()
 	if err != nil {
@@ -241,31 +194,13 @@ func (cm *ConfigurationManager) updateConfiguration() error {
 
 	configurationManagerMutex.Lock()
 	cm.ConfigurationSettings = cs
+	cm.ConfigurationSettings.SecuritySettings.AttributesToMask = append(cm.ConfigurationSettings.SecuritySettings.AttributesToMask, "companyCnpj")
 	cm.configurationUpdateStatus.LastUpdatedDate = cm.configurationUpdateStatus.LastExecutionDate
 	cm.configurationUpdateStatus.UpdateMessages = make(map[time.Time]string)
 	cm.Logger.Info("Configuration was updated to the latest version: "+cm.ConfigurationSettings.Version, cm.Pack, "updateConfiguration")
 	configurationManagerMutex.Unlock()
 
 	return nil
-}
-
-func (cm *ConfigurationManager) validateHTTPSCertificates() bool {
-	certFile := "server.crt"
-	keyFile := "server.key"
-
-	cm.KeyFilePath = fmt.Sprintf("%s%s", certPath, keyFile)
-	cm.CertFilePath = fmt.Sprintf("%s%s", certPath, certFile)
-	_, err := os.Stat(cm.KeyFilePath)
-	if os.IsNotExist(err) {
-		cm.Logger.Panic("Key certificate not found: "+cm.KeyFilePath, cm.Pack, "validateHTTPSCertificates")
-	}
-
-	_, err = os.Stat(cm.CertFilePath)
-	if os.IsNotExist(err) {
-		cm.Logger.Panic("Certificate file not found: "+cm.CertFilePath, cm.Pack, "validateHTTPSCertificates")
-	}
-
-	return true
 }
 
 // getAPIGroupSettings return the settings of API groups
@@ -297,7 +232,7 @@ func (cm *ConfigurationManager) StartUpdateProcess() {
 	cm.processRunning = true
 	cm.Logger.Info("Starting configuration update Process", cm.Pack, "StartUpdateProcess")
 	timeWindow := time.Duration(2) * time.Minute
-	if cm.environment != "DEBUG" {
+	if cm.settings.ConfigurationSettings.Environment != "DEBUG" {
 		timeWindow = time.Duration(4) * time.Hour
 	}
 
@@ -308,16 +243,6 @@ func (cm *ConfigurationManager) StartUpdateProcess() {
 			cm.Logger.Error(err, "Error updating configuration", cm.Pack, "StartUpdateProcess")
 		}
 	}
-
-	//for {
-	//	select {
-	//	case <-ticker.C:
-	//		err := cm.updateConfiguration()
-	//		if err != nil {
-	//			cm.Logger.Error(err, "Error updating configuration", cm.Pack, "StartUpdateProcess")
-	//		}
-	//	}
-	//}
 }
 
 // Initialize executes initial settings configuration
@@ -339,7 +264,7 @@ func (cm *ConfigurationManager) Initialize() error {
 // Returns:
 //   - *models.APIEndpointSetting: error if any
 //   - string: version of the api
-func (cm *ConfigurationManager) GetEndpointSettingFromAPI(endpointName string, logger log.Logger) (*models.APIEndpointSetting, string) {
+func (cm *ConfigurationManager) GetEndpointSettingFromAPI(endpointName string, logger log.Logger) *APIValidationSettings {
 	cm.Logger.Info("loading Settings from API", cm.Pack, "GetEndpointSettingFromAPI")
 	settings := cm.getAPIGroupSettings()
 
@@ -349,7 +274,13 @@ func (cm *ConfigurationManager) GetEndpointSettingFromAPI(endpointName string, l
 				for _, endpoint := range api.EndpointList {
 					apiEndpointName := strings.ToLower(strings.TrimSpace(strings.TrimSpace(api.EndpointBase) + strings.TrimSpace(endpoint.Endpoint)))
 					if apiEndpointName == strings.ToLower(strings.TrimSpace(endpointName)) {
-						return &endpoint, api.Version
+						return &APIValidationSettings{
+							EndpointSettings: &endpoint,
+							APIVersion:       api.Version,
+							API:              api.API,
+							APIGroup:         setting.Group,
+							BasePath:         api.BasePath,
+						}
 					}
 				}
 			}
@@ -357,7 +288,7 @@ func (cm *ConfigurationManager) GetEndpointSettingFromAPI(endpointName string, l
 	}
 
 	logger.Debug("Endpoint Name not found.", "validation-settings", "GetEndpointSettingFromAPI")
-	return nil, ""
+	return nil
 }
 
 // GetLastExecutionDate returns the las execution date
@@ -397,8 +328,8 @@ func (cm *ConfigurationManager) GetUpdateMessages() map[time.Time]string {
 // Returns:
 //   - int: report execution window in minutes
 func (cm *ConfigurationManager) GetReportExecutionWindow() int {
-	if cm.reportExecutionWindow > 0 {
-		return cm.reportExecutionWindow
+	if cm.settings.ReportSettings.ExecutionWindow > 0 {
+		return cm.settings.ReportSettings.ExecutionWindow
 	}
 
 	return cm.ConfigurationSettings.ReportSettings.ReportExecutionWindow
@@ -411,9 +342,36 @@ func (cm *ConfigurationManager) GetReportExecutionWindow() int {
 // Returns:
 //   - int: number of reports to check
 func (cm *ConfigurationManager) GetSendOnReportNumber() int {
-	if cm.reportExecutionNumber > 0 {
-		return cm.reportExecutionNumber
+	if cm.settings.ReportSettings.ExecutionNumber > 0 {
+		return cm.settings.ReportSettings.ExecutionNumber
 	}
 
 	return cm.ConfigurationSettings.ReportSettings.SendOnReportNumber
+}
+
+// IsHTTPS indicates if the application should be configured as HTTP or HTTPS
+//
+// Parameters:
+// Returns:
+//   - bool: true if server configured as HTTPS
+func (cm *ConfigurationManager) IsHTTPS() bool {
+	return cm.settings.SecuritySettings.EnableHTTPS
+}
+
+// GetCertFilePath returns the configured path for the https certificates
+//
+// Parameters:
+// Returns:
+//   - string: string containing the path for the cert certificate file
+func (cm *ConfigurationManager) GetCertFilePath() string {
+	return cm.settings.SecuritySettings.CertFilePath
+}
+
+// GetKeyFilePath returns the configured path for the https certificates
+//
+// Parameters:
+// Returns:
+//   - string: string containing the path for the key certificate file
+func (cm *ConfigurationManager) GetKeyFilePath() string {
+	return cm.settings.SecuritySettings.KeyFilePath
 }

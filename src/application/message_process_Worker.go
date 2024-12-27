@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	messageProcessorWorkerMutex = sync.Mutex{}          // Mutex for multi processing locks
+	messageProcessorWorkerMutex = sync.Mutex{}          // Mutex for multiprocessing locks
 	singletonMutex              = sync.Mutex{}          // Mutex for the singleton variable
 	messageProcessorSingleton   *MessageProcessorWorker // Message process singleton
 )
@@ -25,6 +25,7 @@ type MessageProcessorWorker struct {
 	resultProcessor *ResultProcessor      // Result processor to be used by the package
 	cm              *ConfigurationManager // Configuration manager
 	qm              *QueueManager         // Queue manager to queue the messages
+	lrm             *LocalResultManager
 }
 
 // GetMessageProcessorWorker returns a new message processor
@@ -37,7 +38,7 @@ type MessageProcessorWorker struct {
 //
 // Returns:
 //   - MessageProcessorWorker: New message processor
-func GetMessageProcessorWorker(logger log.Logger, resultProcessor *ResultProcessor, qm *QueueManager, cm *ConfigurationManager) *MessageProcessorWorker {
+func GetMessageProcessorWorker(logger log.Logger, resultProcessor *ResultProcessor, qm *QueueManager, cm *ConfigurationManager, lrm *LocalResultManager) *MessageProcessorWorker {
 	if messageProcessorSingleton == nil {
 		singletonMutex.Lock()
 		defer singletonMutex.Unlock()
@@ -52,6 +53,7 @@ func GetMessageProcessorWorker(logger log.Logger, resultProcessor *ResultProcess
 			resultProcessor: resultProcessor,
 			qm:              qm,
 			cm:              cm,
+			lrm:             lrm,
 		}
 	}
 
@@ -68,9 +70,10 @@ func (mpw *MessageProcessorWorker) processMessage(msg *Message) {
 	messageProcessorWorkerMutex.Lock()
 	mpw.receivedValues[msg.Endpoint]++
 	messageProcessorWorkerMutex.Unlock()
-	endpointSettings, _ := mpw.cm.GetEndpointSettingFromAPI(msg.Endpoint, mpw.Logger)
 
-	if endpointSettings == nil {
+	validationSettings := mpw.cm.GetEndpointSettingFromAPI(msg.Endpoint, mpw.Logger)
+
+	if validationSettings == nil {
 		mpw.Logger.Warning("Ignoring message with endpoint: "+msg.Endpoint, mpw.Pack, "processMessage")
 	} else {
 		messageResult := MessageResult{
@@ -78,8 +81,13 @@ func (mpw *MessageProcessorWorker) processMessage(msg *Message) {
 			HTTPMethod:         msg.HTTPMethod,
 			ServerID:           msg.ServerID,
 			XFapiInteractionID: msg.XFapiInteractionID,
+			TransmitterID:      msg.TransmitterID,
 		}
-		vr, err := mpw.validateMessage(msg, endpointSettings)
+		if msg.ConsentID != "" {
+			messageResult.XFapiInteractionID = "[" + msg.ConsentID + "] - [" + msg.XFapiInteractionID + "]"
+		}
+
+		vr, err := mpw.validateMessage(msg, validationSettings.EndpointSettings)
 		if err != nil {
 			mpw.Logger.Error(err, "Error during Validation for endpoint: "+msg.Endpoint, mpw.Pack, "processMessage")
 			messageResult.Result = false
@@ -94,7 +102,7 @@ func (mpw *MessageProcessorWorker) processMessage(msg *Message) {
 
 		monitoring.IncreaseValidationResult(messageResult.ServerID, messageResult.Endpoint, messageResult.Result)
 		mpw.resultProcessor.AppendResult(&messageResult)
-
+		mpw.lrm.AppendResult(*msg, messageResult, *validationSettings)
 		messageProcessorWorkerMutex.Lock()
 		mpw.validatedValues[msg.Endpoint]++
 		messageProcessorWorkerMutex.Unlock()
@@ -109,7 +117,7 @@ func (mpw *MessageProcessorWorker) processMessage(msg *Message) {
 //   - validationResult: Result to be filled with details from the validation
 //
 // Returns:
-//   - error: Error in case ther is a problem reading or validating the schema
+//   - error: Error in case there is a problem reading or validating the schema
 func (mpw *MessageProcessorWorker) validateContentWithSchema(content string, schema string, validationResult *validation.Result) error {
 	mpw.Logger.Info("Validating content with schema", mpw.Pack, "validateContentWithSchema")
 
@@ -142,7 +150,7 @@ func (mpw *MessageProcessorWorker) validateContentWithSchema(content string, sch
 	return nil
 }
 
-// ValidateMessage gets the payload on the message and validates its fields
+// ValidateMessage gets the Payload on the message and validates its fields
 //
 // Parameters:
 //   - msg: Message to be validated
@@ -155,14 +163,7 @@ func (mpw *MessageProcessorWorker) validateMessage(msg *Message, settings *model
 	mpw.Logger.Info("Validating message for endpoint: "+msg.Endpoint, mpw.Pack, "validateMessage")
 	validationResult := validation.Result{Valid: true, Errors: make(map[string][]string)}
 
-	err := mpw.validateContentWithSchema(msg.HeaderMessage, settings.JSONHeaderSchema, &validationResult)
-	if err != nil {
-		mpw.Logger.Error(err, "Error during header validation", mpw.Pack, "validateMessage")
-		validationResult.Valid = false
-		return &validationResult, err
-	}
-
-	err = mpw.validateContentWithSchema(msg.Message, settings.JSONBodySchema, &validationResult)
+	err := mpw.validateContentWithSchema(msg.Message, settings.JSONBodySchema, &validationResult)
 	if err != nil {
 		mpw.Logger.Error(err, "Error during body validation", mpw.Pack, "validateMessage")
 		validationResult.Valid = false

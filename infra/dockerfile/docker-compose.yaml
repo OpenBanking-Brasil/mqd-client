@@ -7,16 +7,26 @@ services:
     environment:
       - API_PORT=:8080
       - SERVER_ORG_ID=09b20d09-bf30-4497-938e-b0ead8ce9629
-      #- REPORT_EXECUTION_WINDOW=30
+      - REPORT_EXECUTION_WINDOW=5
       - ENVIRONMENT=DEV
-      - LOGGING_LEVEL=WARNING
+      - LOGGING_LEVEL=DEBUG
       - APPLICATION_MODE=TRANSMITTER
       - PROXY_URL=http://127.0.0.1:8082
       - ENABLE_HTTPS=FALSE # CHANGE TO TRUE TO ENABLE HTTPS
-    # Enable volumes in case of HTTPS enabled
-#   Certificates should be with the following names: server.crt, server.key
-#    volumes:
-#      - ./certificates:/certificates/
+      - RESULT_ENABLED=FALSE # Indicates whether to save results locally
+      - RESULT_FILES_PER_DAY=8 #Indicates the number of files that should be created each day
+      - RESULT_DAYS_TO_STORE=3 #Indicates the number of days that will be stored by the application
+      - RESULT_SAMPLES_PER_ERROR=5 #Indicates the number of results that will be saved for each type of error
+      - RESULT_MASK_PRIVATE_CONTENT=TRUE #Indicates if privileged information should be masked before writing log data
+    ## Enable volumes in case of HTTPS enabled
+    ## Certificates should be with the following names: server.crt, server.key
+    ## Settings folder should contain settings.yml file if configuration is made via file
+    ## Environment values will override dile configuration values
+    ## data_logs volume will contain the files created by the application with log information
+    volumes:
+      - ./certificates:/certificates/
+      - ./settings:/settings/
+      - ./data_logs:/data_logs/
     network_mode: "host"
     depends_on:
       - proxy

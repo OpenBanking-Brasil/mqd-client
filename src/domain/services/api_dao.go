@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting"
-	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/configuration"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/log"
 	"github.com/OpenBanking-Brasil/MQD_Client/crosscutting/security/jwt"
 )
@@ -19,6 +18,7 @@ import (
 type RestAPI struct {
 	crosscutting.OFBStruct               // Base structure
 	token                  *jwt.JWKToken // Token used by the server
+	serverURL              string
 }
 
 // loadCertificates Loads certificates from environment variables
@@ -27,7 +27,7 @@ type RestAPI struct {
 // @return
 // error: Error if any
 // Response from server in case of success
-func (ad *RestAPI) requestNewJWTToken() (*jwt.JWKToken, error) {
+func (ad *RestAPI) requestNewJWTToken(clientID string) (*jwt.JWKToken, error) {
 	ad.Logger.Info("Requesting new token", ad.Pack, "requestNewJWTToken")
 
 	// Create an HTTP client
@@ -36,14 +36,14 @@ func (ad *RestAPI) requestNewJWTToken() (*jwt.JWKToken, error) {
 	// Define the parameters for the token request
 	params := url.Values{}
 	params.Set("grant_type", "client_credentials")
-	params.Set("client_id", configuration.ClientID)
+	params.Set("client_id", clientID)
 	requestBody := params.Encode()
 
-	ad.Logger.Debug("ServerURL:"+configuration.ServerURL+tokenPath, ad.Pack, "requestNewJWTToken")
+	ad.Logger.Debug("ServerURL:"+ad.serverURL+tokenPath, ad.Pack, "requestNewJWTToken")
 	ad.Logger.Debug("Body:"+requestBody, ad.Pack, "requestNewJWTToken")
 
 	// Create a new HTTP request
-	req, err := http.NewRequest("POST", configuration.ServerURL+tokenPath, strings.NewReader(requestBody))
+	req, err := http.NewRequest("POST", ad.serverURL+tokenPath, strings.NewReader(requestBody))
 	if err != nil {
 		ad.Logger.Error(err, "Error creating request", ad.Pack, "requestNewJWTToken")
 		return nil, err
@@ -61,7 +61,7 @@ func (ad *RestAPI) requestNewJWTToken() (*jwt.JWKToken, error) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-
+			ad.Logger.Error(err, "Error closing body", ad.Pack, "requestNewJWTToken")
 		}
 	}(response.Body)
 
@@ -90,7 +90,7 @@ func (ad *RestAPI) requestNewJWTToken() (*jwt.JWKToken, error) {
 // @params
 // @return
 // Error if any
-func (ad *RestAPI) getJWKToken() error {
+func (ad *RestAPI) getJWKToken(clientID string) error {
 	ad.Logger.Info("Loading JWT token", ad.Pack, "getJWKToken")
 
 	if ad.token != nil && jwt.ValidateExpiration(ad.Logger, ad.token) {
@@ -100,7 +100,7 @@ func (ad *RestAPI) getJWKToken() error {
 
 	ad.Logger.Info("Token is invalid, Requesting new token", ad.Pack, "getJWKToken")
 
-	token, err := ad.requestNewJWTToken()
+	token, err := ad.requestNewJWTToken(clientID)
 	if err != nil {
 		ad.Logger.Error(err, "Error sending request", ad.Pack, "getJWKToken")
 		return err
