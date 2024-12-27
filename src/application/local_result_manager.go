@@ -146,13 +146,12 @@ func (mng *LocalResultManager) startStoreProcess() {
 		return
 	}
 
-	//executionWindow := 24 / mng.cm.settings.ResultSettings.FilesPerDay
-	//if executionWindow == 0 {
-	//	mng.Logger.Panic("FilesPerDay value is higher than expected, max value : 24, min value: 1.", mng.Pack, "StartStoreProcess")
-	//}
+	executionWindow := 24 / mng.cm.settings.ResultSettings.FilesPerDay
+	if executionWindow == 0 {
+		mng.Logger.Panic("FilesPerDay value is higher than expected, max value : 24, min value: 1.", mng.Pack, "StartStoreProcess")
+	}
 
-	//timeWindow := time.Duration(executionWindow) * time.Hour
-	timeWindow := time.Duration(3) * time.Minute
+	timeWindow := time.Duration(executionWindow) * time.Hour
 	ticker := time.NewTicker(timeWindow)
 
 	for range ticker.C {
