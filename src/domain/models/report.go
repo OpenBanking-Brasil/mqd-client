@@ -30,13 +30,18 @@ type ConfigurationUpdateStatus struct {
 
 // ApplicationConfiguration Contains the information of the actual configuration of the application
 type ApplicationConfiguration struct {
-	ApplicationVersion        string                    // Version of the application
-	Environment               string                    // Environment of the application
-	ConfigurationUpdateStatus ConfigurationUpdateStatus // Status of the configuration update
-	ReportExecutionWindow     string                    // Report Execution Window of the application
-	ReportExecutionNumber     string                    // Report Execution Number limit of the application
-	ApplicationMode           string                    // Mode of the application - TRANSMITTER / RECEIVER
-	ApplicationID             string                    // unique identifier for the application
+	ApplicationVersion               string                    // Version of the application
+	Environment                      string                    // Environment of the application
+	ConfigurationUpdateStatus        ConfigurationUpdateStatus // Status of the configuration update
+	ReportExecutionWindow            string                    // Report Execution Window of the application
+	ReportExecutionNumber            string                    // Report Execution Number limit of the application
+	ApplicationMode                  string                    // Mode of the application - TRANSMITTER / RECEIVER
+	ApplicationID                    string                    // unique identifier for the application
+	ResultSettingsEnabled            bool                      // ResultSettings Enabled
+	ResultSettingsFilesPerDay        int                       // ResultSettings Files per day
+	ResultSettingsDaysToStore        int                       // ResultSettings Days To Store
+	ResultSettingsSamplesPerError    int                       // ResultSettings Samples Per Error
+	ResultSettingsMaskPrivateContent bool                      // ResultSettings Mask PrivateContent
 }
 
 // UnsupportedEndpoint shows the list of unsupported endpoints requested to the API
