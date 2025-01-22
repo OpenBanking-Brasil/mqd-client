@@ -12,11 +12,14 @@ import (
 )
 
 const (
-	serverOrgIDEnv     = "SERVER_ORG_ID"    // constant  to store name of the server id environment variable
+	serverOrgIDEnv = "SERVER_ORG_ID" // constant  to store name of the server id environment variable
+	//loggingLevelEnv    = "LOGGING_LEVEL"    // constant  to store name of the Logging level environment variable
+	//environmentEnv     = "ENVIRONMENT"      // constant  to store name of the environment variable
 	applicationModeEnv = "APPLICATION_MODE" // constant  to store name of the application mode environment variable"
 	transmitterMode    = "TRANSMITTER"      // TRANSMITTER Application mode Constant
 	receiverMode       = "RECEIVER"         // RECEIVER Application mode Constant
-	certPath           = "/certificates/"
+	//proxyURL           = "PROXY_URL"        // RECEIVER Application mode Constant
+	certPath = "/certificates/"
 )
 
 var (
@@ -57,9 +60,9 @@ func (cnf *Configuration) GetApplicationSettings() Settings {
 func (cnf *Configuration) loadApplicationSettings() error {
 	err := cnf.loadConfigurationFile()
 	if err != nil {
-		cnf.logger.Error(err, "Error initializing application configuration, using only environment values", "configuration", "loadApplicationSettings")
+		return err
 	}
-
+	//fmt.Printf("File settings: %+v\n", settings)
 	err = cnf.loadSettingsFromEnvironment()
 	if err != nil {
 		return err
@@ -142,15 +145,7 @@ func (cnf *Configuration) validateHTTPSCertificates() bool {
 // Returns: Error if any
 func (cnf *Configuration) loadConfigurationFile() error {
 	cnf.logger.Info("Loading configuration file", "configuration", "loadConfigurationFile")
-	fileName := "./settings/settings.yml"
-
-	_, err := os.Stat(fileName)
-	if os.IsNotExist(err) {
-		cnf.logger.Warning("Settings file not found. using only environment values", "configuration", "loadConfigurationFile")
-		return nil
-	}
-
-	f, err := os.Open(fileName)
+	f, err := os.Open("./settings/settings.yml")
 	if err != nil {
 		cnf.logger.Error(err, "There was an error loading the configuration File.", "configuration", "loadConfigurationFile")
 		return err
