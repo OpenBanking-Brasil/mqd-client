@@ -32,4 +32,3 @@ go.work
 /infra/dockerfile/settings/
 /infra/dockerfile/certificates/
 /infra/dockerfile/data_logs/
-data_logs/
