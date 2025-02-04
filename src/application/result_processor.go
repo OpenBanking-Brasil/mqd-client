@@ -219,6 +219,13 @@ func (rp *ResultProcessor) updateMetrics(report *models.Report) {
 	report.ApplicationConfiguration.ApplicationID = rp.cm.settings.ConfigurationSettings.ApplicationID.String()
 	report.ApplicationConfiguration.ReportExecutionWindow = strconv.Itoa(rp.cm.GetReportExecutionWindow())
 	report.ApplicationConfiguration.ReportExecutionNumber = strconv.Itoa(rp.cm.GetSendOnReportNumber())
+
+	report.ApplicationConfiguration.ResultSettingsEnabled = rp.cm.settings.ResultSettings.Enabled
+	report.ApplicationConfiguration.ResultSettingsDaysToStore = rp.cm.settings.ResultSettings.DaysToStore
+	report.ApplicationConfiguration.ResultSettingsFilesPerDay = rp.cm.settings.ResultSettings.FilesPerDay
+	report.ApplicationConfiguration.ResultSettingsSamplesPerError = rp.cm.settings.ResultSettings.SamplesPerError
+	report.ApplicationConfiguration.ResultSettingsMaskPrivateContent = rp.cm.settings.ResultSettings.MaskPrivateContent
+
 	report.ApplicationConfiguration.ConfigurationUpdateStatus.LastExecutionDate = rp.cm.GetLastExecutionDate()
 	report.ApplicationConfiguration.ConfigurationUpdateStatus.LastUpdatedDate = rp.cm.GetLastUpdatedDate()
 	for key, value := range rp.cm.GetUpdateMessages() {

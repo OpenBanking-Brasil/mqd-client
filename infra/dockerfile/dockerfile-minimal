@@ -28,6 +28,11 @@ RUN adduser -D mqd_user
 #Copy the built binary and set up unprivileged user
 COPY --from=builder /src/server /usr/server
 COPY --from=builder --chown=mqd_user /src/server/mqd-client /usr/mqd-client
+#Include default settings file
+COPY --from=builder --chown=mqd_user /src/settings ./settings
+
+#Include default settings file
+COPY --from=builder --chown=mqd_user /src/settings ./settings
 
 # Switch to the unprivileged user
 USER mqd_user
