@@ -17,7 +17,7 @@ func init() {
 	monitoring.StartOpenTelemetry()
 	cnf := configuration.Configuration{}
 	settings = cnf.GetApplicationSettings()
-	logger = log.GetLogger()
+	logger = log.GetLogger(cnf.Settings.ConfigurationSettings.LoggingLevel)
 }
 
 // Main is the main function of the api, that is executed on "run"

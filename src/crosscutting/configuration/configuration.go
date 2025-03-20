@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -35,7 +36,7 @@ type Configuration struct {
 // Parameters:
 // Returns:
 func (cnf *Configuration) GetApplicationSettings() Settings {
-	cnf.logger = log.GetLogger()
+	cnf.logger = log.GetLogger("DEBUG")
 	cnf.logger.Info("Initializing application configuration", "configuration", "GetApplicationSettings")
 	err := cnf.loadApplicationSettings()
 	if err != nil {
@@ -47,7 +48,26 @@ func (cnf *Configuration) GetApplicationSettings() Settings {
 	}
 
 	cnf.Settings.ConfigurationSettings.ApplicationID = uuid.New()
+	cnf.printSettings()
+	cnf.logger.SetLoggingGlobalLevelFromString(cnf.Settings.ConfigurationSettings.LoggingLevel)
 	return cnf.Settings
+}
+
+// validateSettings Validates the loaded settings with the allowed values
+//
+// Parameters:
+// Returns: true if validation was ok
+func (cnf *Configuration) printSettings() {
+	//cnf.Settings.ConfigurationSettings.LoggingLevel
+	//cnf.logger.Info("Settings.ConfigurationSettings.LoggingLevel: " + cnf.Settings.ConfigurationSettings.LoggingLevel)
+	// Pretty-print the settings using JSON
+	prettySettings, err := json.MarshalIndent(cnf.Settings, "", "  ")
+	if err != nil {
+		cnf.logger.Error(err, "there was an error printing the application settings", "configuration", "printSettings")
+	}
+
+	fmt.Println("Application Settings:")
+	fmt.Println(string(prettySettings))
 }
 
 // loadApplicationSettings Loads all settings required for the application to run, such as endpoint settings and environment settings

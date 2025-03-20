@@ -13,11 +13,12 @@ var (
 //
 // Returns:
 //   - logger: Logger created
-func GetLogger() Logger {
+func GetLogger(loggingLevel string) Logger {
 	if singleton == nil {
 		lock.Lock()
 		defer lock.Unlock()
 		singleton = GetNewJSONLogger()
+		singleton.SetLoggingGlobalLevelFromString(loggingLevel)
 	}
 
 	return singleton
