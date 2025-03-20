@@ -3,7 +3,7 @@ info:
   title: Motor de Qualidade de Dados - Cliente
   description: |
     ...
-  version: 1.0.0
+  version: 2.3.0
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
@@ -32,6 +32,8 @@ paths:
         - $ref: '#/components/parameters/xFapiInteractionId'
         - $ref: '#/components/parameters/serverOrgId'
         - $ref: '#/components/parameters/endpointName'
+        - $ref: '#/components/parameters/transmitterID'
+        - $ref: '#/components/parameters/consentID'
       responses:
         '200':
           description: 
@@ -83,6 +85,25 @@ components:
       schema:
           type: string
           example: "/accounts/v2/accounts"
+    transmitterID:
+      name: transmitterID
+      in: header
+      description: Identificador da organização transmissora, este é um campo opcional que deve ser usado caso o identificador da organização usado na configuração do aplicativo seja diferente. Deve ser uma organização pertencente ao conglomerado configurado
+      required: false
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+        pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
+    consentID:
+      name: consentID
+      in: header
+      required: false
+      description: Identificador de consentimento usado associado à transação
+      schema:
+        type: string
+        example: 123654852
 
   schemas:
     EmptyObject:
