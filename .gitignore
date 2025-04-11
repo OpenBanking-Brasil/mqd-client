@@ -27,9 +27,12 @@ go.work
 # Backup archive of draw.io
 *.bkp
 
-# IDE
-.idea/
+# Dockerfile private settings
 /infra/dockerfile/settings/
 /infra/dockerfile/certificates/
 /infra/dockerfile/data_logs/
 data_logs/
+
+# IDE settings
+.idea/
+.vscode/

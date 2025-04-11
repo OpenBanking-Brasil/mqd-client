@@ -265,29 +265,32 @@ func (cm *ConfigurationManager) Initialize() error {
 //   - *models.APIEndpointSetting: error if any
 //   - string: version of the api
 func (cm *ConfigurationManager) GetEndpointSettingFromAPI(endpointName string, logger log.Logger) *APIValidationSettings {
-	cm.Logger.Info("loading Settings from API", cm.Pack, "GetEndpointSettingFromAPI")
+	cm.Logger.Info("Loading settings from API", cm.Pack, "GetEndpointSettingFromAPI")
+	lowerEndpointName := strings.ToLower(strings.TrimSpace(endpointName))
 	settings := cm.getAPIGroupSettings()
 
-	for _, setting := range settings {
-		for _, api := range setting.APIList {
-			if strings.Contains(strings.ToLower(endpointName), strings.ToLower(strings.TrimSpace(api.EndpointBase))) {
-				for _, endpoint := range api.EndpointList {
-					apiEndpointName := strings.ToLower(strings.TrimSpace(strings.TrimSpace(api.EndpointBase) + strings.TrimSpace(endpoint.Endpoint)))
-					if apiEndpointName == strings.ToLower(strings.TrimSpace(endpointName)) {
-						return &APIValidationSettings{
-							EndpointSettings: &endpoint,
-							APIVersion:       api.Version,
-							API:              api.API,
-							APIGroup:         setting.Group,
-							BasePath:         api.BasePath,
-						}
+	for _, groupSetting := range settings {
+		for _, api := range groupSetting.APIList {
+			if !strings.Contains(lowerEndpointName, strings.ToLower(strings.TrimSpace(api.EndpointBase))) {
+				continue
+			}
+
+			for _, endpoint := range api.EndpointList {
+				fullEndpointName := strings.ToLower(strings.TrimSpace(api.EndpointBase + endpoint.Endpoint))
+				if fullEndpointName == lowerEndpointName {
+					return &APIValidationSettings{
+						EndpointSettings: &endpoint,
+						APIVersion:       api.Version,
+						API:              api.API,
+						APIGroup:         groupSetting.Group,
+						BasePath:         api.BasePath,
 					}
 				}
 			}
 		}
 	}
 
-	logger.Debug("Endpoint Name not found.", "validation-settings", "GetEndpointSettingFromAPI")
+	logger.Debug("Endpoint's  name not found.", "validation-settings", "GetEndpointSettingFromAPI")
 	return nil
 }
 
