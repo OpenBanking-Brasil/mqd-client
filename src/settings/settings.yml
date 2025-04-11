@@ -6,7 +6,7 @@
     ### ALLOWED VALUES: PRD, DEV, HML
     Environment: PRD
     ### API port where the API will be exposed to receive messages
-    APIPort: 8080
+    APIPort:  8080
   ### Instance-specific settings
   ApplicationSettings:
     ### Indicates whether the application will be used as a TRANSMITTER or as a RECEIVER
@@ -29,6 +29,24 @@
     EnableHTTPS: false
     ### Indicates the URL where the Proxy is located that allows access to the server through the use of ICP-BRAZIL certificates
     ProxyURL: http://127.0.0.1:8082
+    SecurityResponseHeader:
+      StrictTransportSecurity:
+        MaxAge: 31536000
+      XFrameOptions:
+      ContentSecurityPolicy:
+        DefaultSrc: 'self'
+        ScriptSrc: self https://trusted-scripts.com
+        StyleSrc: self https://trusted-styles.com
+        ImgSrc: 'self'
+        ConnectSrc: 'self'
+        FontSrc: 'self'
+        ObjectSrc: 'none'
+        FrameSrc: 'self'
+        FormAction: 'self'
+        Sandbox: 'allow-scripts'
+        WorkerSrc: 'self'
+        ManifestSrc: 'self'
+        PrefetchSrc: 'self'
   ### Configuration settings for storing results locally
   ResultSettings:
     ### Indicates whether to save results locally

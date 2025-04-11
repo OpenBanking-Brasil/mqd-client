@@ -14,10 +14,10 @@ services:
       - PROXY_URL=http://127.0.0.1:8082
       - ENABLE_HTTPS=FALSE # CHANGE TO TRUE TO ENABLE HTTPS
       - RESULT_ENABLED=FALSE # Indicates whether to save results locally
-      - RESULT_FILES_PER_DAY=8 #Indicates the number of files that should be created each day
-      - RESULT_DAYS_TO_STORE=3 #Indicates the number of days that will be stored by the application
-      - RESULT_SAMPLES_PER_ERROR=5 #Indicates the number of results that will be saved for each type of error
-      - RESULT_MASK_PRIVATE_CONTENT=TRUE #Indicates if privileged information should be masked before writing log data
+      - RESULT_FILES_PER_DAY=8 # Indicates the number of files that should be created each day
+      - RESULT_DAYS_TO_STORE=3 # Indicates the number of days that will be stored by the application
+      - RESULT_SAMPLES_PER_ERROR=5 # Indicates the number of results that will be saved for each type of error
+      - RESULT_MASK_PRIVATE_CONTENT=TRUE # Indicates if privileged information should be masked before writing log data
     ## Enable volumes in case of HTTPS enabled
     ## Certificates should be with the following names: server.crt, server.key
     ## Settings folder should contain settings.yml file if configuration is made via file
@@ -44,6 +44,6 @@ services:
     ports:
       - "8082:80"
     volumes:
-     - ./proxy/default.sandbox.conf:/etc/nginx/conf.d/default.conf:ro
-     - ./proxy/nginx.conf:/etc/nginx/nginx.conf
-     - ./certificates:/etc/ssl  
+      - ./proxy/default.sandbox.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./certificates:/etc/ssl  
