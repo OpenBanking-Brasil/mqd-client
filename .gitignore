@@ -29,6 +29,9 @@ go.work
 
 # IDE
 .idea/
+
+# OpenSpec local SDD workspace (specs/proposals, not shipped)
+/openspec/
 /infra/dockerfile/settings/
 /infra/dockerfile/certificates/
 /infra/dockerfile/data_logs/
