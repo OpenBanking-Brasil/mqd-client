@@ -1,0 +1,46 @@
+# Ambiente de QA LOCAL do mqd-client (ver QA_run.md e scripts/qa-up.*).
+#
+# Diferente das Lambdas mqd-*, o mqd-client NÃO usa Postgres, WireMock nem
+# LocalStack — só conversa com o servidor central do MQD (via PROXY_URL). Por
+# isso este compose NÃO depende do mqd-qa-infra: sobe o próprio mock do servidor
+# central (tools/mqd-server-mock) numa rede própria deste projeto.
+#
+# O compose de instalação do cliente (infra/dockerfile/docker-compose.yaml, com o
+# proxy nginx + certificados ICP-Brasil apontando pro sandbox real) continua
+# sendo o de referência pra instalação — este aqui é só pra QA local.
+services:
+  mqd-server-mock:
+    build:
+      context: tools/mqd-server-mock
+    container_name: mqd-client-server-mock
+    restart: "no"
+    ports:
+      - "${MQD_SERVER_MOCK_PORT:-8082}:8082"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8082/settings/configurationSettings.json"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: infra/dockerfile/dockerfile-minimal
+    container_name: mqd-client-app
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      # Dentro da rede do compose, o mock é alcançado pelo nome do serviço, não
+      # 127.0.0.1 — sobrescreve qualquer valor que esteja em .env.
+      PROXY_URL: http://mqd-server-mock:8082
+    ports:
+      - "${MQD_CLIENT_PORT:-8080}:8080"
+    depends_on:
+      mqd-server-mock:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080/metrics"]
+      interval: 3s
+      timeout: 3s
+      retries: 20

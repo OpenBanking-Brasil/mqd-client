@@ -33,3 +33,5 @@ go.work
 /infra/dockerfile/certificates/
 /infra/dockerfile/data_logs/
 data_logs/
+# local QA env (see .env.example / QA_run.md)
+.env

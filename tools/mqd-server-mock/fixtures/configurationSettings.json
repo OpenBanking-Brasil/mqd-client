@@ -1,0 +1,23 @@
+{
+  "Version": "1.0.0-mock",
+  "ValidationSettings": {
+    "APIGroupSettings": [],
+    "TransmitterValidationRate": 100,
+    "ReceiverValidationRate": 100,
+    "ExtremelyHighTroughputValidationRate": 1,
+    "HighTroughputValidationRate": 10,
+    "MediumTroughputValidationRate": 50,
+    "LowTroughputValidationRate": 100,
+    "VeryLowTroughputValidationRate": 100
+  },
+  "ReportSettings": {
+    "ReportExecutionWindow": 5,
+    "SendOnReportNumber": 10000
+  },
+  "SecuritySettings": {
+    "AttributesToMask": [
+      "cpf",
+      "cnpj"
+    ]
+  }
+}
