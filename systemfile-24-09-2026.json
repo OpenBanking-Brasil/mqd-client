@@ -1,0 +1,1732 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2026-09-24T17:56:48.741311874Z",
+  "ArtifactName": ".",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "src/go.mod",
+      "Class": "lang-pkgs",
+      "Type": "gomod",
+      "Packages": [
+        {
+          "ID": "github.com/OpenBanking-Brasil/MQD_Client",
+          "Name": "github.com/OpenBanking-Brasil/MQD_Client",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/openbanking-brasil/mqd_client",
+            "UID": "813453c51726d319"
+          },
+          "Relationship": "root",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/golang-jwt/jwt/v5@v5.3.1",
+          "Name": "github.com/golang-jwt/jwt/v5",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/golang-jwt/jwt/v5@5.3.1",
+            "UID": "3f605e7145960671"
+          },
+          "Version": "5.3.1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/google/uuid@v1.6.0",
+          "Name": "github.com/google/uuid",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/google/uuid@1.6.0",
+            "UID": "23830b32a155a165"
+          },
+          "Version": "1.6.0",
+          "Licenses": [
+            "BSD-3-Clause"
+          ],
+          "Relationship": "direct",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/gorilla/mux@v1.8.1",
+          "Name": "github.com/gorilla/mux",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/gorilla/mux@1.8.1",
+            "UID": "ef23124a9f737321"
+          },
+          "Version": "1.8.1",
+          "Licenses": [
+            "BSD-3-Clause"
+          ],
+          "Relationship": "direct",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/prometheus/client_golang@v1.24.1",
+          "Name": "github.com/prometheus/client_golang",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/client_golang@1.24.1",
+            "UID": "493efc41fead2694"
+          },
+          "Version": "1.24.1",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "github.com/prometheus/common@v0.71.0",
+            "github.com/prometheus/procfs@v0.22.0",
+            "github.com/beorn7/perks@v1.0.1",
+            "github.com/cespare/xxhash/v2@v2.3.0",
+            "github.com/klauspost/compress@v1.20.0",
+            "github.com/prometheus/client_model@v0.6.3",
+            "google.golang.org/protobuf@v1.36.12",
+            "golang.org/x/sys@v0.48.0"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/rs/zerolog@v1.35.1",
+          "Name": "github.com/rs/zerolog",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/rs/zerolog@1.35.1",
+            "UID": "a599bd14d61a8466"
+          },
+          "Version": "1.35.1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "github.com/mattn/go-colorable@v0.1.15"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/sethvargo/go-envconfig@v1.4.3",
+          "Name": "github.com/sethvargo/go-envconfig",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/sethvargo/go-envconfig@1.4.3",
+            "UID": "75ee230cd675cfe1"
+          },
+          "Version": "1.4.3",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Relationship": "direct",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/xeipuuv/gojsonschema@v1.2.0",
+          "Name": "github.com/xeipuuv/gojsonschema",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/xeipuuv/gojsonschema@1.2.0",
+            "UID": "77da0deb8bdea535"
+          },
+          "Version": "1.2.0",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "github.com/xeipuuv/gojsonreference@v0.0.0-20180127040603-bd5ef7bd5415"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "go.opentelemetry.io/otel@v1.46.0",
+          "Name": "go.opentelemetry.io/otel",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel@1.46.0",
+            "UID": "4cd2a2e388dddc55"
+          },
+          "Version": "1.46.0",
+          "Licenses": [
+            "Apache-2.0",
+            "BSD-3-Clause"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "go.opentelemetry.io/otel/metric@v1.46.0",
+            "go.opentelemetry.io/otel/trace@v1.46.0",
+            "github.com/go-logr/logr@v1.4.4",
+            "github.com/go-logr/stdr@v1.2.2",
+            "go.opentelemetry.io/auto/sdk@v1.2.1",
+            "github.com/cespare/xxhash/v2@v2.3.0"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "go.opentelemetry.io/otel/exporters/prometheus@v0.68.0",
+          "Name": "go.opentelemetry.io/otel/exporters/prometheus",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/exporters/prometheus@0.68.0",
+            "UID": "725f571612ba6d90"
+          },
+          "Version": "0.68.0",
+          "Licenses": [
+            "Apache-2.0",
+            "BSD-3-Clause"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "go.opentelemetry.io/otel/trace@v1.46.0",
+            "github.com/prometheus/otlptranslator@v1.0.0",
+            "github.com/prometheus/client_model@v0.6.3",
+            "go.opentelemetry.io/otel/sdk@v1.46.0",
+            "github.com/prometheus/client_golang@v1.24.1",
+            "github.com/prometheus/common@v0.71.0",
+            "go.opentelemetry.io/otel@v1.46.0",
+            "go.opentelemetry.io/otel/metric@v1.46.0",
+            "go.opentelemetry.io/otel/sdk/metric@v1.46.0",
+            "google.golang.org/protobuf@v1.36.12"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "go.opentelemetry.io/otel/metric@v1.46.0",
+          "Name": "go.opentelemetry.io/otel/metric",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/metric@1.46.0",
+            "UID": "12313a9f911413e6"
+          },
+          "Version": "1.46.0",
+          "Licenses": [
+            "Apache-2.0",
+            "BSD-3-Clause"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "go.opentelemetry.io/otel@v1.46.0"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "go.opentelemetry.io/otel/sdk@v1.46.0",
+          "Name": "go.opentelemetry.io/otel/sdk",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/sdk@1.46.0",
+            "UID": "c2922e0d32482040"
+          },
+          "Version": "1.46.0",
+          "Licenses": [
+            "Apache-2.0",
+            "BSD-3-Clause"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "go.opentelemetry.io/otel/metric@v1.46.0",
+            "github.com/go-logr/logr@v1.4.4",
+            "github.com/google/uuid@v1.6.0",
+            "go.opentelemetry.io/otel/trace@v1.46.0",
+            "go.opentelemetry.io/otel/sdk/metric@v1.46.0",
+            "golang.org/x/sys@v0.48.0",
+            "go.opentelemetry.io/otel@v1.46.0"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "go.opentelemetry.io/otel/sdk/metric@v1.46.0",
+          "Name": "go.opentelemetry.io/otel/sdk/metric",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/sdk/metric@1.46.0",
+            "UID": "898a7240ba0d67d4"
+          },
+          "Version": "1.46.0",
+          "Licenses": [
+            "Apache-2.0",
+            "BSD-3-Clause"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "go.opentelemetry.io/otel@v1.46.0",
+            "go.opentelemetry.io/otel/sdk@v1.46.0",
+            "go.opentelemetry.io/otel/trace@v1.46.0",
+            "github.com/go-logr/logr@v1.4.4",
+            "github.com/go-logr/stdr@v1.2.2",
+            "go.opentelemetry.io/otel/metric@v1.46.0"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "gopkg.in/yaml.v3@v3.0.1",
+          "Name": "gopkg.in/yaml.v3",
+          "Identifier": {
+            "PURL": "pkg:golang/gopkg.in/yaml.v3@3.0.1",
+            "UID": "cd80edad73ae42bc"
+          },
+          "Version": "3.0.1",
+          "Licenses": [
+            "Apache-2.0",
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/beorn7/perks@v1.0.1",
+          "Name": "github.com/beorn7/perks",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/beorn7/perks@1.0.1",
+            "UID": "f68a2999a971691f"
+          },
+          "Version": "1.0.1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/cespare/xxhash/v2@v2.3.0",
+          "Name": "github.com/cespare/xxhash/v2",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/cespare/xxhash/v2@2.3.0",
+            "UID": "9b7cd90c8827ca80"
+          },
+          "Version": "2.3.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/go-logr/logr@v1.4.4",
+          "Name": "github.com/go-logr/logr",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/go-logr/logr@1.4.4",
+            "UID": "cbe334bebde77b40"
+          },
+          "Version": "1.4.4",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/go-logr/stdr@v1.2.2",
+          "Name": "github.com/go-logr/stdr",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/go-logr/stdr@1.2.2",
+            "UID": "e3ebebe97c699871"
+          },
+          "Version": "1.2.2",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "github.com/go-logr/logr@v1.4.4"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/klauspost/compress@v1.20.0",
+          "Name": "github.com/klauspost/compress",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/klauspost/compress@1.20.0",
+            "UID": "dda4b73dc93e0d41"
+          },
+          "Version": "1.20.0",
+          "Licenses": [
+            "Apache-2.0",
+            "BSD-3-Clause",
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/kr/text@v0.2.0",
+          "Name": "github.com/kr/text",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/kr/text@0.2.0",
+            "UID": "12c79a0a3df6dd"
+          },
+          "Version": "0.2.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/mattn/go-colorable@v0.1.15",
+          "Name": "github.com/mattn/go-colorable",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/mattn/go-colorable@0.1.15",
+            "UID": "bd4c2cbc6d426a64"
+          },
+          "Version": "0.1.15",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "golang.org/x/sys@v0.48.0",
+            "github.com/mattn/go-isatty@v0.0.24"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/mattn/go-isatty@v0.0.24",
+          "Name": "github.com/mattn/go-isatty",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/mattn/go-isatty@0.0.24",
+            "UID": "40cd8e473b7f7c28"
+          },
+          "Version": "0.0.24",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "golang.org/x/sys@v0.48.0"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/munnerz/goautoneg@v0.0.0-20191010083416-a7dc8b61c822",
+          "Name": "github.com/munnerz/goautoneg",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/munnerz/goautoneg@0.0.0-20191010083416-a7dc8b61c822",
+            "UID": "9234a4c5517df235"
+          },
+          "Version": "0.0.0-20191010083416-a7dc8b61c822",
+          "Licenses": [
+            "BSD-3-Clause"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/prometheus/client_model@v0.6.3",
+          "Name": "github.com/prometheus/client_model",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/client_model@0.6.3",
+            "UID": "334758138725a816"
+          },
+          "Version": "0.6.3",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "google.golang.org/protobuf@v1.36.12"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/prometheus/common@v0.71.0",
+          "Name": "github.com/prometheus/common",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/common@0.71.0",
+            "UID": "51a1029c6ff37484"
+          },
+          "Version": "0.71.0",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "github.com/google/uuid@v1.6.0",
+            "github.com/munnerz/goautoneg@v0.0.0-20191010083416-a7dc8b61c822",
+            "github.com/prometheus/client_model@v0.6.3",
+            "google.golang.org/protobuf@v1.36.12",
+            "github.com/golang-jwt/jwt/v5@v5.3.1"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/prometheus/otlptranslator@v1.0.0",
+          "Name": "github.com/prometheus/otlptranslator",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/otlptranslator@1.0.0",
+            "UID": "97d0258ecbb6fa45"
+          },
+          "Version": "1.0.0",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/prometheus/procfs@v0.22.0",
+          "Name": "github.com/prometheus/procfs",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/procfs@0.22.0",
+            "UID": "d48f1ba1e4a99782"
+          },
+          "Version": "0.22.0",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "golang.org/x/sys@v0.48.0"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/xeipuuv/gojsonpointer@v0.0.0-20190905194746-02993c407bfb",
+          "Name": "github.com/xeipuuv/gojsonpointer",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/xeipuuv/gojsonpointer@0.0.0-20190905194746-02993c407bfb",
+            "UID": "3ac293bb21a66744"
+          },
+          "Version": "0.0.0-20190905194746-02993c407bfb",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "github.com/xeipuuv/gojsonreference@v0.0.0-20180127040603-bd5ef7bd5415",
+          "Name": "github.com/xeipuuv/gojsonreference",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/xeipuuv/gojsonreference@0.0.0-20180127040603-bd5ef7bd5415",
+            "UID": "7bd7759ff7d203a1"
+          },
+          "Version": "0.0.0-20180127040603-bd5ef7bd5415",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "go.opentelemetry.io/auto/sdk@v1.2.1",
+          "Name": "go.opentelemetry.io/auto/sdk",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/auto/sdk@1.2.1",
+            "UID": "65d8fded3f1211e0"
+          },
+          "Version": "1.2.1",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "go.opentelemetry.io/otel@v1.46.0",
+            "go.opentelemetry.io/otel/trace@v1.46.0"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "go.opentelemetry.io/otel/trace@v1.46.0",
+          "Name": "go.opentelemetry.io/otel/trace",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/trace@1.46.0",
+            "UID": "705b56f9b2866d92"
+          },
+          "Version": "1.46.0",
+          "Licenses": [
+            "Apache-2.0",
+            "BSD-3-Clause"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "go.opentelemetry.io/otel@v1.46.0"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "golang.org/x/sys@v0.48.0",
+          "Name": "golang.org/x/sys",
+          "Identifier": {
+            "PURL": "pkg:golang/golang.org/x/sys@0.48.0",
+            "UID": "b7a3edcf58c135e5"
+          },
+          "Version": "0.48.0",
+          "Licenses": [
+            "BSD-3-Clause"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        },
+        {
+          "ID": "google.golang.org/protobuf@v1.36.12",
+          "Name": "google.golang.org/protobuf",
+          "Identifier": {
+            "PURL": "pkg:golang/google.golang.org/protobuf@1.36.12",
+            "UID": "bf06899f048081d9"
+          },
+          "Version": "1.36.12",
+          "Licenses": [
+            "BSD-3-Clause"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {}
+        }
+      ]
+    },
+    {
+      "Target": "infra/dockerfile/dockerfile-minimal",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 26,
+        "Failures": 1,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS026",
+          "AVDID": "AVD-DS-0026",
+          "Title": "No HEALTHCHECK defined",
+          "Description": "You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.",
+          "Message": "Add HEALTHCHECK instruction in your Dockerfile",
+          "Namespace": "builtin.dockerfile.DS026",
+          "Query": "data.builtin.dockerfile.DS026.deny",
+          "Resolution": "Add HEALTHCHECK instruction in Dockerfile",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds026",
+          "References": [
+            "https://blog.aquasec.com/docker-security-best-practices",
+            "https://avd.aquasec.com/misconfig/ds026"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS001",
+          "AVDID": "AVD-DS-0001",
+          "Title": "':latest' tag used",
+          "Description": "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS001",
+          "Query": "data.builtin.dockerfile.DS001.deny",
+          "Resolution": "Add a tag to the image in the 'FROM' statement",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds001",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ds001"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS002",
+          "AVDID": "AVD-DS-0002",
+          "Title": "Image user should not be 'root'",
+          "Description": "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS002",
+          "Query": "data.builtin.dockerfile.DS002.deny",
+          "Resolution": "Add 'USER \u003cnon root user name\u003e' line to the Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds002",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+            "https://avd.aquasec.com/misconfig/ds002"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS004",
+          "AVDID": "AVD-DS-0004",
+          "Title": "Port 22 exposed",
+          "Description": "Exposing port 22 might allow users to SSH into the container.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS004",
+          "Query": "data.builtin.dockerfile.DS004.deny",
+          "Resolution": "Remove 'EXPOSE 22' statement from the Dockerfile",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds004",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ds004"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS005",
+          "AVDID": "AVD-DS-0005",
+          "Title": "ADD instead of COPY",
+          "Description": "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS005",
+          "Query": "data.builtin.dockerfile.DS005.deny",
+          "Resolution": "Use COPY instead of ADD",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds005",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#add",
+            "https://avd.aquasec.com/misconfig/ds005"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS006",
+          "AVDID": "AVD-DS-0006",
+          "Title": "COPY '--from' referring to the current image",
+          "Description": "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS006",
+          "Query": "data.builtin.dockerfile.DS006.deny",
+          "Resolution": "Change the '--from' so that it will not refer to itself",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds006",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/multistage-build/",
+            "https://avd.aquasec.com/misconfig/ds006"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS007",
+          "AVDID": "AVD-DS-0007",
+          "Title": "Multiple ENTRYPOINT instructions listed",
+          "Description": "There can only be one ENTRYPOINT instruction in a Dockerfile. Only the last ENTRYPOINT instruction in the Dockerfile will have an effect.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS007",
+          "Query": "data.builtin.dockerfile.DS007.deny",
+          "Resolution": "Remove unnecessary ENTRYPOINT instruction.",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds007",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#entrypoint",
+            "https://avd.aquasec.com/misconfig/ds007"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS008",
+          "AVDID": "AVD-DS-0008",
+          "Title": "Exposed port out of range",
+          "Description": "UNIX ports outside the range 0-65535 are exposed.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS008",
+          "Query": "data.builtin.dockerfile.DS008.deny",
+          "Resolution": "Use port number within range",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds008",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#expose",
+            "https://avd.aquasec.com/misconfig/ds008"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS009",
+          "AVDID": "AVD-DS-0009",
+          "Title": "WORKDIR path not absolute",
+          "Description": "For clarity and reliability, you should always use absolute paths for your WORKDIR.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS009",
+          "Query": "data.builtin.dockerfile.DS009.deny",
+          "Resolution": "Use absolute paths for your WORKDIR",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds009",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#workdir",
+            "https://avd.aquasec.com/misconfig/ds009"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS010",
+          "AVDID": "AVD-DS-0010",
+          "Title": "RUN using 'sudo'",
+          "Description": "Avoid using 'RUN' with 'sudo' commands, as it can lead to unpredictable behavior.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS010",
+          "Query": "data.builtin.dockerfile.DS010.deny",
+          "Resolution": "Don't use sudo",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds010",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#run",
+            "https://avd.aquasec.com/misconfig/ds010"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS011",
+          "AVDID": "AVD-DS-0011",
+          "Title": "COPY with more than two arguments not ending with slash",
+          "Description": "When a COPY command has more than two arguments, the last one should end with a slash.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS011",
+          "Query": "data.builtin.dockerfile.DS011.deny",
+          "Resolution": "Add slash to last COPY argument",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds011",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#copy",
+            "https://avd.aquasec.com/misconfig/ds011"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS012",
+          "AVDID": "AVD-DS-0012",
+          "Title": "Duplicate aliases defined in different FROMs",
+          "Description": "Different FROMs can't have the same alias defined.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS012",
+          "Query": "data.builtin.dockerfile.DS012.deny",
+          "Resolution": "Change aliases to make them different",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds012",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/multistage-build/",
+            "https://avd.aquasec.com/misconfig/ds012"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS013",
+          "AVDID": "AVD-DS-0013",
+          "Title": "'RUN cd ...' to change directory",
+          "Description": "Use WORKDIR instead of proliferating instructions like 'RUN cd … \u0026\u0026 do-something', which are hard to read, troubleshoot, and maintain.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS013",
+          "Query": "data.builtin.dockerfile.DS013.deny",
+          "Resolution": "Use WORKDIR to change directory",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds013",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#workdir",
+            "https://avd.aquasec.com/misconfig/ds013"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS014",
+          "AVDID": "AVD-DS-0014",
+          "Title": "RUN using 'wget' and 'curl'",
+          "Description": "Avoid using both 'wget' and 'curl' since these tools have the same effect.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS014",
+          "Query": "data.builtin.dockerfile.DS014.deny",
+          "Resolution": "Pick one util, either 'wget' or 'curl'",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds014",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run",
+            "https://avd.aquasec.com/misconfig/ds014"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS015",
+          "AVDID": "AVD-DS-0015",
+          "Title": "'yum clean all' missing",
+          "Description": "You should use 'yum clean all' after using a 'yum install' command to clean package cached data and reduce image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS015",
+          "Query": "data.builtin.dockerfile.DS015.deny",
+          "Resolution": "Add 'yum clean all' to Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds015",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run",
+            "https://avd.aquasec.com/misconfig/ds015"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS016",
+          "AVDID": "AVD-DS-0016",
+          "Title": "Multiple CMD instructions listed",
+          "Description": "There can only be one CMD instruction in a Dockerfile. If you list more than one CMD then only the last CMD will take effect.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS016",
+          "Query": "data.builtin.dockerfile.DS016.deny",
+          "Resolution": "Dockerfile should only have one CMD instruction. Remove all the other CMD instructions",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds016",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#cmd",
+            "https://avd.aquasec.com/misconfig/ds016"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS017",
+          "AVDID": "AVD-DS-0017",
+          "Title": "'RUN \u003cpackage-manager\u003e update' instruction alone",
+          "Description": "The instruction 'RUN \u003cpackage-manager\u003e update' should always be followed by '\u003cpackage-manager\u003e install' in the same RUN statement.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS017",
+          "Query": "data.builtin.dockerfile.DS017.deny",
+          "Resolution": "Combine '\u003cpackage-manager\u003e update' and '\u003cpackage-manager\u003e install' instructions to single one",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds017",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/instructions/#run",
+            "https://avd.aquasec.com/misconfig/ds017"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS019",
+          "AVDID": "AVD-DS-0019",
+          "Title": "'dnf clean all' missing",
+          "Description": "Cached package data should be cleaned after installation to reduce image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS019",
+          "Query": "data.builtin.dockerfile.DS019.deny",
+          "Resolution": "Add 'dnf clean all' to Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds019",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+            "https://avd.aquasec.com/misconfig/ds019"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS020",
+          "AVDID": "AVD-DS-0020",
+          "Title": "'zypper clean' missing",
+          "Description": "The layer and image size should be reduced by deleting unneeded caches after running zypper.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS020",
+          "Query": "data.builtin.dockerfile.DS020.deny",
+          "Resolution": "Add 'zypper clean' to Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds020",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run",
+            "https://avd.aquasec.com/misconfig/ds020"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS021",
+          "AVDID": "AVD-DS-0021",
+          "Title": "'apt-get' missing '-y' to avoid manual input",
+          "Description": "'apt-get' calls should use the flag '-y' to avoid manual user input.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS021",
+          "Query": "data.builtin.dockerfile.DS021.deny",
+          "Resolution": "Add '-y' flag to 'apt-get'",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds021",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#run",
+            "https://avd.aquasec.com/misconfig/ds021"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS022",
+          "AVDID": "AVD-DS-0022",
+          "Title": "Deprecated MAINTAINER used",
+          "Description": "MAINTAINER has been deprecated since Docker 1.13.0.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS022",
+          "Query": "data.builtin.dockerfile.DS022.deny",
+          "Resolution": "Use LABEL instead of MAINTAINER",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds022",
+          "References": [
+            "https://docs.docker.com/engine/deprecated/#maintainer-in-dockerfile",
+            "https://avd.aquasec.com/misconfig/ds022"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS023",
+          "AVDID": "AVD-DS-0023",
+          "Title": "Multiple HEALTHCHECK defined",
+          "Description": "Providing more than one HEALTHCHECK instruction per stage is confusing and error-prone.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS023",
+          "Query": "data.builtin.dockerfile.DS023.deny",
+          "Resolution": "One HEALTHCHECK instruction must remain in Dockerfile. Remove all other instructions.",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds023",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#healthcheck",
+            "https://avd.aquasec.com/misconfig/ds023"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS024",
+          "AVDID": "AVD-DS-0024",
+          "Title": "'apt-get dist-upgrade' used",
+          "Description": "'apt-get dist-upgrade' upgrades a major version so it doesn't make more sense in Dockerfile.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS024",
+          "Query": "data.builtin.dockerfile.DS024.deny",
+          "Resolution": "Just use different image",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds024",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ds024"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS025",
+          "AVDID": "AVD-DS-0025",
+          "Title": "'apk add' is missing '--no-cache'",
+          "Description": "You should use 'apk add' with '--no-cache' to clean package cached data and reduce image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS025",
+          "Query": "data.builtin.dockerfile.DS025.deny",
+          "Resolution": "Add '--no-cache' to 'apk add' in Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds025",
+          "References": [
+            "https://github.com/gliderlabs/docker-alpine/blob/master/docs/usage.md#disabling-cache",
+            "https://avd.aquasec.com/misconfig/ds025"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS027",
+          "AVDID": "AVD-DS-0027",
+          "Title": "'microdnf clean all' missing",
+          "Description": "Cached package data should be cleaned after installation to reduce image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS027",
+          "Query": "data.builtin.dockerfile.DS027.deny",
+          "Resolution": "Add 'microdnf clean all' to Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds027",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+            "https://avd.aquasec.com/misconfig/ds027"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS029",
+          "AVDID": "AVD-DS-0029",
+          "Title": "'apt-get' missing '--no-install-recommends'",
+          "Description": "'apt-get' install should use '--no-install-recommends' to minimize image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS029",
+          "Query": "data.builtin.dockerfile.DS029.deny",
+          "Resolution": "Add '--no-install-recommends' flag to 'apt-get'",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds029",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+            "https://avd.aquasec.com/misconfig/ds029"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS030",
+          "AVDID": "AVD-DS-0030",
+          "Title": "WORKDIR should not be mounted on system dirs",
+          "Description": "WORKDIR should not be mounted on system directories to avoid container breakouts",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS030",
+          "Query": "data.builtin.dockerfile.DS030.deny",
+          "Resolution": "Avoid using system directories to mount WORKDIR",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds030",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#workdir",
+            "https://avd.aquasec.com/misconfig/ds030"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "infra/dockerfile/certificates/client.key",
+      "Class": "secret",
+      "Secrets": [
+        {
+          "RuleID": "private-key",
+          "Category": "AsymmetricPrivateKey",
+          "Severity": "HIGH",
+          "Title": "Asymmetric Private Key",
+          "StartLine": 1,
+          "EndLine": 1,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 1,
+                "Content": "-----BEGIN PRIVATE KEY-----*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************-----END PRIVATE KEY-----",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "-----BEGIN PRIVATE KEY-----*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************-----END PRIVATE KEY-----",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 2,
+                "Content": "",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "-----BEGIN PRIVATE KEY-----*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************-----END PRIVATE KEY",
+          "Layer": {}
+        }
+      ]
+    },
+    {
+      "Target": "OS Packages",
+      "Class": "license"
+    },
+    {
+      "Target": "src/go.mod",
+      "Class": "license",
+      "Licenses": [
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/golang-jwt/jwt/v5",
+          "FilePath": "src/go.mod",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/google/uuid",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/gorilla/mux",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/prometheus/client_golang",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/rs/zerolog",
+          "FilePath": "src/go.mod",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/sethvargo/go-envconfig",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/xeipuuv/gojsonschema",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/exporters/prometheus",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/exporters/prometheus",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/metric",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/metric",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/sdk",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/sdk",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/sdk/metric",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/sdk/metric",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "gopkg.in/yaml.v3",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "gopkg.in/yaml.v3",
+          "FilePath": "src/go.mod",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/beorn7/perks",
+          "FilePath": "src/go.mod",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/cespare/xxhash/v2",
+          "FilePath": "src/go.mod",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/go-logr/logr",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/go-logr/stdr",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/klauspost/compress",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/klauspost/compress",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/klauspost/compress",
+          "FilePath": "src/go.mod",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/kr/text",
+          "FilePath": "src/go.mod",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/mattn/go-colorable",
+          "FilePath": "src/go.mod",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/mattn/go-isatty",
+          "FilePath": "src/go.mod",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/munnerz/goautoneg",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/prometheus/client_model",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/prometheus/common",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/prometheus/otlptranslator",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/prometheus/procfs",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/xeipuuv/gojsonpointer",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "github.com/xeipuuv/gojsonreference",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/auto/sdk",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/trace",
+          "FilePath": "src/go.mod",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "go.opentelemetry.io/otel/trace",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "golang.org/x/sys",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "google.golang.org/protobuf",
+          "FilePath": "src/go.mod",
+          "Name": "BSD-3-Clause",
+          "Confidence": 1,
+          "Link": ""
+        }
+      ]
+    },
+    {
+      "Target": "Loose File License(s)",
+      "Class": "license-file"
+    }
+  ]
+}

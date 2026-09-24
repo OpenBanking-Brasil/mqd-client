@@ -1,0 +1,2315 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2026-09-24T14:56:51.278450922-03:00",
+  "ArtifactName": "mqd-cliente-beta233",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "alpine",
+      "Name": "3.24.2"
+    },
+    "ImageID": "sha256:5c06709233ff6384d3bbce8c2a16b170b39475d0b23a9ff438c5ba086f4e87c4",
+    "DiffIDs": [
+      "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711",
+      "sha256:be861e6695cb4d5996406b5dd821074128ffab6c2941434e09dc3293e5af7847",
+      "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d",
+      "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959",
+      "sha256:4ab8987ffa3c7ae1d9721ae5e7d7e8929d29e5126101bbe388b697f4307d52e9"
+    ],
+    "RepoTags": [
+      "mqd-cliente-beta233:latest"
+    ],
+    "RepoDigests": [
+      "mqd-cliente-beta233@sha256:5c06709233ff6384d3bbce8c2a16b170b39475d0b23a9ff438c5ba086f4e87c4"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2026-09-24T14:56:31.452173901-03:00",
+      "history": [
+        {
+          "created": "2026-09-17T20:37:20Z",
+          "created_by": "ADD alpine-minirootfs-3.24.2-x86_64.tar.gz / # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2026-09-17T20:37:20Z",
+          "created_by": "CMD [\"/bin/sh\"]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2026-09-24T17:56:08Z",
+          "created_by": "RUN /bin/sh -c apk upgrade --no-cache \u0026\u0026 adduser -D mqd_user # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2026-09-24T17:56:31Z",
+          "created_by": "COPY /src/server /usr/server # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2026-09-24T17:56:31Z",
+          "created_by": "COPY --chown=mqd_user /src/server/mqd-client /usr/mqd-client # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2026-09-24T17:56:31Z",
+          "created_by": "COPY --chown=mqd_user /src/settings ./settings # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2026-09-24T17:56:31Z",
+          "created_by": "USER mqd_user",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2026-09-24T17:56:31Z",
+          "created_by": "EXPOSE [8080/tcp]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2026-09-24T17:56:31Z",
+          "created_by": "EXPOSE [8081/tcp]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2026-09-24T17:56:31Z",
+          "created_by": "CMD [\"/usr/mqd-client\"]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711",
+          "sha256:be861e6695cb4d5996406b5dd821074128ffab6c2941434e09dc3293e5af7847",
+          "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d",
+          "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959",
+          "sha256:4ab8987ffa3c7ae1d9721ae5e7d7e8929d29e5126101bbe388b697f4307d52e9"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/usr/mqd-client"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "User": "mqd_user",
+        "WorkingDir": "/",
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "mqd-cliente-beta233 (alpine 3.24.2)",
+      "Class": "os-pkgs",
+      "Type": "alpine",
+      "Packages": [
+        {
+          "ID": "alpine-baselayout@3.7.2-r1",
+          "Name": "alpine-baselayout",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/alpine-baselayout@3.7.2-r1?arch=x86_64\u0026distro=3.24.2",
+            "UID": "9da2ac5e3839ee84"
+          },
+          "Version": "3.7.2-r1",
+          "Arch": "x86_64",
+          "SrcName": "alpine-baselayout",
+          "SrcVersion": "3.7.2-r1",
+          "Licenses": [
+            "GPL-2.0"
+          ],
+          "DependsOn": [
+            "alpine-baselayout-data@3.7.2-r1",
+            "busybox-binsh@1.37.0-r31"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:f0fcfdc2f4da058af6473bc45c4eab62916225b2",
+          "InstalledFiles": [
+            "etc/motd",
+            "etc/crontabs/root",
+            "etc/modprobe.d/aliases.conf",
+            "etc/modprobe.d/blacklist.conf",
+            "etc/modprobe.d/i386.conf",
+            "etc/profile.d/20locale.sh",
+            "etc/profile.d/README",
+            "etc/profile.d/color_prompt.sh.disabled",
+            "usr/lib/sysctl.d/00-alpine.conf",
+            "var/lock",
+            "var/run",
+            "var/spool/mail",
+            "var/spool/cron/crontabs"
+          ]
+        },
+        {
+          "ID": "alpine-baselayout-data@3.7.2-r1",
+          "Name": "alpine-baselayout-data",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/alpine-baselayout-data@3.7.2-r1?arch=x86_64\u0026distro=3.24.2",
+            "UID": "75d6f722a5d24c31"
+          },
+          "Version": "3.7.2-r1",
+          "Arch": "x86_64",
+          "SrcName": "alpine-baselayout",
+          "SrcVersion": "3.7.2-r1",
+          "Licenses": [
+            "GPL-2.0"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:c6f9bded17d844b6f1b0bb5766d2c35c0d5c8508",
+          "InstalledFiles": [
+            "etc/fstab",
+            "etc/group",
+            "etc/hostname",
+            "etc/hosts",
+            "etc/inittab",
+            "etc/modules",
+            "etc/mtab",
+            "etc/nsswitch.conf",
+            "etc/passwd",
+            "etc/profile",
+            "etc/protocols",
+            "etc/services",
+            "etc/shadow",
+            "etc/shells",
+            "etc/sysctl.conf"
+          ]
+        },
+        {
+          "ID": "alpine-keys@2.6-r0",
+          "Name": "alpine-keys",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/alpine-keys@2.6-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "69b083e975813cf"
+          },
+          "Version": "2.6-r0",
+          "Arch": "x86_64",
+          "SrcName": "alpine-keys",
+          "SrcVersion": "2.6-r0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:d8d6b80e53c059a77e4915da78ba964f3ffea240",
+          "InstalledFiles": [
+            "etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+            "etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+            "etc/apk/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5e69ca50.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-60ac2099.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-61666e3f.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616a9724.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616abc23.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616ac3bc.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616adfeb.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616ae350.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-616db30d.rsa.pub",
+            "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-66ba20fe.rsa.pub",
+            "usr/share/apk/keys/aarch64/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+            "usr/share/apk/keys/aarch64/alpine-devel@lists.alpinelinux.org-616ae350.rsa.pub",
+            "usr/share/apk/keys/armhf/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+            "usr/share/apk/keys/armhf/alpine-devel@lists.alpinelinux.org-616a9724.rsa.pub",
+            "usr/share/apk/keys/armv7/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+            "usr/share/apk/keys/armv7/alpine-devel@lists.alpinelinux.org-616adfeb.rsa.pub",
+            "usr/share/apk/keys/loongarch64/alpine-devel@lists.alpinelinux.org-66ba20fe.rsa.pub",
+            "usr/share/apk/keys/mips64/alpine-devel@lists.alpinelinux.org-5e69ca50.rsa.pub",
+            "usr/share/apk/keys/ppc64le/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+            "usr/share/apk/keys/ppc64le/alpine-devel@lists.alpinelinux.org-616abc23.rsa.pub",
+            "usr/share/apk/keys/riscv64/alpine-devel@lists.alpinelinux.org-60ac2099.rsa.pub",
+            "usr/share/apk/keys/riscv64/alpine-devel@lists.alpinelinux.org-616db30d.rsa.pub",
+            "usr/share/apk/keys/s390x/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+            "usr/share/apk/keys/s390x/alpine-devel@lists.alpinelinux.org-616ac3bc.rsa.pub",
+            "usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+            "usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+            "usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-61666e3f.rsa.pub",
+            "usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+            "usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+            "usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub"
+          ]
+        },
+        {
+          "ID": "alpine-release@3.24.2-r0",
+          "Name": "alpine-release",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/alpine-release@3.24.2-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "78175401a85d2fc4"
+          },
+          "Version": "3.24.2-r0",
+          "Arch": "x86_64",
+          "SrcName": "alpine-base",
+          "SrcVersion": "3.24.2-r0",
+          "Licenses": [
+            "MIT"
+          ],
+          "DependsOn": [
+            "alpine-keys@2.6-r0"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:6fd1be469ca235e9c62f1b73fa3e5bffafdeb6b5",
+          "InstalledFiles": [
+            "etc/alpine-release",
+            "etc/issue",
+            "etc/os-release",
+            "etc/secfixes.d/alpine",
+            "usr/lib/os-release"
+          ]
+        },
+        {
+          "ID": "apk-tools@3.0.8-r0",
+          "Name": "apk-tools",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/apk-tools@3.0.8-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "72ab6fd5dfb08b1b"
+          },
+          "Version": "3.0.8-r0",
+          "Arch": "x86_64",
+          "SrcName": "apk-tools",
+          "SrcVersion": "3.0.8-r0",
+          "Licenses": [
+            "GPL-2.0"
+          ],
+          "DependsOn": [
+            "ca-certificates-bundle@20260909-r0",
+            "libapk@3.0.8-r0",
+            "libcrypto3@3.5.8-r0",
+            "musl@1.2.6-r2",
+            "zlib@1.3.2-r0"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:786130a8f2d3ac69fc316118757b7e8151b8b8c3",
+          "InstalledFiles": [
+            "sbin/apk"
+          ]
+        },
+        {
+          "ID": "busybox@1.37.0-r31",
+          "Name": "busybox",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/busybox@1.37.0-r31?arch=x86_64\u0026distro=3.24.2",
+            "UID": "cc98e1c618d97b07"
+          },
+          "Version": "1.37.0-r31",
+          "Arch": "x86_64",
+          "SrcName": "busybox",
+          "SrcVersion": "1.37.0-r31",
+          "Licenses": [
+            "GPL-2.0"
+          ],
+          "DependsOn": [
+            "musl@1.2.6-r2"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:b5405ebc02f7dd8be95b6265c54b243d5456ab8f",
+          "InstalledFiles": [
+            "bin/busybox",
+            "etc/securetty",
+            "etc/busybox-paths.d/busybox",
+            "etc/logrotate.d/acpid",
+            "etc/network/if-up.d/dad",
+            "etc/udhcpc/udhcpc.conf",
+            "usr/share/udhcpc/default.script"
+          ]
+        },
+        {
+          "ID": "busybox-binsh@1.37.0-r31",
+          "Name": "busybox-binsh",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/busybox-binsh@1.37.0-r31?arch=x86_64\u0026distro=3.24.2",
+            "UID": "27af619a97009e51"
+          },
+          "Version": "1.37.0-r31",
+          "Arch": "x86_64",
+          "SrcName": "busybox",
+          "SrcVersion": "1.37.0-r31",
+          "Licenses": [
+            "GPL-2.0"
+          ],
+          "DependsOn": [
+            "busybox@1.37.0-r31"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:5cbd14acc6f1804c5bac6c77dc2c492f010b0fc7",
+          "InstalledFiles": [
+            "bin/sh"
+          ]
+        },
+        {
+          "ID": "ca-certificates-bundle@20260909-r0",
+          "Name": "ca-certificates-bundle",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/ca-certificates-bundle@20260909-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "74eb2b272bd80b2d"
+          },
+          "Version": "20260909-r0",
+          "Arch": "x86_64",
+          "SrcName": "ca-certificates",
+          "SrcVersion": "20260909-r0",
+          "Licenses": [
+            "MPL-2.0",
+            "MIT"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:791237cee877988893a354b5f6c9c44f35d4edb9",
+          "InstalledFiles": [
+            "etc/ssl/cert.pem",
+            "etc/ssl/certs/ca-certificates.crt",
+            "etc/ssl1.1/cert.pem",
+            "etc/ssl1.1/certs"
+          ]
+        },
+        {
+          "ID": "libapk@3.0.8-r0",
+          "Name": "libapk",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/libapk@3.0.8-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "15af6ae60d1be844"
+          },
+          "Version": "3.0.8-r0",
+          "Arch": "x86_64",
+          "SrcName": "apk-tools",
+          "SrcVersion": "3.0.8-r0",
+          "Licenses": [
+            "GPL-2.0"
+          ],
+          "DependsOn": [
+            "libcrypto3@3.5.8-r0",
+            "libssl3@3.5.8-r0",
+            "musl@1.2.6-r2",
+            "zlib@1.3.2-r0"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:b93ce9573c1d0db3eea7ce32841ad0857abc4a54",
+          "InstalledFiles": [
+            "usr/lib/libapk.so.3.0.0"
+          ]
+        },
+        {
+          "ID": "libcrypto3@3.5.8-r0",
+          "Name": "libcrypto3",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/libcrypto3@3.5.8-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "60300275b732a0d9"
+          },
+          "Version": "3.5.8-r0",
+          "Arch": "x86_64",
+          "SrcName": "openssl",
+          "SrcVersion": "3.5.8-r0",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "DependsOn": [
+            "musl@1.2.6-r2"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:1b3b9fc0c136f4936932bcb2ec21499f0ae5dfd3",
+          "InstalledFiles": [
+            "etc/ssl/ct_log_list.cnf",
+            "etc/ssl/ct_log_list.cnf.dist",
+            "etc/ssl/openssl.cnf",
+            "etc/ssl/openssl.cnf.dist",
+            "usr/lib/libcrypto.so.3",
+            "usr/lib/engines-3/afalg.so",
+            "usr/lib/engines-3/capi.so",
+            "usr/lib/engines-3/loader_attic.so",
+            "usr/lib/engines-3/padlock.so",
+            "usr/lib/ossl-modules/legacy.so"
+          ]
+        },
+        {
+          "ID": "libssl3@3.5.8-r0",
+          "Name": "libssl3",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/libssl3@3.5.8-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "425174e1eaedb214"
+          },
+          "Version": "3.5.8-r0",
+          "Arch": "x86_64",
+          "SrcName": "openssl",
+          "SrcVersion": "3.5.8-r0",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "DependsOn": [
+            "libcrypto3@3.5.8-r0",
+            "musl@1.2.6-r2"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:5f9b1e55d821953d2e2b1db322dad70a3b5041ea",
+          "InstalledFiles": [
+            "usr/lib/libssl.so.3"
+          ]
+        },
+        {
+          "ID": "musl@1.2.6-r2",
+          "Name": "musl",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/musl@1.2.6-r2?arch=x86_64\u0026distro=3.24.2",
+            "UID": "6dce2c97e03efc35"
+          },
+          "Version": "1.2.6-r2",
+          "Arch": "x86_64",
+          "SrcName": "musl",
+          "SrcVersion": "1.2.6-r2",
+          "Licenses": [
+            "MIT"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:0f7e5827e4e1a73631beda27b78431a8ba240e05",
+          "InstalledFiles": [
+            "lib/ld-musl-x86_64.so.1",
+            "lib/libc.musl-x86_64.so.1"
+          ]
+        },
+        {
+          "ID": "musl-utils@1.2.6-r2",
+          "Name": "musl-utils",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/musl-utils@1.2.6-r2?arch=x86_64\u0026distro=3.24.2",
+            "UID": "7195a4bdd5c262c2"
+          },
+          "Version": "1.2.6-r2",
+          "Arch": "x86_64",
+          "SrcName": "musl",
+          "SrcVersion": "1.2.6-r2",
+          "Licenses": [
+            "MIT",
+            "BSD-2-Clause",
+            "GPL-2.0"
+          ],
+          "DependsOn": [
+            "musl@1.2.6-r2",
+            "scanelf@1.3.9-r1"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:75ada3c48d63ec5d87c42fdf934a3fdd11298dc5",
+          "InstalledFiles": [
+            "sbin/ldconfig",
+            "usr/bin/getconf",
+            "usr/bin/getent",
+            "usr/bin/iconv",
+            "usr/bin/ldd"
+          ]
+        },
+        {
+          "ID": "scanelf@1.3.9-r1",
+          "Name": "scanelf",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/scanelf@1.3.9-r1?arch=x86_64\u0026distro=3.24.2",
+            "UID": "b0ecaf24453d94f3"
+          },
+          "Version": "1.3.9-r1",
+          "Arch": "x86_64",
+          "SrcName": "pax-utils",
+          "SrcVersion": "1.3.9-r1",
+          "Licenses": [
+            "GPL-2.0"
+          ],
+          "DependsOn": [
+            "musl@1.2.6-r2"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:013f903d0ba219673aebbdd04f74bb5ed82b01f0",
+          "InstalledFiles": [
+            "usr/bin/scanelf"
+          ]
+        },
+        {
+          "ID": "ssl_client@1.37.0-r31",
+          "Name": "ssl_client",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/ssl_client@1.37.0-r31?arch=x86_64\u0026distro=3.24.2",
+            "UID": "7e1b8820fd00d064"
+          },
+          "Version": "1.37.0-r31",
+          "Arch": "x86_64",
+          "SrcName": "busybox",
+          "SrcVersion": "1.37.0-r31",
+          "Licenses": [
+            "GPL-2.0"
+          ],
+          "DependsOn": [
+            "libcrypto3@3.5.8-r0",
+            "libssl3@3.5.8-r0",
+            "musl@1.2.6-r2"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:c220f4a5125a313af733e98def94132bb1e9d40d",
+          "InstalledFiles": [
+            "usr/bin/ssl_client"
+          ]
+        },
+        {
+          "ID": "zlib@1.3.2-r0",
+          "Name": "zlib",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/zlib@1.3.2-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "8df1ffc9ffdabac8"
+          },
+          "Version": "1.3.2-r0",
+          "Arch": "x86_64",
+          "SrcName": "zlib",
+          "SrcVersion": "1.3.2-r0",
+          "Licenses": [
+            "Zlib"
+          ],
+          "DependsOn": [
+            "musl@1.2.6-r2"
+          ],
+          "Layer": {
+            "Digest": "sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5",
+            "DiffID": "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711"
+          },
+          "Digest": "sha1:dd4c3d102acaef2a71a1495951d55fabc8680613",
+          "InstalledFiles": [
+            "usr/lib/libz.so.1",
+            "usr/lib/libz.so.1.3.2"
+          ]
+        }
+      ]
+    },
+    {
+      "Target": "usr/mqd-client",
+      "Class": "lang-pkgs",
+      "Type": "gobinary",
+      "Packages": [
+        {
+          "Name": "github.com/OpenBanking-Brasil/MQD_Client",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/openbanking-brasil/mqd_client",
+            "UID": "9bab4eb377a57fad"
+          },
+          "Relationship": "root",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "stdlib",
+          "Identifier": {
+            "PURL": "pkg:golang/stdlib@1.26.8",
+            "UID": "64a340ee62050bcd"
+          },
+          "Version": "1.26.8",
+          "Relationship": "direct",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/beorn7/perks",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/beorn7/perks@v1.0.1",
+            "UID": "324ce6979ade5ff9"
+          },
+          "Version": "v1.0.1",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/cespare/xxhash/v2",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/cespare/xxhash/v2@v2.3.0",
+            "UID": "c146a6788589ad81"
+          },
+          "Version": "v2.3.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/go-logr/logr",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/go-logr/logr@v1.4.4",
+            "UID": "a3a79790c9031cbc"
+          },
+          "Version": "v1.4.4",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/go-logr/stdr",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/go-logr/stdr@v1.2.2",
+            "UID": "404b282277e1cf0c"
+          },
+          "Version": "v1.2.2",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/golang-jwt/jwt/v5",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/golang-jwt/jwt/v5@v5.3.1",
+            "UID": "f53e1711acc5e667"
+          },
+          "Version": "v5.3.1",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/google/uuid",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/google/uuid@v1.6.0",
+            "UID": "44bb296889e77929"
+          },
+          "Version": "v1.6.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/gorilla/mux",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/gorilla/mux@v1.8.1",
+            "UID": "c8d73c0b137e95ad"
+          },
+          "Version": "v1.8.1",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/mattn/go-colorable",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/mattn/go-colorable@v0.1.15",
+            "UID": "461a32d2c6be98bf"
+          },
+          "Version": "v0.1.15",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/mattn/go-isatty",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/mattn/go-isatty@v0.0.24",
+            "UID": "3154f37eceadb4f2"
+          },
+          "Version": "v0.0.24",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/munnerz/goautoneg",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/munnerz/goautoneg@v0.0.0-20191010083416-a7dc8b61c822",
+            "UID": "e8cb3722bd8ea62f"
+          },
+          "Version": "v0.0.0-20191010083416-a7dc8b61c822",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/client_golang",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/client_golang@v1.24.1",
+            "UID": "42a3a1907b64f84d"
+          },
+          "Version": "v1.24.1",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/client_model",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/client_model@v0.6.3",
+            "UID": "2dda0fcf84c8c4a"
+          },
+          "Version": "v0.6.3",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/common",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/common@v0.71.0",
+            "UID": "d2de2288fedb92ff"
+          },
+          "Version": "v0.71.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/otlptranslator",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/otlptranslator@v1.0.0",
+            "UID": "97a822a4067867d8"
+          },
+          "Version": "v1.0.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/procfs",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/procfs@v0.22.0",
+            "UID": "709e63551df5eaf0"
+          },
+          "Version": "v0.22.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/rs/zerolog",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/rs/zerolog@v1.35.1",
+            "UID": "1fea067f8ba47659"
+          },
+          "Version": "v1.35.1",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/sethvargo/go-envconfig",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/sethvargo/go-envconfig@v1.4.3",
+            "UID": "a0d2e12117bffe9c"
+          },
+          "Version": "v1.4.3",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/xeipuuv/gojsonpointer",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/xeipuuv/gojsonpointer@v0.0.0-20190905194746-02993c407bfb",
+            "UID": "a7ca223a86db4bfe"
+          },
+          "Version": "v0.0.0-20190905194746-02993c407bfb",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/xeipuuv/gojsonreference",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/xeipuuv/gojsonreference@v0.0.0-20180127040603-bd5ef7bd5415",
+            "UID": "f02b2cf71a6a0111"
+          },
+          "Version": "v0.0.0-20180127040603-bd5ef7bd5415",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "github.com/xeipuuv/gojsonschema",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/xeipuuv/gojsonschema@v1.2.0",
+            "UID": "d873b42327d1bd39"
+          },
+          "Version": "v1.2.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/auto/sdk",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/auto/sdk@v1.2.1",
+            "UID": "da735088bc0ebe52"
+          },
+          "Version": "v1.2.1",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel@v1.46.0",
+            "UID": "877f6ac6cc925da3"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/exporters/prometheus",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/exporters/prometheus@v0.68.0",
+            "UID": "1c1f6207dae67545"
+          },
+          "Version": "v0.68.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/metric",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/metric@v1.46.0",
+            "UID": "ebd8c910666dd41d"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/sdk",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/sdk@v1.46.0",
+            "UID": "669d7f2f9da4424"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/sdk/metric",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/sdk/metric@v1.46.0",
+            "UID": "a75f21616b96cc55"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/trace",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/trace@v1.46.0",
+            "UID": "502884bab9d44e13"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "golang.org/x/sys",
+          "Identifier": {
+            "PURL": "pkg:golang/golang.org/x/sys@v0.48.0",
+            "UID": "fef21056a185cc63"
+          },
+          "Version": "v0.48.0",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "google.golang.org/protobuf",
+          "Identifier": {
+            "PURL": "pkg:golang/google.golang.org/protobuf@v1.36.12",
+            "UID": "de0bb6fb3357a164"
+          },
+          "Version": "v1.36.12",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        },
+        {
+          "Name": "gopkg.in/yaml.v3",
+          "Identifier": {
+            "PURL": "pkg:golang/gopkg.in/yaml.v3@v3.0.1",
+            "UID": "772c8f831e4bf03d"
+          },
+          "Version": "v3.0.1",
+          "Layer": {
+            "Digest": "sha256:75eb40c0e9f7274d41129696b4019545219d01fb507fc5f3dfd64f36eeee0081",
+            "DiffID": "sha256:6ae0e7f07163d733005ad24ecc49dd324c790bd70ae9d7d2f22d88c794613959"
+          }
+        }
+      ]
+    },
+    {
+      "Target": "usr/server/mqd-client",
+      "Class": "lang-pkgs",
+      "Type": "gobinary",
+      "Packages": [
+        {
+          "Name": "github.com/OpenBanking-Brasil/MQD_Client",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/openbanking-brasil/mqd_client",
+            "UID": "4dfa97880bc9639d"
+          },
+          "Relationship": "root",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "stdlib",
+          "Identifier": {
+            "PURL": "pkg:golang/stdlib@1.26.8",
+            "UID": "c2e82a37e22979ad"
+          },
+          "Version": "1.26.8",
+          "Relationship": "direct",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/beorn7/perks",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/beorn7/perks@v1.0.1",
+            "UID": "5bb436723b697e11"
+          },
+          "Version": "v1.0.1",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/cespare/xxhash/v2",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/cespare/xxhash/v2@v2.3.0",
+            "UID": "a5ed5c0e2626ee8d"
+          },
+          "Version": "v2.3.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/go-logr/logr",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/go-logr/logr@v1.4.4",
+            "UID": "c488a04c3e069918"
+          },
+          "Version": "v1.4.4",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/go-logr/stdr",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/go-logr/stdr@v1.2.2",
+            "UID": "4c8f107d109d1ba4"
+          },
+          "Version": "v1.2.2",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/golang-jwt/jwt/v5",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/golang-jwt/jwt/v5@v5.3.1",
+            "UID": "564feaa9696ccbe3"
+          },
+          "Version": "v5.3.1",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/google/uuid",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/google/uuid@v1.6.0",
+            "UID": "5bfa5dbbc660e7c9"
+          },
+          "Version": "v1.6.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/gorilla/mux",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/gorilla/mux@v1.8.1",
+            "UID": "9f1c0d1cdb2d5ad1"
+          },
+          "Version": "v1.8.1",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/mattn/go-colorable",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/mattn/go-colorable@v0.1.15",
+            "UID": "19cb000f69ad746b"
+          },
+          "Version": "v0.1.15",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/mattn/go-isatty",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/mattn/go-isatty@v0.0.24",
+            "UID": "8e524b5575e6f9c6"
+          },
+          "Version": "v0.0.24",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/munnerz/goautoneg",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/munnerz/goautoneg@v0.0.0-20191010083416-a7dc8b61c822",
+            "UID": "97b42d549bc45533"
+          },
+          "Version": "v0.0.0-20191010083416-a7dc8b61c822",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/client_golang",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/client_golang@v1.24.1",
+            "UID": "108d42605d9d1e0d"
+          },
+          "Version": "v1.24.1",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/client_model",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/client_model@v0.6.3",
+            "UID": "4eb17f40fb344516"
+          },
+          "Version": "v0.6.3",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/common",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/common@v0.71.0",
+            "UID": "3256cc18411c60fb"
+          },
+          "Version": "v0.71.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/otlptranslator",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/otlptranslator@v1.0.0",
+            "UID": "fec30eb26bb614ec"
+          },
+          "Version": "v1.0.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/prometheus/procfs",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/prometheus/procfs@v0.22.0",
+            "UID": "6d33d1e04f159534"
+          },
+          "Version": "v0.22.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/rs/zerolog",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/rs/zerolog@v1.35.1",
+            "UID": "a8b21fca67625649"
+          },
+          "Version": "v1.35.1",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/sethvargo/go-envconfig",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/sethvargo/go-envconfig@v1.4.3",
+            "UID": "92852774403fbf38"
+          },
+          "Version": "v1.4.3",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/xeipuuv/gojsonpointer",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/xeipuuv/gojsonpointer@v0.0.0-20190905194746-02993c407bfb",
+            "UID": "7820c674de18406"
+          },
+          "Version": "v0.0.0-20190905194746-02993c407bfb",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/xeipuuv/gojsonreference",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/xeipuuv/gojsonreference@v0.0.0-20180127040603-bd5ef7bd5415",
+            "UID": "3d51247236f1f1c9"
+          },
+          "Version": "v0.0.0-20180127040603-bd5ef7bd5415",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "github.com/xeipuuv/gojsonschema",
+          "Identifier": {
+            "PURL": "pkg:golang/github.com/xeipuuv/gojsonschema@v1.2.0",
+            "UID": "76ce105967695b99"
+          },
+          "Version": "v1.2.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/auto/sdk",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/auto/sdk@v1.2.1",
+            "UID": "f62049552ac4bf56"
+          },
+          "Version": "v1.2.1",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel@v1.46.0",
+            "UID": "fd9ba6ef8a9b0efb"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/exporters/prometheus",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/exporters/prometheus@v0.68.0",
+            "UID": "194b008963e097bd"
+          },
+          "Version": "v0.68.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/metric",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/metric@v1.46.0",
+            "UID": "fb683d647c858515"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/sdk",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/sdk@v1.46.0",
+            "UID": "b621f0ffc4c3ee80"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/sdk/metric",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/sdk/metric@v1.46.0",
+            "UID": "69acb54094e9a489"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "go.opentelemetry.io/otel/trace",
+          "Identifier": {
+            "PURL": "pkg:golang/go.opentelemetry.io/otel/trace@v1.46.0",
+            "UID": "5f39fcb67d874377"
+          },
+          "Version": "v1.46.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "golang.org/x/sys",
+          "Identifier": {
+            "PURL": "pkg:golang/golang.org/x/sys@v0.48.0",
+            "UID": "c0f8ebc5f4a9078b"
+          },
+          "Version": "v0.48.0",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "google.golang.org/protobuf",
+          "Identifier": {
+            "PURL": "pkg:golang/google.golang.org/protobuf@v1.36.12",
+            "UID": "e17bf33936605b4"
+          },
+          "Version": "v1.36.12",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        },
+        {
+          "Name": "gopkg.in/yaml.v3",
+          "Identifier": {
+            "PURL": "pkg:golang/gopkg.in/yaml.v3@v3.0.1",
+            "UID": "dd7fdddfa234c529"
+          },
+          "Version": "v3.0.1",
+          "Layer": {
+            "Digest": "sha256:76277f2a9de315f26822e16f827bf16e1727e89a0960f2ee4490fabf2dfc6142",
+            "DiffID": "sha256:0fd8ae3ba96fdf149c4653f7008d6b8b4f505d49d010d18ee5d87ae22141639d"
+          }
+        }
+      ]
+    },
+    {
+      "Target": "mqd-cliente-beta233",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 26,
+        "Failures": 1,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS026",
+          "AVDID": "AVD-DS-0026",
+          "Title": "No HEALTHCHECK defined",
+          "Description": "You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.",
+          "Message": "Add HEALTHCHECK instruction in your Dockerfile",
+          "Namespace": "builtin.dockerfile.DS026",
+          "Query": "data.builtin.dockerfile.DS026.deny",
+          "Resolution": "Add HEALTHCHECK instruction in Dockerfile",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds026",
+          "References": [
+            "https://blog.aquasec.com/docker-security-best-practices",
+            "https://avd.aquasec.com/misconfig/ds026"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS001",
+          "AVDID": "AVD-DS-0001",
+          "Title": "':latest' tag used",
+          "Description": "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS001",
+          "Query": "data.builtin.dockerfile.DS001.deny",
+          "Resolution": "Add a tag to the image in the 'FROM' statement",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds001",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ds001"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS002",
+          "AVDID": "AVD-DS-0002",
+          "Title": "Image user should not be 'root'",
+          "Description": "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS002",
+          "Query": "data.builtin.dockerfile.DS002.deny",
+          "Resolution": "Add 'USER \u003cnon root user name\u003e' line to the Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds002",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+            "https://avd.aquasec.com/misconfig/ds002"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS004",
+          "AVDID": "AVD-DS-0004",
+          "Title": "Port 22 exposed",
+          "Description": "Exposing port 22 might allow users to SSH into the container.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS004",
+          "Query": "data.builtin.dockerfile.DS004.deny",
+          "Resolution": "Remove 'EXPOSE 22' statement from the Dockerfile",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds004",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ds004"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS005",
+          "AVDID": "AVD-DS-0005",
+          "Title": "ADD instead of COPY",
+          "Description": "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS005",
+          "Query": "data.builtin.dockerfile.DS005.deny",
+          "Resolution": "Use COPY instead of ADD",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds005",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#add",
+            "https://avd.aquasec.com/misconfig/ds005"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS006",
+          "AVDID": "AVD-DS-0006",
+          "Title": "COPY '--from' referring to the current image",
+          "Description": "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS006",
+          "Query": "data.builtin.dockerfile.DS006.deny",
+          "Resolution": "Change the '--from' so that it will not refer to itself",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds006",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/multistage-build/",
+            "https://avd.aquasec.com/misconfig/ds006"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS007",
+          "AVDID": "AVD-DS-0007",
+          "Title": "Multiple ENTRYPOINT instructions listed",
+          "Description": "There can only be one ENTRYPOINT instruction in a Dockerfile. Only the last ENTRYPOINT instruction in the Dockerfile will have an effect.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS007",
+          "Query": "data.builtin.dockerfile.DS007.deny",
+          "Resolution": "Remove unnecessary ENTRYPOINT instruction.",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds007",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#entrypoint",
+            "https://avd.aquasec.com/misconfig/ds007"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS008",
+          "AVDID": "AVD-DS-0008",
+          "Title": "Exposed port out of range",
+          "Description": "UNIX ports outside the range 0-65535 are exposed.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS008",
+          "Query": "data.builtin.dockerfile.DS008.deny",
+          "Resolution": "Use port number within range",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds008",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#expose",
+            "https://avd.aquasec.com/misconfig/ds008"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS009",
+          "AVDID": "AVD-DS-0009",
+          "Title": "WORKDIR path not absolute",
+          "Description": "For clarity and reliability, you should always use absolute paths for your WORKDIR.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS009",
+          "Query": "data.builtin.dockerfile.DS009.deny",
+          "Resolution": "Use absolute paths for your WORKDIR",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds009",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#workdir",
+            "https://avd.aquasec.com/misconfig/ds009"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS010",
+          "AVDID": "AVD-DS-0010",
+          "Title": "RUN using 'sudo'",
+          "Description": "Avoid using 'RUN' with 'sudo' commands, as it can lead to unpredictable behavior.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS010",
+          "Query": "data.builtin.dockerfile.DS010.deny",
+          "Resolution": "Don't use sudo",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds010",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#run",
+            "https://avd.aquasec.com/misconfig/ds010"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS011",
+          "AVDID": "AVD-DS-0011",
+          "Title": "COPY with more than two arguments not ending with slash",
+          "Description": "When a COPY command has more than two arguments, the last one should end with a slash.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS011",
+          "Query": "data.builtin.dockerfile.DS011.deny",
+          "Resolution": "Add slash to last COPY argument",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds011",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#copy",
+            "https://avd.aquasec.com/misconfig/ds011"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS012",
+          "AVDID": "AVD-DS-0012",
+          "Title": "Duplicate aliases defined in different FROMs",
+          "Description": "Different FROMs can't have the same alias defined.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS012",
+          "Query": "data.builtin.dockerfile.DS012.deny",
+          "Resolution": "Change aliases to make them different",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds012",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/multistage-build/",
+            "https://avd.aquasec.com/misconfig/ds012"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS013",
+          "AVDID": "AVD-DS-0013",
+          "Title": "'RUN cd ...' to change directory",
+          "Description": "Use WORKDIR instead of proliferating instructions like 'RUN cd … \u0026\u0026 do-something', which are hard to read, troubleshoot, and maintain.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS013",
+          "Query": "data.builtin.dockerfile.DS013.deny",
+          "Resolution": "Use WORKDIR to change directory",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds013",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#workdir",
+            "https://avd.aquasec.com/misconfig/ds013"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS014",
+          "AVDID": "AVD-DS-0014",
+          "Title": "RUN using 'wget' and 'curl'",
+          "Description": "Avoid using both 'wget' and 'curl' since these tools have the same effect.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS014",
+          "Query": "data.builtin.dockerfile.DS014.deny",
+          "Resolution": "Pick one util, either 'wget' or 'curl'",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds014",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run",
+            "https://avd.aquasec.com/misconfig/ds014"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS015",
+          "AVDID": "AVD-DS-0015",
+          "Title": "'yum clean all' missing",
+          "Description": "You should use 'yum clean all' after using a 'yum install' command to clean package cached data and reduce image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS015",
+          "Query": "data.builtin.dockerfile.DS015.deny",
+          "Resolution": "Add 'yum clean all' to Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds015",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run",
+            "https://avd.aquasec.com/misconfig/ds015"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS016",
+          "AVDID": "AVD-DS-0016",
+          "Title": "Multiple CMD instructions listed",
+          "Description": "There can only be one CMD instruction in a Dockerfile. If you list more than one CMD then only the last CMD will take effect.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS016",
+          "Query": "data.builtin.dockerfile.DS016.deny",
+          "Resolution": "Dockerfile should only have one CMD instruction. Remove all the other CMD instructions",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds016",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#cmd",
+            "https://avd.aquasec.com/misconfig/ds016"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS017",
+          "AVDID": "AVD-DS-0017",
+          "Title": "'RUN \u003cpackage-manager\u003e update' instruction alone",
+          "Description": "The instruction 'RUN \u003cpackage-manager\u003e update' should always be followed by '\u003cpackage-manager\u003e install' in the same RUN statement.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS017",
+          "Query": "data.builtin.dockerfile.DS017.deny",
+          "Resolution": "Combine '\u003cpackage-manager\u003e update' and '\u003cpackage-manager\u003e install' instructions to single one",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds017",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/instructions/#run",
+            "https://avd.aquasec.com/misconfig/ds017"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS019",
+          "AVDID": "AVD-DS-0019",
+          "Title": "'dnf clean all' missing",
+          "Description": "Cached package data should be cleaned after installation to reduce image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS019",
+          "Query": "data.builtin.dockerfile.DS019.deny",
+          "Resolution": "Add 'dnf clean all' to Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds019",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+            "https://avd.aquasec.com/misconfig/ds019"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS020",
+          "AVDID": "AVD-DS-0020",
+          "Title": "'zypper clean' missing",
+          "Description": "The layer and image size should be reduced by deleting unneeded caches after running zypper.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS020",
+          "Query": "data.builtin.dockerfile.DS020.deny",
+          "Resolution": "Add 'zypper clean' to Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds020",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run",
+            "https://avd.aquasec.com/misconfig/ds020"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS021",
+          "AVDID": "AVD-DS-0021",
+          "Title": "'apt-get' missing '-y' to avoid manual input",
+          "Description": "'apt-get' calls should use the flag '-y' to avoid manual user input.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS021",
+          "Query": "data.builtin.dockerfile.DS021.deny",
+          "Resolution": "Add '-y' flag to 'apt-get'",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds021",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#run",
+            "https://avd.aquasec.com/misconfig/ds021"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS022",
+          "AVDID": "AVD-DS-0022",
+          "Title": "Deprecated MAINTAINER used",
+          "Description": "MAINTAINER has been deprecated since Docker 1.13.0.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS022",
+          "Query": "data.builtin.dockerfile.DS022.deny",
+          "Resolution": "Use LABEL instead of MAINTAINER",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds022",
+          "References": [
+            "https://docs.docker.com/engine/deprecated/#maintainer-in-dockerfile",
+            "https://avd.aquasec.com/misconfig/ds022"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS023",
+          "AVDID": "AVD-DS-0023",
+          "Title": "Multiple HEALTHCHECK defined",
+          "Description": "Providing more than one HEALTHCHECK instruction per stage is confusing and error-prone.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS023",
+          "Query": "data.builtin.dockerfile.DS023.deny",
+          "Resolution": "One HEALTHCHECK instruction must remain in Dockerfile. Remove all other instructions.",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds023",
+          "References": [
+            "https://docs.docker.com/engine/reference/builder/#healthcheck",
+            "https://avd.aquasec.com/misconfig/ds023"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS024",
+          "AVDID": "AVD-DS-0024",
+          "Title": "'apt-get dist-upgrade' used",
+          "Description": "'apt-get dist-upgrade' upgrades a major version so it doesn't make more sense in Dockerfile.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS024",
+          "Query": "data.builtin.dockerfile.DS024.deny",
+          "Resolution": "Just use different image",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds024",
+          "References": [
+            "https://avd.aquasec.com/misconfig/ds024"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS025",
+          "AVDID": "AVD-DS-0025",
+          "Title": "'apk add' is missing '--no-cache'",
+          "Description": "You should use 'apk add' with '--no-cache' to clean package cached data and reduce image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS025",
+          "Query": "data.builtin.dockerfile.DS025.deny",
+          "Resolution": "Add '--no-cache' to 'apk add' in Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds025",
+          "References": [
+            "https://github.com/gliderlabs/docker-alpine/blob/master/docs/usage.md#disabling-cache",
+            "https://avd.aquasec.com/misconfig/ds025"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS027",
+          "AVDID": "AVD-DS-0027",
+          "Title": "'microdnf clean all' missing",
+          "Description": "Cached package data should be cleaned after installation to reduce image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS027",
+          "Query": "data.builtin.dockerfile.DS027.deny",
+          "Resolution": "Add 'microdnf clean all' to Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds027",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+            "https://avd.aquasec.com/misconfig/ds027"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS029",
+          "AVDID": "AVD-DS-0029",
+          "Title": "'apt-get' missing '--no-install-recommends'",
+          "Description": "'apt-get' install should use '--no-install-recommends' to minimize image size.",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS029",
+          "Query": "data.builtin.dockerfile.DS029.deny",
+          "Resolution": "Add '--no-install-recommends' flag to 'apt-get'",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds029",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+            "https://avd.aquasec.com/misconfig/ds029"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS030",
+          "AVDID": "AVD-DS-0030",
+          "Title": "WORKDIR should not be mounted on system dirs",
+          "Description": "WORKDIR should not be mounted on system directories to avoid container breakouts",
+          "Message": "No issues found",
+          "Namespace": "builtin.dockerfile.DS030",
+          "Query": "data.builtin.dockerfile.DS030.deny",
+          "Resolution": "Avoid using system directories to mount WORKDIR",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds030",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#workdir",
+            "https://avd.aquasec.com/misconfig/ds030"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "OS Packages",
+      "Class": "license",
+      "Licenses": [
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "alpine-baselayout",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "alpine-baselayout-data",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "alpine-keys",
+          "FilePath": "",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "alpine-release",
+          "FilePath": "",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "apk-tools",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "busybox",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "busybox-binsh",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "MEDIUM",
+          "Category": "reciprocal",
+          "PkgName": "ca-certificates-bundle",
+          "FilePath": "",
+          "Name": "MPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "ca-certificates-bundle",
+          "FilePath": "",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "libapk",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "libcrypto3",
+          "FilePath": "",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "libssl3",
+          "FilePath": "",
+          "Name": "Apache-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "musl",
+          "FilePath": "",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "musl-utils",
+          "FilePath": "",
+          "Name": "MIT",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "musl-utils",
+          "FilePath": "",
+          "Name": "BSD-2-Clause",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "musl-utils",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "scanelf",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "ssl_client",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "LOW",
+          "Category": "notice",
+          "PkgName": "zlib",
+          "FilePath": "",
+          "Name": "Zlib",
+          "Confidence": 1,
+          "Link": ""
+        }
+      ]
+    },
+    {
+      "Target": "usr/server/mqd-client",
+      "Class": "license"
+    },
+    {
+      "Target": "usr/mqd-client",
+      "Class": "license"
+    },
+    {
+      "Target": "Loose File License(s)",
+      "Class": "license-file"
+    }
+  ]
+}
