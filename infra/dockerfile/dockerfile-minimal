@@ -17,13 +17,10 @@ COPY /src/. .
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./server/mqd-client .
 
-# Última versão ESTÁVEL do Alpine, com versão fixa. Não usar "edge" (versão de
-# desenvolvimento, sem suporte de segurança e sem base de CVE no Trivy) nem
-# "latest" / sem tag (muda sem aviso entre builds).
-FROM docker.io/alpine:3.24.2
+FROM docker.io/alpine
 
-# Apply pending security patches and set up an unprivileged user
-RUN apk upgrade --no-cache && adduser -D mqd_user
+# Set up an unprivileged user
+RUN adduser -D mqd_user
 
 #WORKDIR /usr/
 #COPY --from=builder /src/server .
