@@ -1,5 +1,5 @@
 # mqd-client
-Aplicação que será instalada no cliente (Receptora) encarregada de realizar validações aos payloads recebidos nas diferentes APIs OpenFinance, e depois enviar os resultados para um servidor central localizado no perímetro central
+Aplicação que será instalada no cliente (Transmissora) encarregada de realizar validações aos payloads recebidos nas diferentes APIs OpenFinance, e depois enviar os resultados para um servidor central localizado no perímetro central
 
 Nesta primeira versão, você terá as seguintes limitações:
 1. Escopo reduzido para APIs da Fase 2
